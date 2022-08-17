@@ -17,10 +17,11 @@ app.use(morgan("tiny"));
 app.use(verifyUser);
 
 // app.use("/public", express.static(process.cwd()));
-app.get("/", (req, res) => {
+
+app.get("/v1", (req, res) => {
 	res.send("hello");
 });
-app.use("/auth", routes.auth);
+app.use("/user/auth", routes.auth);
 
 //static routes
 // app.use(routes._public);
