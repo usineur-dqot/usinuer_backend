@@ -18,9 +18,6 @@ app.use(verifyUser);
 
 // app.use("/public", express.static(process.cwd()));
 
-app.get("/v1", (req, res) => {
-	res.send("hello");
-});
 app.use("/user/auth", routes.auth);
 
 //static routes

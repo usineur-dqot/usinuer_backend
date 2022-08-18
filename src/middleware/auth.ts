@@ -5,21 +5,21 @@ import { users } from "@model/users";
 import env from "@config/env";
 
 const ignorePaths = [
-	"/auth/login",
-	"/auth/test",
-	"/auth/register",
-	"/auth/send-mobile-otp",
-	"/auth/get-otp",
-	"/auth/verify-mobile-otp",
+	"/user/auth/login",
+	"/user/auth/test",
+	"/user/auth/register",
+	"/user/auth/send-mobile-otp",
+	"/user/auth/get-otp",
+	"/user/auth/verify-mobile-otp",
 
-	"/auth/google-login",
-	"/auth/register",
-	"/auth/forgot-password",
+	"/user/auth/google-login",
+	"/user/auth/register",
+	"/user/auth/forgot-password",
 	"/public",
 	"/send-test-notification",
-	"/auth/change-password",
-	"/auth/verify-otp",
-	"/auth/send-otp",
+	"/user/auth/change-password",
+	"/user/auth/verify-otp",
+	"/user/auth/send-otp",
 ];
 
 export interface UserAuthRequest extends Request {
@@ -35,6 +35,7 @@ export default async function verifyUser(
 	let token;
 
 	let ignore = ignorePaths.indexOf(req.path) > -1;
+
 	if (req.url.startsWith("/public")) {
 		ignore = true;
 	}

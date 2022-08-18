@@ -4,7 +4,5 @@ module.exports = {
       name: "APP",
       script: "dist/client/app.js",
     },
-
-
   ],
 };
