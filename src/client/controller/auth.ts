@@ -4,6 +4,7 @@ import { UserAuthRequest } from "@middleware/auth";
 import Joi from "joi";
 import models from "@model/index";
 import { Op } from "sequelize";
+import bcrypt from "bcryptjs";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -98,6 +99,7 @@ export default {
 			}
 
 			data["role_id"] = 1;
+			data.password = bcrypt.hashSync(data.password);
 
 			objectToBeDeleted.forEach((f) => delete data[f]);
 
@@ -159,7 +161,10 @@ export default {
 			}
 
 			data["role_id"] = 2;
-			objectToBeDeleted.forEach((f) => delete data[f]);
+			data.password = bcrypt.hashSync(data.password);
+			[...objectToBeDeleted, "password_confirmation"].forEach(
+				(f) => delete data[f],
+			);
 
 			let user = await models.users.create(data);
 

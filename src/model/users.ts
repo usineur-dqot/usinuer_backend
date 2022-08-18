@@ -23,7 +23,7 @@ export interface usersAttributes {
   prof_pic?: string;
   prot_pic?: string;
   pdf_file?: string;
-  account: string;
+  account?: string;
   user_status: number;
   activation_key?: string;
   zcode?: string;
@@ -65,7 +65,7 @@ export interface usersAttributes {
 
 export type usersPk = "id";
 export type usersId = users[usersPk];
-export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status";
+export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status";
 export type usersCreationAttributes = Optional<usersAttributes, usersOptionalAttributes>;
 
 export class users extends Model<usersAttributes, usersCreationAttributes> implements usersAttributes {
@@ -90,7 +90,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   prof_pic?: string;
   prot_pic?: string;
   pdf_file?: string;
-  account!: string;
+  account?: string;
   user_status!: number;
   activation_key?: string;
   zcode?: string;
@@ -221,7 +221,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     account: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     user_status: {
       type: DataTypes.TINYINT,
