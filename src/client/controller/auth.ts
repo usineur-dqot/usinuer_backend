@@ -5,6 +5,8 @@ import Joi from "joi";
 import models from "@model/index";
 import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import env from "@config/env";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -99,7 +101,7 @@ export default {
 			}
 
 			data["role_id"] = 1;
-			data.password = bcrypt.hashSync(data.password);
+			data.password = bcrypt.hashSync(data.password, 10);
 
 			objectToBeDeleted.forEach((f) => delete data[f]);
 
@@ -161,7 +163,7 @@ export default {
 			}
 
 			data["role_id"] = 2;
-			data.password = bcrypt.hashSync(data.password);
+			data.password = bcrypt.hashSync(data.password, 10);
 			[...objectToBeDeleted, "password_confirmation"].forEach(
 				(f) => delete data[f],
 			);
@@ -170,5 +172,48 @@ export default {
 
 			return R(res, true, "Registered", user);
 		}
+	}),
+
+	login: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		//validation
+		const schema = Joi.object({
+			email_username: Joi.string().required(),
+			password: Joi.string().required(),
+		}).validate(req.body);
+
+		if (schema.error) {
+			return R(res, false, schema.error.message);
+		}
+
+		let data = schema.value;
+
+		let user = await models.users.findOne({
+			where: {
+				[Op.or]: [
+					{
+						email: data.email_username,
+					},
+					{
+						user_name: data.email_username,
+					},
+				],
+			},
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid Credentials 1");
+		}
+
+		if (!bcrypt.compareSync(data.password, user.password || "")) {
+			return R(res, false, "Invalid Credentials 2");
+		}
+
+		const token = jwt.sign({ id: user.id }, env.secret);
+
+		let u: any = user.toJSON();
+		delete u.password;
+		u["token"] = token;
+
+		return R(res, true, "Logged in successfully", u);
 	}),
 };

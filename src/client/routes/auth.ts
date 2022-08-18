@@ -7,4 +7,6 @@ router.get("/test", cn.test);
 
 router.post("/register", cn.register);
 
+router.post("/login", cn.login);
+
 export default router;
