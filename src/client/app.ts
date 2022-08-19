@@ -19,6 +19,7 @@ app.use(verifyUser);
 // app.use("/public", express.static(process.cwd()));
 
 app.use("/user/auth", routes.auth);
+app.use("/user/project", routes.project);
 
 //static routes
 // app.use(routes._public);

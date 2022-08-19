@@ -10,7 +10,7 @@ const sequelize = new Sequelize(config.db, config.user, config.password, {
 		acquire: config.pool.acquire,
 		idle: config.pool.idle,
 	},
-	logging: process.env.NODE_ENV === "production" ? false : true,
+	logging: process.env.NODE_ENV === "production" ? false : false,
 	dialectOptions: {
 		dateStrings: true,
 		typeCast: true,

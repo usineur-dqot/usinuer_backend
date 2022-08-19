@@ -33,3 +33,14 @@ export const _asyncWrapper =
 			next(e);
 		}
 	};
+
+/*
+	Post.findAndCountAll({
+		where: {...},
+		order: [...],
+		limit: 5,
+		offset: 0,
+	}).then(function (result) {
+		res.render(...);
+	});
+*/

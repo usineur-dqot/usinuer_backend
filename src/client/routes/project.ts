@@ -1,12 +1,10 @@
 import express, { Request, Response } from "express";
-import cn from "@client/controller/auth";
+import cn from "@client/controller/project";
 
 const router = express.Router();
 
 router.get("/test", cn.test);
 
-router.post("/register", cn.register);
-
-router.post("/login", cn.login);
+router.get("/list", cn.list);
 
 export default router;
