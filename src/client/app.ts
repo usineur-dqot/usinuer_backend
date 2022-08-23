@@ -8,21 +8,24 @@ import routes from "./routes";
 import morgan from "morgan";
 
 const app = express();
+
+//cors
 app.use(cors({ origin: "*" }));
 
 app.use(express.json());
 
-app.use(morgan("tiny"));
-
+// authentication
 app.use(verifyUser);
 
-// app.use("/public", express.static(process.cwd()));
+// static routes
+app.use(routes._public);
+
+//logger
+app.use(morgan("tiny"));
 
 app.use("/user/auth", routes.auth);
 app.use("/user/project", routes.project);
-
-//static routes
-// app.use(routes._public);
+app.use("/user/upload", routes.upload);
 
 app.use(errorHandler);
 

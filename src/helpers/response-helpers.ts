@@ -14,6 +14,14 @@ export function R(
 		meta: meta ?? {},
 	});
 }
+export function _R(status: boolean, message: String, data?: any, meta?: any) {
+	return {
+		status: status,
+		message: message,
+		data: data ?? {},
+		meta: meta ?? {},
+	};
+}
 
 export function asyncWrapper(callback: any) {
 	return function (req: Request, res: Response, next: NextFunction) {

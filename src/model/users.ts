@@ -184,7 +184,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
       allowNull: false
     },
     password: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(500),
       allowNull: true
     },
     email: {

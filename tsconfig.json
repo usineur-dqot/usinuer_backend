@@ -29,8 +29,9 @@
     "baseUrl": "src", // This must be specified if "paths" is.
     
    "paths": {
-     "@_types":["_types/*"],
+    "@_types":["_types/*"],
     "@config/*": ["config/*"],
+    "@validation/*": ["validation/*"],
     "@db/*": ["db/*"],
     "@middleware/*": ["middleware/*"],
     "@model/*": ["model/*"],

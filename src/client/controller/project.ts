@@ -1,13 +1,12 @@
-import express, { Request, Response } from "express";
+import { Response } from "express";
 import { asyncWrapper, R } from "@helpers/response-helpers";
 import { UserAuthRequest } from "@middleware/auth";
-import Joi from "joi";
 import models from "@model/index";
-import { Op } from "sequelize";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import env from "@config/env";
 import db from "@db/mysql";
+import { uploadFile } from "@helpers/upload";
+import { Validate } from "validation/utils";
+import schema from "validation/schema";
+import moment from "moment";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -47,6 +46,57 @@ export default {
 			current_page: opt.page,
 			total_count: count,
 			total_pages: Math.floor(count / opt.limit),
+		});
+	}),
+	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		let data = await Validate(
+			res,
+			["project_name", "description", "visibility", "post_for"],
+			schema.project.addProject,
+			req.body,
+			{},
+		);
+
+		let user = await models.users.findOne({
+			where: {
+				id: req.user?.id,
+			},
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		let files = await uploadFile(req, res);
+		data["country_code"] = 2;
+
+		if (data.visibility.toLowerCase() == "private") {
+			data["pro_job"] = 1;
+		} else {
+			data["pro_job"] = 0;
+		}
+		data["project_post_date"] = moment().format("YYYY MM DD");
+
+		data["post_for"] = moment().add(data.post_for, "days").unix();
+		// project_exp_date = YYYY MM DD
+
+		let project = await models.projects.create(data);
+
+		let imageData = files.map((m: any) => {
+			return {
+				project_id: project.id,
+				project_name: project.project_name,
+				project_post_date: moment().format(),
+				cust_id: user?.id,
+				attach_file: m,
+			};
+		});
+
+		let project_images = await models.project_images.bulkCreate(imageData);
+
+		return R(res, false, "Project Added Successfully", {
+			project,
+			project_images,
 		});
 	}),
 };
