@@ -49,6 +49,8 @@ export default {
 				"created",
 				"enddate",
 				"description",
+				"project_status",
+				"visibility",
 				[
 					db.sequelize.literal(
 						`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
