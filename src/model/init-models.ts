@@ -560,6 +560,8 @@ export function initModels(sequelize: Sequelize) {
   const user_relation = _user_relation.initModel(sequelize);
   const users = _users.initModel(sequelize);
 
+  project_images.belongsTo(projects, { as: "project", foreignKey: "project_id"});
+  projects.hasMany(project_images, { as: "project_images", foreignKey: "project_id"});
 
   return {
     admin_apprv_imgs: admin_apprv_imgs,

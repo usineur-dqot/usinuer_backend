@@ -122,10 +122,10 @@ export default {
 						"string.pattern.base":
 							"Password must contains at least 6 characters, including UPPER or lowercase with numbers.",
 					}),
-				password_confirmation: Joi.any()
-					.equal(Joi.ref("password"))
-					.required()
-					.messages({ "any.only": "{{#label}} does not match" }),
+				// password_confirmation: Joi.any()
+				// 	.equal(Joi.ref("password"))
+				// 	.required()
+				// 	.messages({ "any.only": "{{#label}} does not match" }),
 				name: Joi.string().required(),
 				surname: Joi.string().required(),
 				address1: Joi.string().required(),

@@ -7,6 +7,7 @@ import { uploadFile } from "@helpers/upload";
 import { Validate } from "validation/utils";
 import schema from "validation/schema";
 import moment from "moment";
+import { Op } from "sequelize";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -21,6 +22,16 @@ export default {
 		};
 
 		const projects = await models.projects.findAndCountAll({
+			include: [
+				{
+					model: models.project_images,
+					as: "project_images",
+					where: {
+						project_id: { [Op.col]: "projects.id" },
+					},
+					required: false,
+				},
+			],
 			attributes: [
 				"id",
 				"project_name",
@@ -49,6 +60,7 @@ export default {
 		});
 	}),
 	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
 		let data = await Validate(
 			res,
 			["project_name", "description", "visibility", "post_for"],
@@ -67,16 +79,16 @@ export default {
 			return R(res, false, "Invalid user");
 		}
 
+		// file upload
 		let files = await uploadFile(req, res);
-		data["country_code"] = 2;
 
 		if (data.visibility.toLowerCase() == "private") {
 			data["pro_job"] = 1;
 		} else {
 			data["pro_job"] = 0;
 		}
+		data["country_code"] = 2;
 		data["project_post_date"] = moment().format("YYYY MM DD");
-
 		data["post_for"] = moment().add(data.post_for, "days").unix();
 		// project_exp_date = YYYY MM DD
 

@@ -17,7 +17,7 @@
 		"ext": "ts, js"
 	},
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "nodemon src/test/index.ts",
 		"watch": "tsc-alias -w & tsc -w",
 		"build": "tsc && tsc-alias",
 		"app": "nodemon src/client/app.ts",

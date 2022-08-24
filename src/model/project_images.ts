@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { projects, projectsId } from './projects';
 
 export interface project_imagesAttributes {
   id: number;
@@ -33,6 +34,11 @@ export class project_images extends Model<project_imagesAttributes, project_imag
   country_code!: number;
   adminApprove!: number;
 
+  // project_images belongsTo projects via project_id
+  project!: projects;
+  getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
+  setProject!: Sequelize.BelongsToSetAssociationMixin<projects, projectsId>;
+  createProject!: Sequelize.BelongsToCreateAssociationMixin<projects>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof project_images {
     return sequelize.define('project_images', {
@@ -43,8 +49,12 @@ export class project_images extends Model<project_imagesAttributes, project_imag
       primaryKey: true
     },
     project_id: {
-      type: DataTypes.BIGINT,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'projects',
+        key: 'id'
+      }
     },
     project_name: {
       type: DataTypes.STRING(255),
@@ -93,6 +103,13 @@ export class project_images extends Model<project_imagesAttributes, project_imag
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "project_id",
+        using: "BTREE",
+        fields: [
+          { name: "project_id" },
         ]
       },
     ]

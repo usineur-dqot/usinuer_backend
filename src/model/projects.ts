@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { project_images, project_imagesId } from './project_images';
 
 export interface projectsAttributes {
   id: number;
@@ -133,6 +134,18 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   country_code?: number;
   pro_job?: number;
 
+  // projects hasMany project_images via project_id
+  project_images!: project_images[];
+  getProject_images!: Sequelize.HasManyGetAssociationsMixin<project_images>;
+  setProject_images!: Sequelize.HasManySetAssociationsMixin<project_images, project_imagesId>;
+  addProject_image!: Sequelize.HasManyAddAssociationMixin<project_images, project_imagesId>;
+  addProject_images!: Sequelize.HasManyAddAssociationsMixin<project_images, project_imagesId>;
+  createProject_image!: Sequelize.HasManyCreateAssociationMixin<project_images>;
+  removeProject_image!: Sequelize.HasManyRemoveAssociationMixin<project_images, project_imagesId>;
+  removeProject_images!: Sequelize.HasManyRemoveAssociationsMixin<project_images, project_imagesId>;
+  hasProject_image!: Sequelize.HasManyHasAssociationMixin<project_images, project_imagesId>;
+  hasProject_images!: Sequelize.HasManyHasAssociationsMixin<project_images, project_imagesId>;
+  countProject_images!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof projects {
     return sequelize.define('projects', {
