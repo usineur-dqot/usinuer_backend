@@ -222,20 +222,16 @@ export default {
 			where: {
 				id: req.user?.id,
 			},
-			attributes: {
-				exclude: ["password"],
-				include: [
-					"id",
-					"user_name",
-					"address1",
-					"address2",
-					"zcode",
-					"city",
-					"country",
-					"country_code",
-					"prof_pic",
-				],
-			},
+			attributes: [
+				"id",
+				"user_name",
+				"address1",
+				"address2",
+				"zcode",
+				"city",
+				"country_code",
+				"prof_pic",
+			],
 		});
 
 		if (!user) {
