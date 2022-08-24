@@ -216,4 +216,18 @@ export default {
 
 		return R(res, true, "Logged in successfully", u);
 	}),
+
+	me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		let user = await models.users.findOne({
+			where: {
+				id: req.user?.id,
+			},
+			attributes: { exclude: ["password"] },
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid User");
+		}
+		return R(res, true, "User data", user);
+	}),
 };

@@ -19,9 +19,19 @@ export default {
 		const opt = {
 			page: parseInt(req.query.page?.toString() || "0"),
 			limit: parseInt(req.query.limit?.toString() || "10"),
+			user_id: req.query.user_id?.toString() || null,
 		};
 
+		let userQuery = opt.user_id
+			? {
+					creator_id: opt.user_id,
+			  }
+			: {};
+
 		const projects = await models.projects.findAndCountAll({
+			where: {
+				...userQuery,
+			},
 			include: [
 				{
 					model: models.project_images,
@@ -88,6 +98,7 @@ export default {
 			data["pro_job"] = 0;
 		}
 		data["country_code"] = 2;
+		data["creator_id"] = user.id;
 		data["project_post_date"] = moment().format("YYYY MM DD");
 		data["post_for"] = moment().add(data.post_for, "days").unix();
 		// project_exp_date = YYYY MM DD
