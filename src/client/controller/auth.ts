@@ -7,6 +7,9 @@ import { Op } from "sequelize";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import env from "@config/env";
+import { Validate } from "@validation/utils";
+import schema from "@validation/schema";
+import { uploadFile } from "@helpers/upload";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -238,5 +241,27 @@ export default {
 			return R(res, false, "Invalid User");
 		}
 		return R(res, true, "User data", user);
+	}),
+
+	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.user.editUser, req.body, {});
+
+		let user = await models.users.findOne({
+			where: {
+				id: req.user?.id,
+			},
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		// file upload
+		let files = await uploadFile(req, res);
+
+		// project_exp_date = YYYY MM DD
+
+		let image = files[0];
 	}),
 };

@@ -6,6 +6,9 @@ import { R } from "@helpers/response-helpers";
 import Joi from "joi";
 
 export const Pick = (keys: any, object: any) => {
+	if (keys.length === 0) {
+		return object;
+	}
 	const subset = Object.fromEntries(
 		keys
 			.filter((key: any) => key in object) // line can be removed to make it inclusive
