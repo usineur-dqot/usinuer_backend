@@ -1,6 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { project_images, project_imagesId } from './project_images';
+import type { users, usersId } from './users';
 
 export interface projectsAttributes {
   id: number;
@@ -146,6 +147,11 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   hasProject_image!: Sequelize.HasManyHasAssociationMixin<project_images, project_imagesId>;
   hasProject_images!: Sequelize.HasManyHasAssociationsMixin<project_images, project_imagesId>;
   countProject_images!: Sequelize.HasManyCountAssociationsMixin;
+  // projects belongsTo users via creator_id
+  creator!: users;
+  getCreator!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setCreator!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createCreator!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof projects {
     return sequelize.define('projects', {
@@ -235,8 +241,12 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
       allowNull: true
     },
     creator_id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     created: {
       type: DataTypes.INTEGER,
@@ -417,6 +427,13 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "creator_id",
+        using: "BTREE",
+        fields: [
+          { name: "creator_id" },
         ]
       },
     ]

@@ -562,6 +562,8 @@ export function initModels(sequelize: Sequelize) {
 
   project_images.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(project_images, { as: "project_images", foreignKey: "project_id"});
+  projects.belongsTo(users, { as: "creator", foreignKey: "creator_id"});
+  users.hasMany(projects, { as: "projects", foreignKey: "creator_id"});
 
   return {
     admin_apprv_imgs: admin_apprv_imgs,

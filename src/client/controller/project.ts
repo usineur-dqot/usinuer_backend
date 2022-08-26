@@ -41,6 +41,12 @@ export default {
 					},
 					required: false,
 				},
+				{
+					model: models.users,
+					as: "creator",
+					attributes: ["email", "user_name"],
+					required: false,
+				},
 			],
 			attributes: [
 				"id",

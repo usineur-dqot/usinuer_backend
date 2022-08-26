@@ -201,11 +201,11 @@ export default {
 		});
 
 		if (!user) {
-			return R(res, false, "Invalid Credentials 1");
+			return R(res, false, "Invalid Credentials");
 		}
 
 		if (!bcrypt.compareSync(data.password, user.password || "")) {
-			return R(res, false, "Invalid Credentials 2");
+			return R(res, false, "Invalid Credentials.");
 		}
 
 		const token = jwt.sign({ id: user.id }, env.secret);

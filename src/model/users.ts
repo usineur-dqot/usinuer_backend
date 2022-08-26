@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { projects, projectsId } from './projects';
 
 export interface usersAttributes {
   id: number;
@@ -129,6 +130,18 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   entrepreneur?: number;
   bid_status!: number;
 
+  // users hasMany projects via creator_id
+  projects!: projects[];
+  getProjects!: Sequelize.HasManyGetAssociationsMixin<projects>;
+  setProjects!: Sequelize.HasManySetAssociationsMixin<projects, projectsId>;
+  addProject!: Sequelize.HasManyAddAssociationMixin<projects, projectsId>;
+  addProjects!: Sequelize.HasManyAddAssociationsMixin<projects, projectsId>;
+  createProject!: Sequelize.HasManyCreateAssociationMixin<projects>;
+  removeProject!: Sequelize.HasManyRemoveAssociationMixin<projects, projectsId>;
+  removeProjects!: Sequelize.HasManyRemoveAssociationsMixin<projects, projectsId>;
+  hasProject!: Sequelize.HasManyHasAssociationMixin<projects, projectsId>;
+  hasProjects!: Sequelize.HasManyHasAssociationsMixin<projects, projectsId>;
+  countProjects!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof users {
     return sequelize.define('users', {
