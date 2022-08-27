@@ -225,6 +225,12 @@ export default {
 			where: {
 				id: req.user?.id,
 			},
+			include: [
+				{
+					model: models.country,
+					as: "country_code_country",
+				},
+			],
 			attributes: [
 				"id",
 				"user_name",
@@ -271,6 +277,9 @@ export default {
 		let files = await uploadFile(req, res);
 
 		data["prof_pic"] = files[0];
+
+		data["country_code"] = country.id;
+		data["country_symbol"] = country.country_symbol;
 
 		await user.update(data);
 		// await user.save();

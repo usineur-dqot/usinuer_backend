@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { country, countryId } from './country';
 import type { projects, projectsId } from './projects';
 
 export interface usersAttributes {
@@ -130,6 +131,11 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   entrepreneur?: number;
   bid_status!: number;
 
+  // users belongsTo country via country_code
+  country_code_country!: country;
+  getCountry_code_country!: Sequelize.BelongsToGetAssociationMixin<country>;
+  setCountry_code_country!: Sequelize.BelongsToSetAssociationMixin<country, countryId>;
+  createCountry_code_country!: Sequelize.BelongsToCreateAssociationMixin<country>;
   // users hasMany projects via creator_id
   projects!: projects[];
   getProjects!: Sequelize.HasManyGetAssociationsMixin<projects>;
@@ -157,8 +163,12 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
       defaultValue: "0"
     },
     country_code: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'country',
+        key: 'id'
+      }
     },
     user_name: {
       type: DataTypes.STRING(128),
@@ -401,6 +411,13 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "country_code",
+        using: "BTREE",
+        fields: [
+          { name: "country_code" },
         ]
       },
     ]
