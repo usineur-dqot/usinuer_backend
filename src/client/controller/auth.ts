@@ -243,7 +243,7 @@ export default {
 		return R(res, true, "User data", user);
 	}),
 
-	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+	update: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		let data = await Validate(res, [], schema.user.editUser, req.body, {});
 
@@ -257,11 +257,61 @@ export default {
 			return R(res, false, "Invalid user");
 		}
 
+		let country = await models.country.findOne({
+			where: {
+				id: data.country_code,
+			},
+		});
+
+		if (!country) {
+			return R(res, false, "Invalid country");
+		}
+
 		// file upload
 		let files = await uploadFile(req, res);
 
-		// project_exp_date = YYYY MM DD
+		data["prof_pic"] = files[0];
 
-		let image = files[0];
+		await user.update(data);
+		// await user.save();
+
+		return R(res, true, "profile updated");
+	}),
+
+	change_password: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			[],
+			schema.user.change_password,
+			req.body,
+			{},
+		);
+
+		let user = await models.users.findOne({
+			where: {
+				id: req.user?.id,
+			},
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		if (!bcrypt.compareSync(data.old_password, user.password || "")) {
+			return R(res, false, "Old Password is not correct.");
+		}
+
+		user.password = bcrypt.hashSync(data.new_password, 10);
+
+		await user.save();
+
+		return R(res, true, "Password Changed");
+	}),
+
+	list_countries: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		let countries = await models.country.findAll({});
+
+		return R(res, true, "country data", countries);
 	}),
 };
