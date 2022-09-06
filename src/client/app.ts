@@ -10,7 +10,15 @@ import morgan from "morgan";
 const app = express();
 
 //cors
-app.use(cors({ origin: "*" }));
+const corsOpts = {
+	origin: "*",
+
+	methods: ["GET", "POST"],
+
+	allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOpts));
 
 app.use(express.json());
 
