@@ -59,6 +59,7 @@ export default {
 				"visibility",
 				"project_post_date",
 				"post_for",
+				"created_at",
 				[
 					db.sequelize.literal(
 						`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
