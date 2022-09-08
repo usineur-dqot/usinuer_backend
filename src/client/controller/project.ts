@@ -68,6 +68,7 @@ export default {
 			],
 			limit: opt.limit,
 			offset: opt.page * opt.limit,
+			order: [["created_at", "DESC"]],
 		});
 
 		let list = projects.rows;
