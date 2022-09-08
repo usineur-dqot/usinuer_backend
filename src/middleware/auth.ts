@@ -12,7 +12,6 @@ const ignorePaths = [
 	"/user/auth/get-otp",
 	"/user/auth/verify-mobile-otp",
 	"/user/project/list",
-
 	"/user/auth/google-login",
 	"/user/auth/register",
 	"/user/auth/forgot-password",

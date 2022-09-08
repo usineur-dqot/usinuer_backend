@@ -57,6 +57,8 @@ export default {
 				"description",
 				"project_status",
 				"visibility",
+				"project_post_date",
+				"post_for",
 				[
 					db.sequelize.literal(
 						`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
@@ -125,7 +127,7 @@ export default {
 
 		let project_images = await models.project_images.bulkCreate(imageData);
 
-		return R(res, false, "Project Added Successfully", {
+		return R(res, true, "Project Added Successfully", {
 			project,
 			project_images,
 		});
