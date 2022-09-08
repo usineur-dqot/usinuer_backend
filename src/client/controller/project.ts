@@ -31,6 +31,9 @@ export default {
 		const projects = await models.projects.findAndCountAll({
 			where: {
 				...userQuery,
+				creator_id: {
+					[Op.ne]: req.user?.id,
+				},
 			},
 			include: [
 				{
