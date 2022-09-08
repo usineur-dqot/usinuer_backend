@@ -31,9 +31,6 @@ export default {
 		const projects = await models.projects.findAndCountAll({
 			where: {
 				...userQuery,
-				creator_id: {
-					[Op.ne]: req.user?.id,
-				},
 			},
 			include: [
 				{
@@ -81,6 +78,53 @@ export default {
 			total_count: count,
 			total_pages: Math.floor(count / opt.limit),
 		});
+	}),
+	show: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		//pagination options
+		let project_id = req.query.id;
+
+		if (!project_id) {
+			return R(res, false, "please provide a project ID");
+		}
+
+		const project = await models.projects.findOne({
+			where: {
+				id: project_id.toString(),
+			},
+			include: [
+				{
+					model: models.project_images,
+					as: "project_images",
+					where: {
+						project_id: { [Op.col]: "projects.id" },
+					},
+					required: false,
+				},
+				{
+					model: models.users,
+					as: "creator",
+					attributes: ["email", "user_name"],
+					required: false,
+				},
+			],
+
+			attributes: {
+				include: [
+					[
+						db.sequelize.literal(
+							`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
+						),
+						"bids_count",
+					],
+				],
+			},
+		});
+
+		if (!project) {
+			return R(res, false, "No project found");
+		}
+
+		return R(res, true, "project details", project);
 	}),
 	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation

@@ -8,6 +8,8 @@ router.get("/test", cn.test);
 
 router.get("/list", cn.list);
 
+router.get("/detail", cn.show);
+
 router.use(upload());
 router.post("/add", cn.add);
 
