@@ -59,7 +59,7 @@ export default {
 				"visibility",
 				"project_post_date",
 				"post_for",
-				"created_at",
+				"createdAt",
 				[
 					db.sequelize.literal(
 						`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
@@ -69,7 +69,7 @@ export default {
 			],
 			limit: opt.limit,
 			offset: opt.page * opt.limit,
-			order: [["created_at", "DESC"]],
+			order: [["createdAt", "DESC"]],
 		});
 
 		let list = projects.rows;

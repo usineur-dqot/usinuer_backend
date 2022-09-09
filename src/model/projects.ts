@@ -65,12 +65,13 @@ export interface projectsAttributes {
   site_it?: number;
   country_code?: number;
   pro_job?: number;
-  created_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export type projectsPk = "id";
 export type projectsId = projects[projectsPk];
-export type projectsOptionalAttributes = "id" | "project_status" | "buyer_complete_status" | "provider_complete_status" | "expedition_day" | "expedition_day2" | "track_number" | "additional_description" | "project_image" | "project_categories" | "project_start" | "start_bid" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "created" | "enddate" | "programmer_id" | "bid_select_date" | "unpaid_project_notify_date" | "checkstamp" | "buyer_rated" | "provider_rated" | "project_paid" | "project_award_date" | "project_award_date_format" | "project_fund_date_format" | "fund_release_date" | "notification_status" | "attachment_url" | "image" | "first_upload" | "attachment_name" | "attachment_folder" | "is_private" | "private_users" | "contact" | "salary" | "flag" | "salarytype" | "escrow_due" | "city" | "zipcode" | "post_for" | "project_post_format_date" | "project_post_date" | "project_expiry_date" | "expired_notification_sent" | "fund_notification_sent" | "unpaid_project_notif" | "site_fr" | "site_uk" | "site_it" | "country_code" | "pro_job" | "created_at";
+export type projectsOptionalAttributes = "id" | "project_status" | "buyer_complete_status" | "provider_complete_status" | "expedition_day" | "expedition_day2" | "track_number" | "additional_description" | "project_image" | "project_categories" | "project_start" | "start_bid" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "created" | "enddate" | "programmer_id" | "bid_select_date" | "unpaid_project_notify_date" | "checkstamp" | "buyer_rated" | "provider_rated" | "project_paid" | "project_award_date" | "project_award_date_format" | "project_fund_date_format" | "fund_release_date" | "notification_status" | "attachment_url" | "image" | "first_upload" | "attachment_name" | "attachment_folder" | "is_private" | "private_users" | "contact" | "salary" | "flag" | "salarytype" | "escrow_due" | "city" | "zipcode" | "post_for" | "project_post_format_date" | "project_post_date" | "project_expiry_date" | "expired_notification_sent" | "fund_notification_sent" | "unpaid_project_notif" | "site_fr" | "site_uk" | "site_it" | "country_code" | "pro_job" | "createdAt" | "updatedAt";
 export type projectsCreationAttributes = Optional<projectsAttributes, projectsOptionalAttributes>;
 
 export class projects extends Model<projectsAttributes, projectsCreationAttributes> implements projectsAttributes {
@@ -135,7 +136,8 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   site_it?: number;
   country_code?: number;
   pro_job?: number;
-  created_at?: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 
   // projects hasMany project_images via project_id
   project_images!: project_images[];

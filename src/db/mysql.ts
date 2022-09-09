@@ -14,7 +14,7 @@ const sequelize = new Sequelize(config.db, config.user, config.password, {
 	dialectOptions: {
 		dateStrings: true,
 		typeCast: true,
-		// decimalNumbers: true
+		decimalNumbers: true,
 	},
 	define: {
 		timestamps: false,
