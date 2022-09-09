@@ -16,6 +16,9 @@ const sequelize = new Sequelize(config.db, config.user, config.password, {
 		typeCast: true,
 		// decimalNumbers: true
 	},
+	define: {
+		timestamps: false,
+	},
 	timezone: "+05:30",
 	// logging: false
 });
