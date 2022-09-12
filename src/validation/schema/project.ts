@@ -7,4 +7,8 @@ export default {
 		visibility: Joi.string().required(),
 		post_for: Joi.number().required(),
 	},
+	question: {
+		project_id: Joi.string().required(),
+		message: Joi.string().required(),
+	},
 };

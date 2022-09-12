@@ -108,6 +108,15 @@ export default {
 					attributes: ["email", "user_name"],
 					required: false,
 				},
+
+				{
+					model: models.prebid_messages,
+					as: "prebid_messages",
+					where: {
+						project_id: { [Op.col]: "projects.id" },
+					},
+					required: false,
+				},
 			],
 
 			attributes: {
@@ -127,6 +136,40 @@ export default {
 		}
 
 		return R(res, true, "project details", project);
+	}),
+	askQuestion: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			["project_id", "message"],
+			schema.project.question,
+			req.body,
+			{},
+		);
+
+		let user = await models.users.findByPk(req.user?.id, {
+			attributes: ["id"],
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		let project = await models.projects.findByPk(data.project_id, {
+			attributes: ["id", "creator_id"],
+		});
+
+		if (!project) {
+			return R(res, false, "Project not found");
+		}
+
+		data["from_id"] = user.id;
+		data["to_id"] = project.creator_id;
+		data["msg_type"] = "Q";
+
+		let question = await models.prebid_messages.create(data);
+
+		return R(res, true, "Question Submitted", question);
 	}),
 	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation

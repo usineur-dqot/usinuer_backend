@@ -562,6 +562,8 @@ export function initModels(sequelize: Sequelize) {
 
   users.belongsTo(country, { as: "country_code_country", foreignKey: "country_code"});
   country.hasMany(users, { as: "users", foreignKey: "country_code"});
+  prebid_messages.belongsTo(projects, { as: "project", foreignKey: "project_id"});
+  projects.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "project_id"});
   project_images.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(project_images, { as: "project_images", foreignKey: "project_id"});
   projects.belongsTo(users, { as: "creator", foreignKey: "creator_id"});

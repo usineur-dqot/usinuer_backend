@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { prebid_messages, prebid_messagesId } from './prebid_messages';
 import type { project_images, project_imagesId } from './project_images';
 import type { users, usersId } from './users';
 
@@ -139,6 +140,18 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   createdAt?: Date;
   updatedAt?: Date;
 
+  // projects hasMany prebid_messages via project_id
+  prebid_messages!: prebid_messages[];
+  getPrebid_messages!: Sequelize.HasManyGetAssociationsMixin<prebid_messages>;
+  setPrebid_messages!: Sequelize.HasManySetAssociationsMixin<prebid_messages, prebid_messagesId>;
+  addPrebid_message!: Sequelize.HasManyAddAssociationMixin<prebid_messages, prebid_messagesId>;
+  addPrebid_messages!: Sequelize.HasManyAddAssociationsMixin<prebid_messages, prebid_messagesId>;
+  createPrebid_message!: Sequelize.HasManyCreateAssociationMixin<prebid_messages>;
+  removePrebid_message!: Sequelize.HasManyRemoveAssociationMixin<prebid_messages, prebid_messagesId>;
+  removePrebid_messages!: Sequelize.HasManyRemoveAssociationsMixin<prebid_messages, prebid_messagesId>;
+  hasPrebid_message!: Sequelize.HasManyHasAssociationMixin<prebid_messages, prebid_messagesId>;
+  hasPrebid_messages!: Sequelize.HasManyHasAssociationsMixin<prebid_messages, prebid_messagesId>;
+  countPrebid_messages!: Sequelize.HasManyCountAssociationsMixin;
   // projects hasMany project_images via project_id
   project_images!: project_images[];
   getProject_images!: Sequelize.HasManyGetAssociationsMixin<project_images>;
