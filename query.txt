@@ -4,3 +4,15 @@ ADD `updatedAt` datetime NOT NULL AFTER `createdAt`;
 
 ALTER TABLE `prebid_messages`
 ADD FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
+
+
+///
+
+ALTER TABLE `prebid_messages`
+CHANGE `from_id` `from_id` bigint NOT NULL AFTER `reply_for`;
+
+ALTER TABLE `prebid_messages`
+CHANGE `from_id` `from_id` bigint unsigned NOT NULL AFTER `reply_for`;
+
+ALTER TABLE `prebid_messages`
+ADD FOREIGN KEY (`from_id`) REFERENCES `users` (`id`)

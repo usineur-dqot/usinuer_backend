@@ -1,6 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { projects, projectsId } from './projects';
+import type { users, usersId } from './users';
 
 export interface prebid_messagesAttributes {
   id: number;
@@ -51,6 +52,11 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
   getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
   setProject!: Sequelize.BelongsToSetAssociationMixin<projects, projectsId>;
   createProject!: Sequelize.BelongsToCreateAssociationMixin<projects>;
+  // prebid_messages belongsTo users via from_id
+  from!: users;
+  getFrom!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setFrom!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createFrom!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof prebid_messages {
     return sequelize.define('prebid_messages', {
@@ -73,8 +79,12 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
       allowNull: true
     },
     from_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     to_id: {
       type: DataTypes.INTEGER,
@@ -139,6 +149,13 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
         using: "BTREE",
         fields: [
           { name: "project_id" },
+        ]
+      },
+      {
+        name: "from_id",
+        using: "BTREE",
+        fields: [
+          { name: "from_id" },
         ]
       },
     ]
