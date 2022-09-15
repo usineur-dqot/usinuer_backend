@@ -81,6 +81,76 @@ export default {
 			total_pages: Math.floor(count / opt.limit),
 		});
 	}),
+	my: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		//pagination options
+		const opt = {
+			page: parseInt(req.query.page?.toString() || "0"),
+			limit: parseInt(req.query.limit?.toString() || "10"),
+			user_id: req.query.user_id?.toString() || null,
+		};
+
+		let user = await models.users.findByPk(req.user?.id, {
+			attributes: ["id", "role_id"],
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+		if (user.role_id == 1) {
+			const projects = await models.projects.findAndCountAll({
+				where: {
+					creator_id: user.id,
+				},
+				include: [
+					{
+						model: models.project_images,
+						as: "project_images",
+						where: {
+							project_id: { [Op.col]: "projects.id" },
+						},
+						required: false,
+					},
+					{
+						model: models.users,
+						as: "creator",
+						attributes: ["email", "user_name"],
+						required: false,
+					},
+				],
+				attributes: [
+					"id",
+					"project_name",
+					"project_image",
+					"created",
+					"enddate",
+					"description",
+					"project_status",
+					"visibility",
+					"project_post_date",
+					"post_for",
+					"createdAt",
+					[
+						db.sequelize.literal(
+							`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
+						),
+						"bids_count",
+					],
+				],
+				limit: opt.limit,
+				offset: opt.page * opt.limit,
+				order: [["createdAt", "DESC"]],
+			});
+
+			let list = projects.rows;
+			let count = projects.count;
+
+			return R(res, true, "project list", list, {
+				current_page: opt.page,
+				total_count: count,
+				total_pages: Math.floor(count / opt.limit),
+			});
+		}
+	}),
 	show: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		//pagination options
 		let project_id = req.query.id;

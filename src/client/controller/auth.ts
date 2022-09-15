@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 import env from "@config/env";
 import { Validate } from "@validation/utils";
 import schema from "@validation/schema";
-import { uploadFile } from "@helpers/upload";
+import { uploadFile, uploadOneFile } from "@helpers/upload";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -231,16 +231,7 @@ export default {
 					as: "country_code_country",
 				},
 			],
-			attributes: [
-				"id",
-				"user_name",
-				"address1",
-				"address2",
-				"zcode",
-				"city",
-				"country_code",
-				"prof_pic",
-			],
+			attributes: { exclude: ["password"] },
 		});
 
 		if (!user) {
@@ -272,11 +263,16 @@ export default {
 		if (!country) {
 			return R(res, false, "Invalid country");
 		}
+		let file;
+		console.log(req.query?.change_pic);
+		if (req.query?.change_pic) {
+			// file upload
+			file = await uploadOneFile(req, res);
+		}
 
-		// file upload
-		let files = await uploadFile(req, res);
-
-		data["prof_pic"] = files[0];
+		if (file) {
+			data["prof_pic"] = file;
+		}
 
 		data["country_code"] = country.id;
 		data["country_symbol"] = country.country_symbol;

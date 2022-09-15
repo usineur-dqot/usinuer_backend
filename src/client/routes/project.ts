@@ -8,7 +8,10 @@ router.get("/test", cn.test);
 
 router.get("/list", cn.list);
 
+router.get("/my", cn.my);
+
 router.get("/detail", cn.show);
+
 router.post("/ask-question", cn.askQuestion);
 
 router.use(upload());

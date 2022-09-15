@@ -12,6 +12,7 @@ const ignorePaths = [
 	"/user/auth/get-otp",
 	"/user/auth/verify-mobile-otp",
 	"/user/project/list",
+	"/user/project/detail",
 	"/user/auth/google-login",
 	"/user/auth/register",
 	"/user/auth/forgot-password",
@@ -33,7 +34,7 @@ export default async function verifyUser(
 	next: NextFunction,
 ) {
 	let token;
-
+	console.log(req.path);
 	let ignore = ignorePaths.indexOf(req.path) > -1;
 
 	if (req.url.startsWith("/public")) {
