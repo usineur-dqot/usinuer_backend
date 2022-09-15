@@ -18,7 +18,7 @@ const ignorePaths = [
 	"/user/auth/forgot-password",
 	"/public",
 	"/send-test-notification",
-	"/user/auth/change-password",
+
 	"/user/auth/verify-otp",
 	"/user/auth/send-otp",
 ];
