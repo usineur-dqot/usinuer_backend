@@ -13,12 +13,12 @@ const ignorePaths = [
 	"/user/auth/verify-mobile-otp",
 	"/user/project/list",
 	"/user/project/detail",
+	"/user/project/add-temp",
 	"/user/auth/google-login",
 	"/user/auth/register",
 	"/user/auth/forgot-password",
 	"/public",
 	"/send-test-notification",
-
 	"/user/auth/verify-otp",
 	"/user/auth/send-otp",
 ];

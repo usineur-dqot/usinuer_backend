@@ -16,3 +16,15 @@ CHANGE `from_id` `from_id` bigint unsigned NOT NULL AFTER `reply_for`;
 
 ALTER TABLE `prebid_messages`
 ADD FOREIGN KEY (`from_id`) REFERENCES `users` (`id`)
+
+
+
+// only for machinist
+Withdraw Funds
+Review Machinists 
+
+//
+
+SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
+CREATE TABLE `copy_projects` LIKE `projects`;
+INSERT INTO `copy_projects` SELECT * FROM `projects`;

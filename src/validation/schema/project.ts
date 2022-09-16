@@ -11,4 +11,7 @@ export default {
 		project_id: Joi.string().required(),
 		message: Joi.string().required(),
 	},
+	get_temp: {
+		project_ids: Joi.array().min(1).required(),
+	},
 };

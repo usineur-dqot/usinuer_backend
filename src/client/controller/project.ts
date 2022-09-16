@@ -302,4 +302,95 @@ export default {
 			project_images,
 		});
 	}),
+
+	add_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			["project_name", "description", "visibility", "post_for"],
+			schema.project.addProject,
+			req.body,
+			{},
+		);
+
+		// file upload
+		let files = await uploadFile(req, res);
+
+		if (data.visibility.toLowerCase() == "private") {
+			data["pro_job"] = 1;
+		} else {
+			data["pro_job"] = 0;
+		}
+		data["country_code"] = 2;
+		data["creator_id"] = 0;
+		data["project_post_date"] = moment().format("YYYY MM DD");
+		data["post_for"] = moment().add(data.post_for, "days").unix();
+		data["images"] = files;
+		// project_exp_date = YYYY MM DD
+
+		let project = await models.projects_temp.create(data);
+
+		return R(res, true, "Project will be posted after you log in", project);
+	}),
+
+	get_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			["project_ids"],
+			schema.project.get_temp,
+			req.body,
+			{},
+		);
+
+		let user = await models.users.findOne({
+			where: {
+				id: req.user?.id,
+			},
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		let temp_projects = await models.projects_temp.findAll({
+			where: {
+				id: {
+					[Op.in]: data.project_ids,
+				},
+				creator_id: {
+					[Op.eq]: 0,
+				},
+			},
+		});
+
+		if (!temp_projects.length) {
+			return R(res, false, "no data available to post");
+		}
+
+		for (let p of temp_projects) {
+			let project = p.toJSON();
+			let images: any = project.images;
+
+			delete project.images;
+			project.creator_id = user?.id;
+
+			let entry = await models.projects.create(project);
+
+			if (images && images?.length) {
+				let imageData = images.map((m: any) => {
+					return {
+						project_id: entry.id,
+						project_name: entry.project_name,
+						project_post_date: moment().format(),
+						cust_id: user?.id,
+						attach_file: m,
+					};
+				});
+				let project_images = await models.project_images.bulkCreate(imageData);
+			}
+		}
+
+		return R(res, true, "Project Added Successfully", {});
+	}),
 };

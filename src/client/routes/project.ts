@@ -13,8 +13,10 @@ router.get("/my", cn.my);
 router.get("/detail", cn.show);
 
 router.post("/ask-question", cn.askQuestion);
+router.post("/get-temp", cn.get_temp);
 
 router.use(upload());
 router.post("/add", cn.add);
+router.post("/add-temp", cn.add_temp);
 
 export default router;

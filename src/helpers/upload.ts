@@ -28,7 +28,15 @@ export const uploadFile = async (req: UserAuthRequest, res: Response) => {
 				// 	return res.json({ message: "Invalid Image", status: false });
 				// }
 
-				filename = "" + Date.now() + req.user?.id + extensionName;
+				if (req.user?.id) {
+					filename =
+						filename.substring(0, 3) +
+						Date.now() +
+						req.user?.id +
+						extensionName;
+				} else {
+					filename = filename.substring(0, 10) + Date.now() + extensionName;
+				}
 
 				file.mv(`${publicPath}${filename}`);
 			} catch (e) {

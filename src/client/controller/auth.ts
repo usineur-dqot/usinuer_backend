@@ -110,7 +110,13 @@ export default {
 
 			let user = await models.users.create(data);
 
-			return R(res, true, "Registered", user);
+			const token = jwt.sign({ id: user.id }, env.secret);
+
+			let u: any = user.toJSON();
+			delete u.password;
+			u["token"] = token;
+
+			return R(res, true, "Registered", u);
 		} else if (data.role === 2) {
 			//user is machinist
 
@@ -173,7 +179,13 @@ export default {
 
 			let user = await models.users.create(data);
 
-			return R(res, true, "Registered", user);
+			const token = jwt.sign({ id: user.id }, env.secret);
+
+			let u: any = user.toJSON();
+			delete u.password;
+			u["token"] = token;
+
+			return R(res, true, "Registered", u);
 		}
 	}),
 

@@ -129,6 +129,8 @@ import { projects as _projects } from "./projects";
 import type { projectsAttributes, projectsCreationAttributes } from "./projects";
 import { projects_preview as _projects_preview } from "./projects_preview";
 import type { projects_previewAttributes, projects_previewCreationAttributes } from "./projects_preview";
+import { projects_temp as _projects_temp } from "./projects_temp";
+import type { projects_tempAttributes, projects_tempCreationAttributes } from "./projects_temp";
 import { rating_hold as _rating_hold } from "./rating_hold";
 import type { rating_holdAttributes, rating_holdCreationAttributes } from "./rating_hold";
 import { rejected_domains as _rejected_domains } from "./rejected_domains";
@@ -250,6 +252,7 @@ export {
   _project_topics as project_topics,
   _projects as projects,
   _projects_preview as projects_preview,
+  _projects_temp as projects_temp,
   _rating_hold as rating_hold,
   _rejected_domains as rejected_domains,
   _report_violation as report_violation,
@@ -410,6 +413,8 @@ export type {
   projectsCreationAttributes,
   projects_previewAttributes,
   projects_previewCreationAttributes,
+  projects_tempAttributes,
+  projects_tempCreationAttributes,
   rating_holdAttributes,
   rating_holdCreationAttributes,
   rejected_domainsAttributes,
@@ -532,6 +537,7 @@ export function initModels(sequelize: Sequelize) {
   const project_topics = _project_topics.initModel(sequelize);
   const projects = _projects.initModel(sequelize);
   const projects_preview = _projects_preview.initModel(sequelize);
+  const projects_temp = _projects_temp.initModel(sequelize);
   const rating_hold = _rating_hold.initModel(sequelize);
   const rejected_domains = _rejected_domains.initModel(sequelize);
   const report_violation = _report_violation.initModel(sequelize);
@@ -637,6 +643,7 @@ export function initModels(sequelize: Sequelize) {
     project_topics: project_topics,
     projects: projects,
     projects_preview: projects_preview,
+    projects_temp: projects_temp,
     rating_hold: rating_hold,
     rejected_domains: rejected_domains,
     report_violation: report_violation,
