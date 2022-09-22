@@ -28,3 +28,17 @@ Review Machinists
 SET sql_mode = 'NO_AUTO_VALUE_ON_ZERO';
 CREATE TABLE `copy_projects` LIKE `projects`;
 INSERT INTO `copy_projects` SELECT * FROM `projects`;
+
+//
+
+ALTER TABLE `bids`
+CHANGE `bid_days` `bid_days` int NULL AFTER `user_id`,
+CHANGE `bid_hours` `bid_hours` int NULL AFTER `bid_days`,
+CHANGE `bid_file` `bid_file` varchar(255) COLLATE 'latin1_swedish_ci' NULL AFTER `bid_hours`,
+CHANGE `bid_amount` `bid_amount` mediumint NULL AFTER `bid_file`,
+CHANGE `bid_amount_gbp` `bid_amount_gbp` int NULL AFTER `bid_amount`,
+CHANGE `bid_time` `bid_time` int NULL AFTER `bid_amount_gbp`,
+CHANGE `bid_desc` `bid_desc` text COLLATE 'utf8mb3_general_ci' NULL AFTER `bid_time`,
+CHANGE `lowbid_notify` `lowbid_notify` enum('0','1') COLLATE 'utf8mb3_general_ci' NULL AFTER `bid_desc`,
+CHANGE `escrow_flag` `escrow_flag` smallint NULL AFTER `lowbid_notify`,
+CHANGE `no_offer` `no_offer` int NULL COMMENT '1=offer, 2=Blank offer' AFTER `escrow_flag`;

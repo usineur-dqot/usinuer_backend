@@ -18,5 +18,6 @@ router.post("/get-temp", cn.get_temp);
 router.use(upload());
 router.post("/add", cn.add);
 router.post("/add-temp", cn.add_temp);
+router.post("/add-bid", cn.add_bid);
 
 export default router;

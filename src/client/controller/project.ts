@@ -3,7 +3,7 @@ import { asyncWrapper, R } from "@helpers/response-helpers";
 import { UserAuthRequest } from "@middleware/auth";
 import models from "@model/index";
 import db from "@db/mysql";
-import { uploadFile } from "@helpers/upload";
+import { uploadFile, uploadOneFile } from "@helpers/upload";
 import { Validate } from "validation/utils";
 import schema from "validation/schema";
 import moment from "moment";
@@ -331,6 +331,29 @@ export default {
 		let project = await models.projects_temp.create(data);
 
 		return R(res, true, "Project will be posted after you log in", project);
+	}),
+	add_bid: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.project.addBid, req.body, {});
+
+		if (req.user?.id != data.user_id) {
+			return R(res, false, "	Invalid	User");
+		}
+
+		let project = await models.projects.findByPk(data.project_id);
+
+		if (!project) {
+			return R(res, false, "Invalid Project");
+		}
+
+		// file upload
+		let file = await uploadOneFile(req, res);
+
+		data["bid_file"] = file;
+
+		let bid = await models.bids.create(data);
+
+		return R(res, true, "Offer Submitted", bid);
 	}),
 
 	get_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
