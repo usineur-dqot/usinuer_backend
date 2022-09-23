@@ -54,11 +54,18 @@ export const uploadFile = async (req: UserAuthRequest, res: Response) => {
 	}
 };
 
-export const uploadOneFile = async (req: UserAuthRequest, res: Response) => {
+export const uploadOneFile = async (
+	req: UserAuthRequest,
+	res: Response,
+	ignore?: Boolean,
+) => {
 	try {
 		let publicPath = env.project;
 
 		if (!req.files) {
+			if (ignore) {
+				return false;
+			}
 			return R(res, false, "No file uploaded!");
 		}
 

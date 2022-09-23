@@ -378,9 +378,11 @@ export default {
 		}
 
 		// file upload
-		let file = await uploadOneFile(req, res);
+		let file = await uploadOneFile(req, res, true);
 
-		data["bid_file"] = file;
+		if (file) {
+			data["bid_file"] = file;
+		}
 
 		let bid = await models.bids.create(data);
 
