@@ -21,6 +21,7 @@ const ignorePaths = [
 	"/send-test-notification",
 	"/user/auth/verify-otp",
 	"/user/auth/send-otp",
+	"/user/project/get-my-temp",
 ];
 
 export interface UserAuthRequest extends Request {
