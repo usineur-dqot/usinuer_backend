@@ -313,6 +313,16 @@ export default {
 			{},
 		);
 
+		let temp_id = req.query?.temp_id;
+		let project: any;
+
+		if (temp_id) {
+			project = await models.projects_temp.findByPk(temp_id?.toString());
+			if (!project) {
+				return R(res, false, "Invalid Project");
+			}
+		}
+
 		// file upload
 		let files = await uploadFile(req, res);
 
@@ -325,10 +335,16 @@ export default {
 		data["creator_id"] = 0;
 		data["project_post_date"] = moment().format("YYYY MM DD");
 		data["post_for"] = moment().add(data.post_for, "days").unix();
-		data["images"] = files;
 		// project_exp_date = YYYY MM DD
 
-		let project = await models.projects_temp.create(data);
+		if (project) {
+			data["images"] = [...project.images, ...files];
+			return R(res, true, "Project will be posted after you log in", project);
+		} else {
+			data["images"] = files;
+		}
+
+		project = await models.projects_temp.create(data);
 
 		return R(res, true, "Project will be posted after you log in", project);
 	}),
