@@ -178,6 +178,14 @@ export default {
 					where: {
 						project_id: { [Op.col]: "projects.id" },
 					},
+					include: [
+						{
+							model: models.users,
+							as: "user",
+							attributes: ["email", "user_name"],
+							required: false,
+						},
+					],
 					required: false,
 				},
 				{
