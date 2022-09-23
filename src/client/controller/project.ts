@@ -384,7 +384,7 @@ export default {
 
 		let temp_projects = await models.projects_temp.findOne({
 			where: {
-				id: data.project_ids,
+				id: data.project_id,
 				creator_id: {
 					[Op.eq]: 0,
 				},
