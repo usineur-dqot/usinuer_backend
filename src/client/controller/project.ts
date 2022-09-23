@@ -372,6 +372,31 @@ export default {
 		return R(res, true, "Offer Submitted", bid);
 	}),
 
+	get_my_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			["project_id"],
+			schema.project.get_my_temp,
+			req.query,
+			{},
+		);
+
+		let temp_projects = await models.projects_temp.findOne({
+			where: {
+				id: data.project_ids,
+				creator_id: {
+					[Op.eq]: 0,
+				},
+			},
+		});
+
+		if (!temp_projects) {
+			return R(res, false, "no data available to post");
+		}
+
+		return R(res, true, "Temp Project Found", {});
+	}),
 	get_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		let data = await Validate(

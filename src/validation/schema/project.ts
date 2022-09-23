@@ -14,6 +14,9 @@ export default {
 	get_temp: {
 		project_ids: Joi.array().min(1).required(),
 	},
+	get_my_temp: {
+		project_id: Joi.string().required(),
+	},
 	addBid: {
 		bid_desc: Joi.string().required(),
 		bid_amount: Joi.number().required(),
