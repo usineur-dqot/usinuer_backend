@@ -382,7 +382,7 @@ export default {
 			{},
 		);
 
-		let temp_projects = await models.projects_temp.findOne({
+		let temp_project = await models.projects_temp.findOne({
 			where: {
 				id: data.project_id,
 				creator_id: {
@@ -391,11 +391,11 @@ export default {
 			},
 		});
 
-		if (!temp_projects) {
+		if (!temp_project) {
 			return R(res, false, "no data available to post");
 		}
 
-		return R(res, true, "Temp Project Found", {});
+		return R(res, true, "Temp Project Found", temp_project);
 	}),
 	get_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
