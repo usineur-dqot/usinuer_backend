@@ -173,12 +173,19 @@ export default {
 					required: false,
 				},
 				{
+					model: models.bids,
+					as: "bids",
+					where: {
+						project_id: { [Op.col]: "projects.id" },
+					},
+					required: false,
+				},
+				{
 					model: models.users,
 					as: "creator",
 					attributes: ["email", "user_name"],
 					required: false,
 				},
-
 				{
 					model: models.prebid_messages,
 					as: "prebid_messages",

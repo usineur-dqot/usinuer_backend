@@ -42,3 +42,9 @@ CHANGE `bid_desc` `bid_desc` text COLLATE 'utf8mb3_general_ci' NULL AFTER `bid_t
 CHANGE `lowbid_notify` `lowbid_notify` enum('0','1') COLLATE 'utf8mb3_general_ci' NULL AFTER `bid_desc`,
 CHANGE `escrow_flag` `escrow_flag` smallint NULL AFTER `lowbid_notify`,
 CHANGE `no_offer` `no_offer` int NULL COMMENT '1=offer, 2=Blank offer' AFTER `escrow_flag`;
+
+
+//
+
+ALTER TABLE `bids`
+ADD FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
