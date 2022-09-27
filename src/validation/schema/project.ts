@@ -25,4 +25,8 @@ export default {
 		project_id: Joi.number().required(),
 		user_id: Joi.number().required(),
 	},
+	select_machinist: {
+		programmer_id: Joi.string().required(),
+		project_id: Joi.string().required(),
+	},
 };

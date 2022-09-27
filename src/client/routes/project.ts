@@ -18,6 +18,8 @@ router.post("/get-temp", cn.get_temp);
 
 router.get("/get-my-temp", cn.get_my_temp);
 
+router.get("/select-machinist", cn.select_machinist);
+
 router.use(upload());
 router.post("/add", cn.add);
 router.post("/add-temp", cn.add_temp);

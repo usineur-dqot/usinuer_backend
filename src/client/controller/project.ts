@@ -389,6 +389,41 @@ export default {
 		return R(res, true, "Offer Submitted", bid);
 	}),
 
+	select_machinist: asyncWrapper(
+		async (req: UserAuthRequest, res: Response) => {
+			// validation
+			let data = await Validate(
+				res,
+				[],
+				schema.project.select_machinist,
+				req.query,
+				{},
+			);
+
+			let project = await models.projects.findByPk(data.project_id, {
+				attributes: ["id", "programmer_id"],
+			});
+
+			if (!project) {
+				return R(res, false, "Invalid Project");
+			}
+
+			let user = await models.users.findByPk(data.programmer_id, {
+				attributes: ["id"],
+			});
+
+			if (!user) {
+				return R(res, false, "Invalid	 user");
+			}
+
+			project.programmer_id = user.id;
+
+			await project.save();
+
+			return R(res, true, "Machinist selected");
+		},
+	),
+
 	get_my_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		let data = await Validate(
