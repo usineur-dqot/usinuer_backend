@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { bids, bidsId } from './bids';
 import type { country, countryId } from './country';
 import type { prebid_messages, prebid_messagesId } from './prebid_messages';
 import type { projects, projectsId } from './projects';
@@ -137,6 +138,18 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   getCountry_code_country!: Sequelize.BelongsToGetAssociationMixin<country>;
   setCountry_code_country!: Sequelize.BelongsToSetAssociationMixin<country, countryId>;
   createCountry_code_country!: Sequelize.BelongsToCreateAssociationMixin<country>;
+  // users hasMany bids via user_id
+  bids!: bids[];
+  getBids!: Sequelize.HasManyGetAssociationsMixin<bids>;
+  setBids!: Sequelize.HasManySetAssociationsMixin<bids, bidsId>;
+  addBid!: Sequelize.HasManyAddAssociationMixin<bids, bidsId>;
+  addBids!: Sequelize.HasManyAddAssociationsMixin<bids, bidsId>;
+  createBid!: Sequelize.HasManyCreateAssociationMixin<bids>;
+  removeBid!: Sequelize.HasManyRemoveAssociationMixin<bids, bidsId>;
+  removeBids!: Sequelize.HasManyRemoveAssociationsMixin<bids, bidsId>;
+  hasBid!: Sequelize.HasManyHasAssociationMixin<bids, bidsId>;
+  hasBids!: Sequelize.HasManyHasAssociationsMixin<bids, bidsId>;
+  countBids!: Sequelize.HasManyCountAssociationsMixin;
   // users hasMany prebid_messages via from_id
   prebid_messages!: prebid_messages[];
   getPrebid_messages!: Sequelize.HasManyGetAssociationsMixin<prebid_messages>;

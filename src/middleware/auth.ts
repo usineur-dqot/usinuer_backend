@@ -99,7 +99,12 @@ export default async function verifyUser(
 	}
 
 	if (token) {
-		let user: any = jwt.verify(token ?? "", env.secret);
+		let user: any;
+		try {
+			user = jwt.verify(token ?? "", env.secret);
+		} catch (e) {
+			console.table(e);
+		}
 
 		if (!user && !ignore) {
 			return res.status(401).json({

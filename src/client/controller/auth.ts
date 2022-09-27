@@ -276,7 +276,7 @@ export default {
 			return R(res, false, "Invalid country");
 		}
 		let file;
-		console.log(req.query?.change_pic);
+
 		if (req.query?.change_pic) {
 			// file upload
 			file = await uploadOneFile(req, res);

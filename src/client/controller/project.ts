@@ -149,6 +149,61 @@ export default {
 				total_count: count,
 				total_pages: Math.floor(count / opt.limit),
 			});
+		} else if (user.role_id == 2) {
+			const projects = await models.projects.findAndCountAll({
+				where: {
+					programmer_id: user.id,
+				},
+				include: [
+					{
+						model: models.project_images,
+						as: "project_images",
+						where: {
+							project_id: { [Op.col]: "projects.id" },
+						},
+						required: false,
+					},
+					{
+						model: models.users,
+						as: "creator",
+						attributes: ["email", "user_name"],
+						required: false,
+					},
+				],
+				attributes: [
+					"id",
+					"project_name",
+					"project_image",
+					"created",
+					"enddate",
+					"description",
+					"project_status",
+					"visibility",
+					"project_post_date",
+					"post_for",
+					"createdAt",
+					[
+						db.sequelize.literal(
+							`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
+						),
+						"bids_count",
+					],
+				],
+				limit: opt.limit,
+				offset: opt.page * opt.limit,
+				order: [["createdAt", "DESC"]],
+			});
+
+			let list = projects.rows;
+			let count = projects.count;
+
+			return R(res, true, "project list", list, {
+				current_page: opt.page,
+				total_count: count,
+				total_pages: Math.floor(count / opt.limit),
+			});
+		} else {
+			return R(res, false, "Invalid User");
 		}
 	}),
 	show: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
