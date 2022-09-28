@@ -16,9 +16,10 @@ export const uploadFile = async (req: UserAuthRequest, res: Response) => {
 		const file = req.files.file;
 		const data: any = [];
 
-		const move = (image: any) => {
+		const move = (image: any, i: any) => {
 			const file = image;
 			let filename = file?.name;
+			let index = i + 1;
 			try {
 				const extensionName = path?.extname(filename ?? "");
 
@@ -35,7 +36,11 @@ export const uploadFile = async (req: UserAuthRequest, res: Response) => {
 						req.user?.id +
 						extensionName;
 				} else {
-					filename = filename.substring(0, 10) + Date.now() + extensionName;
+					filename =
+						filename.substring(0, 10) +
+						`${index}` +
+						req.user?.id +
+						extensionName;
 				}
 
 				file.mv(`${publicPath}${filename}`);
@@ -46,7 +51,9 @@ export const uploadFile = async (req: UserAuthRequest, res: Response) => {
 			data.push(filename);
 		};
 
-		Array.isArray(file) ? file.forEach((file) => move(file)) : move(file);
+		Array.isArray(file)
+			? file.forEach((file, i) => move(file, i))
+			: move(file, 0);
 
 		return data;
 	} catch (e) {
