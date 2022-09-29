@@ -432,6 +432,10 @@ export default {
 			return R(res, false, "Invalid Project");
 		}
 
+		if (project.programmer_id) {
+			return R(res, false, "Job already assigned to a machinist");
+		}
+
 		// file upload
 		let file = await uploadOneFile(req, res, true);
 
@@ -461,6 +465,10 @@ export default {
 
 			if (!project) {
 				return R(res, false, "Invalid Project");
+			}
+
+			if (project.programmer_id) {
+				return R(res, false, "Job already assigned to a machinist");
 			}
 
 			let user = await models.users.findByPk(data.programmer_id, {
