@@ -548,10 +548,11 @@ export default {
 		}
 
 		for (let p of temp_projects) {
-			let project = p.toJSON();
+			let project: any = p.toJSON();
 			let images: any = project.images;
 
 			delete project.images;
+			delete project.id;
 			project.creator_id = user?.id;
 
 			let entry = await models.projects.create(project);
