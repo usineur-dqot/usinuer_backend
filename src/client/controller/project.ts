@@ -85,7 +85,7 @@ export default {
 		//pagination options
 		const opt = {
 			page: parseInt(req.query.page?.toString() || "0"),
-			limit: parseInt(req.query.limit?.toString() || "10"),
+			limit: parseInt(req.query.limit?.toString() || "100"),
 			user_id: req.query.user_id?.toString() || null,
 		};
 
@@ -150,58 +150,188 @@ export default {
 				total_pages: Math.floor(count / opt.limit),
 			});
 		} else if (user.role_id == 2) {
-			const projects = await models.projects.findAndCountAll({
-				where: {
-					programmer_id: user.id,
-				},
-				include: [
-					{
-						model: models.project_images,
-						as: "project_images",
-						where: {
-							project_id: { [Op.col]: "projects.id" },
+			let status = req.query.status;
+
+			if (!status) {
+				return R(res, false, "please provide a status");
+			}
+
+			if (status == "1") {
+				const projects = await models.projects.findAndCountAll({
+					where: {
+						programmer_id: user.id,
+					},
+					include: [
+						{
+							model: models.project_images,
+							as: "project_images",
+							where: {
+								project_id: { [Op.col]: "projects.id" },
+							},
+							required: false,
 						},
-						required: false,
-					},
-					{
-						model: models.users,
-						as: "creator",
-						attributes: ["email", "user_name"],
-						required: false,
-					},
-				],
-				attributes: [
-					"id",
-					"project_name",
-					"project_image",
-					"created",
-					"enddate",
-					"description",
-					"project_status",
-					"visibility",
-					"project_post_date",
-					"post_for",
-					"createdAt",
-					[
-						db.sequelize.literal(
-							`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
-						),
-						"bids_count",
+						{
+							model: models.users,
+							as: "creator",
+							attributes: ["email", "user_name"],
+							required: false,
+						},
 					],
-				],
-				limit: opt.limit,
-				offset: opt.page * opt.limit,
-				order: [["createdAt", "DESC"]],
-			});
+					attributes: [
+						"id",
+						"project_name",
+						"project_image",
+						"created",
+						"enddate",
+						"description",
+						"project_status",
+						"visibility",
+						"project_post_date",
+						"post_for",
+						"createdAt",
+						[
+							db.sequelize.literal(
+								`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
+							),
+							"bids_count",
+						],
+					],
+					limit: opt.limit,
+					offset: opt.page * opt.limit,
+					order: [["createdAt", "DESC"]],
+				});
 
-			let list = projects.rows;
-			let count = projects.count;
+				let list = projects.rows;
+				let count = projects.count;
 
-			return R(res, true, "project list", list, {
-				current_page: opt.page,
-				total_count: count,
-				total_pages: Math.floor(count / opt.limit),
-			});
+				return R(res, true, "project list", list, {
+					current_page: opt.page,
+					total_count: count,
+					total_pages: Math.floor(count / opt.limit),
+				});
+			} else if (status == "2") {
+				let bids = await models.bids.findAll({
+					where: {
+						user_id: user.id,
+					},
+					attributes: ["id", "user_id", "project_id"],
+				});
+
+				if (!bids.length) {
+					return R(res, true, "No Data Found", []);
+				}
+
+				let ids = bids.map((b) => b.project_id);
+
+				const projects = await models.projects.findAndCountAll({
+					where: {
+						programmer_id: user.id,
+						id: {
+							[Op.in]: ids,
+						},
+					},
+					include: [
+						{
+							model: models.project_images,
+							as: "project_images",
+							where: {
+								project_id: { [Op.col]: "projects.id" },
+							},
+							required: false,
+						},
+						{
+							model: models.users,
+							as: "creator",
+							attributes: ["email", "user_name"],
+							required: false,
+						},
+					],
+					attributes: [
+						"id",
+						"project_name",
+						"project_image",
+						"created",
+						"enddate",
+						"description",
+						"project_status",
+						"visibility",
+						"project_post_date",
+						"post_for",
+						"createdAt",
+						[
+							db.sequelize.literal(
+								`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
+							),
+							"bids_count",
+						],
+					],
+					limit: opt.limit,
+					offset: opt.page * opt.limit,
+					order: [["createdAt", "DESC"]],
+				});
+
+				let list = projects.rows;
+				let count = projects.count;
+
+				return R(res, true, "project list", list, {
+					current_page: opt.page,
+					total_count: count,
+					total_pages: Math.floor(count / opt.limit),
+				});
+			} else {
+				const projects = await models.projects.findAndCountAll({
+					where: {
+						programmer_id: user.id,
+					},
+					include: [
+						{
+							model: models.project_images,
+							as: "project_images",
+							where: {
+								project_id: { [Op.col]: "projects.id" },
+							},
+							required: false,
+						},
+						{
+							model: models.users,
+							as: "creator",
+							attributes: ["email", "user_name"],
+							required: false,
+						},
+					],
+					attributes: [
+						"id",
+						"project_name",
+						"project_image",
+						"created",
+						"enddate",
+						"description",
+						"project_status",
+						"visibility",
+						"project_post_date",
+						"post_for",
+						"createdAt",
+						[
+							db.sequelize.literal(
+								`(SELECT COUNT(*) FROM bids WHERE project_id = projects.id)`,
+							),
+							"bids_count",
+						],
+					],
+					limit: opt.limit,
+					offset: opt.page * opt.limit,
+					order: [["createdAt", "DESC"]],
+				});
+
+				let list = projects.rows;
+				let count = projects.count;
+
+				return R(res, true, "project list", list, {
+					current_page: opt.page,
+					total_count: count,
+					total_pages: Math.floor(count / opt.limit),
+				});
+			}
 		} else {
 			return R(res, false, "Invalid User");
 		}
