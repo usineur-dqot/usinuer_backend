@@ -59,6 +59,7 @@ export default {
 				"visibility",
 				"project_post_date",
 				"post_for",
+				"programmer_id",
 				"createdAt",
 				[
 					db.sequelize.literal(
