@@ -5,7 +5,7 @@ import cors from "cors";
 import verifyUser from "@middleware/auth";
 import env from "@config/env";
 import routes from "./routes";
-import morgan from "morgan";
+import morgan from "@middleware/morgan";
 
 const app = express();
 
@@ -30,7 +30,7 @@ app.use(verifyUser);
 app.use(routes._public);
 
 //logger
-app.use(morgan("tiny"));
+app.use(morgan);
 
 app.use("/user/auth", routes.auth);
 app.use("/user/project", routes.project);

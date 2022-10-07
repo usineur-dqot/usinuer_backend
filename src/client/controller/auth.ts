@@ -10,6 +10,7 @@ import env from "@config/env";
 import { Validate } from "@validation/utils";
 import schema from "@validation/schema";
 import { uploadFile, uploadOneFile } from "@helpers/upload";
+import moment from "moment";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -104,6 +105,7 @@ export default {
 			}
 
 			data["role_id"] = 1;
+			data["country_code"] = 74;
 			data.password = bcrypt.hashSync(data.password, 10);
 
 			objectToBeDeleted.forEach((f) => delete data[f]);
@@ -172,6 +174,7 @@ export default {
 			}
 
 			data["role_id"] = 2;
+			data["country_code"] = 74;
 			data.password = bcrypt.hashSync(data.password, 10);
 			[...objectToBeDeleted, "password_confirmation"].forEach(
 				(f) => delete data[f],
@@ -222,6 +225,15 @@ export default {
 		if (!bcrypt.compareSync(data.password, user.password || "")) {
 			return R(res, false, "Invalid Credentials.");
 		}
+		let current_date = new Date();
+		user.last_seen = current_date;
+
+		await user.save();
+
+		await models.login_info.create({
+			user_id: user.id,
+			ip_address: `${req.headers["x-forwarded-for"]}`.split(",")[0] || "",
+		});
 
 		const token = jwt.sign({ id: user.id }, env.secret);
 

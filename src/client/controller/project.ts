@@ -381,6 +381,12 @@ export default {
 					required: false,
 				},
 				{
+					model: models.users,
+					as: "programmer",
+					attributes: ["email", "user_name"],
+					required: false,
+				},
+				{
 					model: models.prebid_messages,
 					as: "prebid_messages",
 					where: {
@@ -610,9 +616,37 @@ export default {
 				return R(res, false, "Invalid	 user");
 			}
 
+			let bid = await models.bids.findByPk(data.bid_id);
+
+			if (!bid) {
+				return R(res, false, "Invalid	 Bid");
+			}
+
 			project.programmer_id = user.id;
 
 			await project.save();
+
+			if (!req.user?.id) {
+				return R(res, false, "");
+			}
+
+			let transaction = await models.transactions.create({
+				amount: bid.bid_amount || 0,
+				amount_gbp: bid.bid_amount_gbp || 0,
+				type: "PROJECT AWARDED",
+
+				// customer id
+				creator_id: req.user?.id,
+				buyer_id: req.user?.id,
+
+				// machinist id
+				provider_id: user.id,
+				reciever_id: user.id,
+
+				status: "PENDING",
+				description: "Selected the machinist",
+				project_id: project.id,
+			});
 
 			return R(res, true, "Machinist selected");
 		},

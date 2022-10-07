@@ -3,7 +3,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 
 export interface login_infoAttributes {
   id: number;
-  user_id: string;
+  user_id: number;
   ip_address: string;
   create_datetime: Date;
   status: '0' | '1';
@@ -16,7 +16,7 @@ export type login_infoCreationAttributes = Optional<login_infoAttributes, login_
 
 export class login_info extends Model<login_infoAttributes, login_infoCreationAttributes> implements login_infoAttributes {
   id!: number;
-  user_id!: string;
+  user_id!: number;
   ip_address!: string;
   create_datetime!: Date;
   status!: '0' | '1';
@@ -31,7 +31,7 @@ export class login_info extends Model<login_infoAttributes, login_infoCreationAt
       primaryKey: true
     },
     user_id: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false
     },
     ip_address: {

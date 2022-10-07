@@ -65,11 +65,14 @@ export interface usersAttributes {
   nxtduedate?: string;
   entrepreneur?: number;
   bid_status: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  last_seen?: Date;
 }
 
 export type usersPk = "id";
 export type usersId = users[usersPk];
-export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status";
+export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "createdAt" | "updatedAt" | "last_seen";
 export type usersCreationAttributes = Optional<usersAttributes, usersOptionalAttributes>;
 
 export class users extends Model<usersAttributes, usersCreationAttributes> implements usersAttributes {
@@ -132,6 +135,9 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   nxtduedate?: string;
   entrepreneur?: number;
   bid_status!: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+  last_seen?: Date;
 
   // users belongsTo country via country_code
   country_code_country!: country;
@@ -174,6 +180,18 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   hasProject!: Sequelize.HasManyHasAssociationMixin<projects, projectsId>;
   hasProjects!: Sequelize.HasManyHasAssociationsMixin<projects, projectsId>;
   countProjects!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany projects via programmer_id
+  programmer_projects!: projects[];
+  getProgrammer_projects!: Sequelize.HasManyGetAssociationsMixin<projects>;
+  setProgrammer_projects!: Sequelize.HasManySetAssociationsMixin<projects, projectsId>;
+  addProgrammer_project!: Sequelize.HasManyAddAssociationMixin<projects, projectsId>;
+  addProgrammer_projects!: Sequelize.HasManyAddAssociationsMixin<projects, projectsId>;
+  createProgrammer_project!: Sequelize.HasManyCreateAssociationMixin<projects>;
+  removeProgrammer_project!: Sequelize.HasManyRemoveAssociationMixin<projects, projectsId>;
+  removeProgrammer_projects!: Sequelize.HasManyRemoveAssociationsMixin<projects, projectsId>;
+  hasProgrammer_project!: Sequelize.HasManyHasAssociationMixin<projects, projectsId>;
+  hasProgrammer_projects!: Sequelize.HasManyHasAssociationsMixin<projects, projectsId>;
+  countProgrammer_projects!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof users {
     return sequelize.define('users', {
@@ -426,10 +444,14 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
       allowNull: false,
       defaultValue: 1,
       comment: "0=>Not able to bid and 1 => able to bid"
+    },
+    last_seen: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     tableName: 'users',
-    timestamps: false,
+    timestamps: true,
     indexes: [
       {
         name: "PRIMARY",

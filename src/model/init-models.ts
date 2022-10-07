@@ -580,6 +580,8 @@ export function initModels(sequelize: Sequelize) {
   users.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "from_id"});
   projects.belongsTo(users, { as: "creator", foreignKey: "creator_id"});
   users.hasMany(projects, { as: "projects", foreignKey: "creator_id"});
+  projects.belongsTo(users, { as: "programmer", foreignKey: "programmer_id"});
+  users.hasMany(projects, { as: "programmer_projects", foreignKey: "programmer_id"});
 
   return {
     admin_apprv_imgs: admin_apprv_imgs,

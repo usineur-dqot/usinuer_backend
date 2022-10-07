@@ -35,7 +35,7 @@ export default async function verifyUser(
 	next: NextFunction,
 ) {
 	let token;
-	console.log(req.path);
+
 	let ignore = ignorePaths.indexOf(req.path) > -1;
 
 	if (req.url.startsWith("/public")) {

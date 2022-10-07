@@ -182,6 +182,11 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   getCreator!: Sequelize.BelongsToGetAssociationMixin<users>;
   setCreator!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
   createCreator!: Sequelize.BelongsToCreateAssociationMixin<users>;
+  // projects belongsTo users via programmer_id
+  programmer!: users;
+  getProgrammer!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setProgrammer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createProgrammer!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof projects {
     return sequelize.define('projects', {
@@ -287,8 +292,12 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
       allowNull: true
     },
     programmer_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     bid_select_date: {
       type: DataTypes.DATE,
@@ -464,6 +473,13 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
         using: "BTREE",
         fields: [
           { name: "creator_id" },
+        ]
+      },
+      {
+        name: "programmer_id",
+        using: "BTREE",
+        fields: [
+          { name: "programmer_id" },
         ]
       },
     ]

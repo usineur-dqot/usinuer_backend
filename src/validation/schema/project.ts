@@ -28,5 +28,6 @@ export default {
 	select_machinist: {
 		programmer_id: Joi.string().required(),
 		project_id: Joi.string().required(),
+		bid_id: Joi.string().required(),
 	},
 };
