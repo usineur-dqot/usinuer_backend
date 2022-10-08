@@ -65,3 +65,23 @@ ADD `last_seen` datetime NULL;
 
 ALTER TABLE `login_info`
 CHANGE `user_id` `user_id` bigint unsigned NOT NULL AFTER `id`;
+
+
+//
+
+
+ALTER TABLE `messages`
+CHANGE `reply_for` `reply_for` bigint unsigned NOT NULL AFTER `project_id`,
+CHANGE `from_id` `from_id` bigint unsigned NOT NULL AFTER `reply_for`;
+
+ALTER TABLE `messages`
+CHANGE `reply_for` `reply_for` bigint unsigned NULL AFTER `project_id`,
+CHANGE `buyer_message_status` `buyer_message_status` char(1) COLLATE 'latin1_swedish_ci' NULL AFTER `to_id`,
+CHANGE `programmer_message_status` `programmer_message_status` char(1) COLLATE 'latin1_swedish_ci' NULL AFTER `buyer_message_status`,
+CHANGE `provider_delete_status` `provider_delete_status` char(1) COLLATE 'latin1_swedish_ci' NULL AFTER `programmer_message_status`,
+CHANGE `buyer_delete_status` `buyer_delete_status` char(1) COLLATE 'latin1_swedish_ci' NULL AFTER `provider_delete_status`,
+CHANGE `notification_status` `notification_status` char(1) COLLATE 'latin1_swedish_ci' NULL DEFAULT '0' COMMENT 'P=\"Prebid\",N=\"Notifications\"' AFTER `created`,
+CHANGE `deluserid` `deluserid` longtext COLLATE 'latin1_swedish_ci' NULL AFTER `notification_status`,
+CHANGE `attach_file` `attach_file` varchar(150) COLLATE 'latin1_swedish_ci' NULL AFTER `deluserid`,
+CHANGE `approve` `approve` int NULL AFTER `attach_file`;
+

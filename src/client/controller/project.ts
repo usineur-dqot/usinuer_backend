@@ -651,6 +651,62 @@ export default {
 			return R(res, true, "Machinist selected");
 		},
 	),
+	list_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.project.list_msgs, req.query, {});
+
+		let project = await models.projects.findByPk(data.project_id, {
+			attributes: ["id", "programmer_id"],
+		});
+
+		if (!project) {
+			return R(res, false, "Invalid Project");
+		}
+
+		let messages = await models.messages.findAll({
+			where: {
+				project_id: data.project_id,
+				[Op.or]: [
+					{
+						to_id: data.to_id,
+						from_id: req.user?.id,
+					},
+					{
+						to_id: req.user?.id,
+						from_id: data.to_id,
+					},
+				],
+			},
+			order: [["created", "DESC"]],
+		});
+
+		return R(res, true, "Messages list", messages);
+	}),
+	send_msg: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.project.send_msg, req.body, {});
+
+		let project = await models.projects.findByPk(data.project_id);
+
+		if (!project) {
+			return R(res, false, "Invalid Project");
+		}
+
+		// file upload
+		let file = await uploadOneFile(req, res, true);
+
+		if (file) {
+			data["attach_file"] = file;
+		}
+
+		data["created"] = moment().unix();
+		data["from_id"] = req.user?.id;
+		data["reply_for"] = 0;
+
+		let message = await models.messages.create(data);
+
+		return R(res, true, "Message Sent", message);
+	}),
 
 	get_my_temp: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation

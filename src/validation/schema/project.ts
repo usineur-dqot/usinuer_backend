@@ -25,6 +25,15 @@ export default {
 		project_id: Joi.number().required(),
 		user_id: Joi.number().required(),
 	},
+	send_msg: {
+		project_id: Joi.number().required(),
+		to_id: Joi.number().required(),
+		message: Joi.string().required(),
+	},
+	list_msgs: {
+		project_id: Joi.number().required(),
+		to_id: Joi.number().required(),
+	},
 	select_machinist: {
 		programmer_id: Joi.string().required(),
 		project_id: Joi.string().required(),
