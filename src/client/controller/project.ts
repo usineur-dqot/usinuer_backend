@@ -585,6 +585,47 @@ export default {
 		return R(res, true, "Offer Submitted", bid);
 	}),
 
+	update_bid: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.project.updateBid, req.body, {});
+
+		if (req.user?.id != data.user_id) {
+			return R(res, false, "	Invalid	User");
+		}
+
+		let bid_id = req.query?.id || "";
+
+		if(!bid_id) {
+		return R(res, false, "No Bid ID Found");
+		}
+
+		
+		let bid = await models.bids.findByPk(bid_id.toString())
+
+		if(!bid){
+			return R(res, false, "No Bid Found");
+		}
+
+
+		// file upload
+		let file = await uploadOneFile(req, res, true);
+
+		if (file) {
+			data["bid_file"] = file;
+		}
+
+
+		await bid.update(data)
+
+
+
+		
+
+		
+
+		return R(res, true, "Offer updated", bid);
+	}),
+
 	select_machinist: asyncWrapper(
 		async (req: UserAuthRequest, res: Response) => {
 			// validation

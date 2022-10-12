@@ -25,6 +25,15 @@ export default {
 		project_id: Joi.number().required(),
 		user_id: Joi.number().required(),
 	},
+
+	updateBid: {
+		bid_desc: Joi.string().required(),
+		bid_amount: Joi.number().allow("").required(),
+		bid_amount_gbp: Joi.number().allow("").required(),
+		bid_days: Joi.number().required(),
+		project_id: Joi.number().required(),
+		user_id: Joi.number().required(),
+	},
 	send_msg: {
 		project_id: Joi.number().required(),
 		to_id: Joi.number().required(),

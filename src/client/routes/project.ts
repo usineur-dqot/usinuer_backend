@@ -22,10 +22,19 @@ router.get("/select-machinist", cn.select_machinist);
 
 router.get("/list-msgs", cn.list_msgs);
 
+
+/*FILE UPLOAD APIs */
 router.use(upload());
+
 router.post("/add", cn.add);
+
 router.post("/add-temp", cn.add_temp);
+
 router.post("/add-bid", cn.add_bid);
+
+router.post("/update-bid", cn.update_bid);
+
 router.post("/send-msg", cn.send_msg);
+
 
 export default router;

@@ -11,6 +11,12 @@ export default {
 		address1: Joi.string().required(),
 		description: Joi.string().required(),
 	},
+	editAddress: {
+		name: Joi.string().required(),
+		zcode: Joi.string().required(),
+		city: Joi.string().required(),
+		address1: Joi.string().required(),
+	},
 	change_password: {
 		old_password: Joi.string().required(),
 		new_password: Joi.string()

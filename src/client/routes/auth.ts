@@ -16,7 +16,12 @@ router.post("/change-password", cn.change_password);
 
 router.get("/countries", cn.list_countries);
 
+/*FILE UPLOAD APIs */
 router.use(upload());
+
 router.post("/update-profile", cn.update);
+
+router.post("/update-address", cn.update_address);
+
 
 export default router;

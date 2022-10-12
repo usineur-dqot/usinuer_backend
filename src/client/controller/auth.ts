@@ -306,6 +306,26 @@ export default {
 
 		return R(res, true, "profile updated");
 	}),
+	update_address: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.user.editAddress, req.body, {});
+
+		let user = await models.users.findOne({
+			where: {
+				id: req.user?.id,
+			},
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+
+		await user.update(data);
+		// await user.save();
+
+		return R(res, true, "profile updated");
+	}),
 
 	change_password: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
