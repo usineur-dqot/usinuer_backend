@@ -85,3 +85,9 @@ CHANGE `deluserid` `deluserid` longtext COLLATE 'latin1_swedish_ci' NULL AFTER `
 CHANGE `attach_file` `attach_file` varchar(150) COLLATE 'latin1_swedish_ci' NULL AFTER `deluserid`,
 CHANGE `approve` `approve` int NULL AFTER `attach_file`;
 
+//
+
+
+ALTER TABLE `messages`
+ADD FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
+

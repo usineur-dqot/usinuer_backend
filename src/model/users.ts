@@ -2,6 +2,7 @@ import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { bids, bidsId } from './bids';
 import type { country, countryId } from './country';
+import type { messages, messagesId } from './messages';
 import type { prebid_messages, prebid_messagesId } from './prebid_messages';
 import type { projects, projectsId } from './projects';
 
@@ -156,6 +157,30 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   hasBid!: Sequelize.HasManyHasAssociationMixin<bids, bidsId>;
   hasBids!: Sequelize.HasManyHasAssociationsMixin<bids, bidsId>;
   countBids!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany messages via from_id
+  messages!: messages[];
+  getMessages!: Sequelize.HasManyGetAssociationsMixin<messages>;
+  setMessages!: Sequelize.HasManySetAssociationsMixin<messages, messagesId>;
+  addMessage!: Sequelize.HasManyAddAssociationMixin<messages, messagesId>;
+  addMessages!: Sequelize.HasManyAddAssociationsMixin<messages, messagesId>;
+  createMessage!: Sequelize.HasManyCreateAssociationMixin<messages>;
+  removeMessage!: Sequelize.HasManyRemoveAssociationMixin<messages, messagesId>;
+  removeMessages!: Sequelize.HasManyRemoveAssociationsMixin<messages, messagesId>;
+  hasMessage!: Sequelize.HasManyHasAssociationMixin<messages, messagesId>;
+  hasMessages!: Sequelize.HasManyHasAssociationsMixin<messages, messagesId>;
+  countMessages!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany messages via to_id
+  to_messages!: messages[];
+  getTo_messages!: Sequelize.HasManyGetAssociationsMixin<messages>;
+  setTo_messages!: Sequelize.HasManySetAssociationsMixin<messages, messagesId>;
+  addTo_message!: Sequelize.HasManyAddAssociationMixin<messages, messagesId>;
+  addTo_messages!: Sequelize.HasManyAddAssociationsMixin<messages, messagesId>;
+  createTo_message!: Sequelize.HasManyCreateAssociationMixin<messages>;
+  removeTo_message!: Sequelize.HasManyRemoveAssociationMixin<messages, messagesId>;
+  removeTo_messages!: Sequelize.HasManyRemoveAssociationsMixin<messages, messagesId>;
+  hasTo_message!: Sequelize.HasManyHasAssociationMixin<messages, messagesId>;
+  hasTo_messages!: Sequelize.HasManyHasAssociationsMixin<messages, messagesId>;
+  countTo_messages!: Sequelize.HasManyCountAssociationsMixin;
   // users hasMany prebid_messages via from_id
   prebid_messages!: prebid_messages[];
   getPrebid_messages!: Sequelize.HasManyGetAssociationsMixin<prebid_messages>;

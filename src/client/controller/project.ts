@@ -4,7 +4,7 @@ import { UserAuthRequest } from "@middleware/auth";
 import models from "@model/index";
 import db from "@db/mysql";
 import { uploadFile, uploadOneFile } from "@helpers/upload";
-import { Validate } from "validation/utils";
+import { Pick, Validate } from "validation/utils";
 import schema from "validation/schema";
 import moment from "moment";
 import { Op } from "sequelize";
@@ -456,6 +456,38 @@ export default {
 
 		return R(res, true, "Question Submitted", question);
 	}),
+
+	addAnswer: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(res, [], schema.project.answer, req.body, {});
+
+		let user = await models.users.findByPk(req.user?.id, {
+			attributes: ["id"],
+		});
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		let question = await models.prebid_messages.findByPk(data.id);
+
+		if (!question) {
+			return R(res, false, "Question Not Found", null);
+		}
+
+		let q = question.toJSON();
+
+		let answer = await models.prebid_messages.create({
+			project_id: q.project_id,
+			reply_for: q.id,
+			from_id: user.id,
+			to_id: q.from_id,
+			message: data.message,
+			msg_type: "A",
+		});
+
+		return R(res, true, "Answer Submitted", answer);
+	}),
 	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		let data = await Validate(
@@ -595,17 +627,15 @@ export default {
 
 		let bid_id = req.query?.id || "";
 
-		if(!bid_id) {
-		return R(res, false, "No Bid ID Found");
+		if (!bid_id) {
+			return R(res, false, "No Bid ID Found");
 		}
 
-		
-		let bid = await models.bids.findByPk(bid_id.toString())
+		let bid = await models.bids.findByPk(bid_id.toString());
 
-		if(!bid){
+		if (!bid) {
 			return R(res, false, "No Bid Found");
 		}
-
 
 		// file upload
 		let file = await uploadOneFile(req, res, true);
@@ -614,14 +644,7 @@ export default {
 			data["bid_file"] = file;
 		}
 
-
-		await bid.update(data)
-
-
-
-		
-
-		
+		await bid.update(data);
 
 		return R(res, true, "Offer updated", bid);
 	}),

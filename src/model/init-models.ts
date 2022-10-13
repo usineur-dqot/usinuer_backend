@@ -568,14 +568,22 @@ export function initModels(sequelize: Sequelize) {
 
   users.belongsTo(country, { as: "country_code_country", foreignKey: "country_code"});
   country.hasMany(users, { as: "users", foreignKey: "country_code"});
+  prebid_messages.belongsTo(prebid_messages, { as: "reply_for_prebid_message", foreignKey: "reply_for"});
+  prebid_messages.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "reply_for"});
   bids.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(bids, { as: "bids", foreignKey: "project_id"});
+  messages.belongsTo(projects, { as: "project", foreignKey: "project_id"});
+  projects.hasMany(messages, { as: "messages", foreignKey: "project_id"});
   prebid_messages.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "project_id"});
   project_images.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(project_images, { as: "project_images", foreignKey: "project_id"});
   bids.belongsTo(users, { as: "user", foreignKey: "user_id"});
   users.hasMany(bids, { as: "bids", foreignKey: "user_id"});
+  messages.belongsTo(users, { as: "from", foreignKey: "from_id"});
+  users.hasMany(messages, { as: "messages", foreignKey: "from_id"});
+  messages.belongsTo(users, { as: "to", foreignKey: "to_id"});
+  users.hasMany(messages, { as: "to_messages", foreignKey: "to_id"});
   prebid_messages.belongsTo(users, { as: "from", foreignKey: "from_id"});
   users.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "from_id"});
   projects.belongsTo(users, { as: "creator", foreignKey: "creator_id"});

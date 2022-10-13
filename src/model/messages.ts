@@ -1,5 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { projects, projectsId } from './projects';
+import type { users, usersId } from './users';
 
 export interface messagesAttributes {
   id: number;
@@ -41,6 +43,21 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
   attach_file?: string;
   approve?: number;
 
+  // messages belongsTo projects via project_id
+  project!: projects;
+  getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
+  setProject!: Sequelize.BelongsToSetAssociationMixin<projects, projectsId>;
+  createProject!: Sequelize.BelongsToCreateAssociationMixin<projects>;
+  // messages belongsTo users via from_id
+  from!: users;
+  getFrom!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setFrom!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createFrom!: Sequelize.BelongsToCreateAssociationMixin<users>;
+  // messages belongsTo users via to_id
+  to!: users;
+  getTo!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setTo!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createTo!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof messages {
     return sequelize.define('messages', {
@@ -52,7 +69,11 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
     },
     project_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'projects',
+        key: 'id'
+      }
     },
     reply_for: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -60,11 +81,19 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
     },
     from_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     to_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     buyer_message_status: {
       type: DataTypes.CHAR(1),
@@ -118,6 +147,27 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "project_id",
+        using: "BTREE",
+        fields: [
+          { name: "project_id" },
+        ]
+      },
+      {
+        name: "from_id",
+        using: "BTREE",
+        fields: [
+          { name: "from_id" },
+        ]
+      },
+      {
+        name: "to_id",
+        using: "BTREE",
+        fields: [
+          { name: "to_id" },
         ]
       },
     ]

@@ -47,6 +47,11 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
   createdAt?: Date;
   updatedAt?: Date;
 
+  // prebid_messages belongsTo prebid_messages via reply_for
+  reply_for_prebid_message!: prebid_messages;
+  getReply_for_prebid_message!: Sequelize.BelongsToGetAssociationMixin<prebid_messages>;
+  setReply_for_prebid_message!: Sequelize.BelongsToSetAssociationMixin<prebid_messages, prebid_messagesId>;
+  createReply_for_prebid_message!: Sequelize.BelongsToCreateAssociationMixin<prebid_messages>;
   // prebid_messages belongsTo projects via project_id
   project!: projects;
   getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
@@ -75,8 +80,12 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
       }
     },
     reply_for: {
-      type: DataTypes.INTEGER,
-      allowNull: true
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'prebid_messages',
+        key: 'id'
+      }
     },
     from_id: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -87,7 +96,7 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
       }
     },
     to_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false
     },
     buyer_message_status: {
@@ -156,6 +165,13 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
         using: "BTREE",
         fields: [
           { name: "from_id" },
+        ]
+      },
+      {
+        name: "reply_for",
+        using: "BTREE",
+        fields: [
+          { name: "reply_for" },
         ]
       },
     ]
