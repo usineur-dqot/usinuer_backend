@@ -376,6 +376,16 @@ export default {
 							as: "messages",
 							where:{
 								project_id: { [Op.col]: "projects.id" },
+								[Op.or]: [
+									{
+										to_id: { [Op.col]: "projects.bids.user_id" },
+										from_id: {[Op.col]: "projects.creator_id" },
+									},
+									{
+										to_id: {[Op.col]: "projects.creator_id"},
+										from_id: { [Op.col]: "projects.bids.user_id" },
+									},
+								],
 							},
 							limit:2,
 							required: false,
