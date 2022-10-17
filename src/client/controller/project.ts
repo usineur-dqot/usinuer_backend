@@ -371,6 +371,17 @@ export default {
 							attributes: ["email", "user_name"],
 							required: false,
 						},
+						{
+							model: models.messages,
+							as: "messages",
+							where:{
+								project_id: { [Op.col]: "projects.id" },
+							},
+							limit:2,
+							required: false,
+
+						},
+
 					],
 					required: false,
 				},
