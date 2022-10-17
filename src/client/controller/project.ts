@@ -720,12 +720,19 @@ export default {
 		let data = await Validate(res, [], schema.project.list_msgs, req.query, {});
 
 		let project = await models.projects.findByPk(data.project_id, {
-			attributes: ["id", "programmer_id"],
+			attributes: ["id", "programmer_id", "project_name"],
 		});
 
 		if (!project) {
 			return R(res, false, "Invalid Project");
 		}
+
+		let to = await models.users.findByPk(
+			data.to_id == req.user?.id ? data.from_id : data.to_id,
+			{
+				attributes: ["user_name"],
+			},
+		);
 
 		let messages = await models.messages.findAll({
 			where: {
@@ -733,14 +740,60 @@ export default {
 				[Op.or]: [
 					{
 						to_id: data.to_id,
-						from_id: req.user?.id,
+						from_id: data.from_id,
 					},
 					{
-						to_id: req.user?.id,
+						to_id: data.from_id,
 						from_id: data.to_id,
 					},
 				],
 			},
+			order: [["created", "DESC"]],
+		});
+
+		return R(res, true, "Messages list", messages, { to, project });
+	}),
+
+	my_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+
+		let user = await models.users.findByPk(req.user?.id);
+
+		if (!user) {
+			return R(res, false, "Invalid user");
+		}
+
+		let messages = await models.messages.findAll({
+			where: {
+				[Op.or]: [
+					{
+						from_id: req.user?.id,
+					},
+					{
+						to_id: req.user?.id,
+					},
+				],
+			},
+			include: [
+				{
+					model: models.projects,
+					as: "project",
+					attributes: ["project_name"],
+				},
+				{
+					model: models.users,
+					as: "from",
+					attributes: ["email", "user_name"],
+					required: false,
+				},
+				{
+					model: models.users,
+					as: "to",
+					attributes: ["email", "user_name"],
+					required: false,
+				},
+			],
+			group: ["project_id"],
 			order: [["created", "DESC"]],
 		});
 
@@ -768,6 +821,72 @@ export default {
 		data["reply_for"] = 0;
 
 		let message = await models.messages.create(data);
+
+		return R(res, true, "Message Sent", message);
+	}),
+	list_bid_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			[],
+			schema.project.list_bid_msgs,
+			req.query,
+			{},
+		);
+
+		let project = await models.projects.findByPk(data.project_id, {
+			attributes: ["id", "programmer_id"],
+		});
+
+		if (!project) {
+			return R(res, false, "Invalid Project");
+		}
+
+		let messages = await models.message_dialog.findAll({
+			where: {
+				project_id: data.project_id,
+				[Op.or]: [
+					{
+						send_to: data.send_to,
+						send_from: req.user?.id,
+					},
+					{
+						send_to: req.user?.id,
+						send_from: data.send_to,
+					},
+				],
+			},
+			order: [["datetime", "DESC"]],
+		});
+
+		return R(res, true, "Messages list", messages);
+	}),
+	send_bid_msg: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			[],
+			schema.project.send_bid_msg,
+			req.body,
+			{},
+		);
+
+		let project = await models.projects.findByPk(data.project_id);
+
+		if (!project) {
+			return R(res, false, "Invalid Project");
+		}
+
+		// file upload
+		let file = await uploadOneFile(req, res, true);
+
+		if (file) {
+			data["attachment"] = file;
+		}
+
+		data["send_from"] = req.user?.id;
+
+		let message = await models.message_dialog.create(data);
 
 		return R(res, true, "Message Sent", message);
 	}),
