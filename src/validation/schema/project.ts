@@ -43,9 +43,20 @@ export default {
 		to_id: Joi.number().required(),
 		message: Joi.string().required(),
 	},
+
+	send_bid_msg: {
+		project_id: Joi.number().required(),
+		send_to: Joi.number().required(),
+		msg_box: Joi.string().required(),
+	},
 	list_msgs: {
 		project_id: Joi.number().required(),
 		to_id: Joi.number().required(),
+		from_id: Joi.number().required(),
+	},
+	list_bid_msgs: {
+		project_id: Joi.number().required(),
+		send_to: Joi.number().required(),
 	},
 	select_machinist: {
 		programmer_id: Joi.string().required(),
