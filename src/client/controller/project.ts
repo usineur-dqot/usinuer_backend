@@ -371,27 +371,26 @@ export default {
 							attributes: ["email", "user_name"],
 							required: false,
 						},
-						{
-							model: models.messages,
-							as: "messages",
-							where:{
-								project_id: { [Op.col]: "projects.id" },
-								[Op.or]: [
-									{
-										to_id: { [Op.col]: "projects.bids.user_id" },
-										from_id: {[Op.col]: "projects.creator_id" },
-									},
-									{
-										to_id: {[Op.col]: "projects.creator_id"},
-										from_id: { [Op.col]: "projects.bids.user_id" },
-									},
-								],
-							},
-							limit:2,
-							required: false,
+						// {
+						// 	model: models.messages,
+						// 	as: "messages",
+						// 	where:{
+						// 		project_id: { [Op.col]: "projects.id" },
+						// 		[Op.or]: [
+						// 			{
+						// 				to_id: { [Op.col]: "projects.bids.user_id" },
+						// 				from_id: {[Op.col]: "projects.creator_id" },
+						// 			},
+						// 			{
+						// 				to_id: {[Op.col]: "projects.creator_id"},
+						// 				from_id: { [Op.col]: "projects.bids.user_id" },
+						// 			},
+						// 		],
+						// 	},
+						// 	limit:2,
+						// 	required: false,
 
-						},
-
+						// },
 					],
 					required: false,
 				},
@@ -998,6 +997,4 @@ export default {
 
 		return R(res, true, "Project Added Successfully", {});
 	}),
-	
-
 };

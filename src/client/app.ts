@@ -34,6 +34,7 @@ app.use(morgan);
 
 app.use("/user/auth", routes.auth);
 app.use("/user/project", routes.project);
+app.use("/user/wallet", routes.wallet);
 app.use("/user/upload", routes.upload);
 
 app.use(errorHandler);
