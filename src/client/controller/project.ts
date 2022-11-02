@@ -743,7 +743,7 @@ export default {
 				res,
 				[],
 				schema.project.add_payment,
-				req.query,
+				req.body,
 				{},
 			);
 
