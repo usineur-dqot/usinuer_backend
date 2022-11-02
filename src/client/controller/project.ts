@@ -768,7 +768,7 @@ export default {
 						
 			 await transaction_details.update(
 				{
-					project_id: data.project.id,
+					project_id: data.project_id,
 				},
 				{
 				where:	{
