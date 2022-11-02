@@ -22,6 +22,8 @@ router.get("/get-my-temp", cn.get_my_temp);
 
 router.get("/select-machinist", cn.select_machinist);
 
+router.post("/deposit-fund", cn.add_payment);
+
 router.get("/list-msgs", cn.list_msgs);
 
 router.get("/list-bid-msgs", cn.list_bid_msgs);
@@ -42,5 +44,9 @@ router.post("/update-bid", cn.update_bid);
 router.post("/send-msg", cn.send_msg);
 
 router.post("/send-bid-msg", cn.send_bid_msg);
+
+
+
+
 
 export default router;

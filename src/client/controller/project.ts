@@ -735,6 +735,66 @@ export default {
 			return R(res, true, "Machinist selected");
 		},
 	),
+
+	add_payment: asyncWrapper(
+		async (req: UserAuthRequest, res: Response) => {
+			// validation
+			let data = await Validate(
+				res,
+				[],
+				schema.project.add_payment,
+				req.query,
+				{},
+			);
+
+			let transaction_details = await models.transactions.findOne({
+
+				where:{
+					project_id: data.project.id,
+
+				}
+			}) 
+			if(!transaction_details){
+				return R(res, false, "Invalid  transaction");
+
+			}
+			let old_amount= transaction_details.amount;
+			if(old_amount != data.amount ){
+				return R(res, false, "Invalid  amount");
+
+			}
+
+
+			let project = await models.projects.findByPk(data.project_id, {
+				attributes: ["id", "programmer_id"],
+			});
+
+			if (!project) {
+				return R(res, false, "Invalid Project");
+			}
+
+			
+			 await transaction_details.update(
+				{
+					project_id: data.project.id,
+				},
+				{
+				where:	{
+						amount: data.amount ,
+						amount_gbp: transaction_details.amount_gbp ,
+						type: "PROJECT AWARDED",
+						
+						status: "SUCCESS",
+						description: "PAYMENT IS DONE ",
+						
+					}
+				});
+
+			return R(res, true, "Payment is done ");
+		},
+	),
+
+
 	list_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		let data = await Validate(res, [], schema.project.list_msgs, req.query, {});

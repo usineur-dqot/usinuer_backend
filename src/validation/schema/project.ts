@@ -64,14 +64,9 @@ export default {
 		bid_id: Joi.string().required(),
 	},
 	add_payment:{
-		
 
-
-
-	},
-	payment_req:{
-		order_id: Joi.string().required(),
 		project_id: Joi.string().required(),
-	}
-
+		amount: Joi.number().required(),
+	},
+	
 };

@@ -9,6 +9,7 @@ import schema from "validation/schema";
 import moment from "moment";
 import { Op } from "sequelize";
 import axios from "axios";
+
 import paypal from "paypal-rest-sdk";
 
 paypal.configure({
@@ -26,7 +27,7 @@ export default {
 	create_order: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 
-		let orderId = "9WN50236EH272062K";
+		let orderId = "1KK29035TN181923N";
 
 		var create_payment_json = {
 			intent: "sale",
