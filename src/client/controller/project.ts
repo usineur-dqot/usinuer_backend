@@ -750,7 +750,7 @@ export default {
 			let transaction_details = await models.transactions.findOne({
 
 				where:{
-					project_id: data.project.id,
+					project_id: data.project_id,
 
 				}
 			}) 
