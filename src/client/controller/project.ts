@@ -765,15 +765,7 @@ export default {
 			}
 
 
-			let project = await models.projects.findByPk(data.project_id, {
-				attributes: ["id", "programmer_id"],
-			});
-
-			if (!project) {
-				return R(res, false, "Invalid Project");
-			}
-
-			
+						
 			 await transaction_details.update(
 				{
 					project_id: data.project.id,
