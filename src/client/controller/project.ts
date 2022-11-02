@@ -767,11 +767,9 @@ export default {
 
 						
 			 await transaction_details.update(
-				{
-					project_id: data.project_id,
-				},
-				{
-				where:	{
+				
+				
+					{
 						amount: data.amount ,
 						amount_gbp: transaction_details.amount_gbp ,
 						type: "PROJECT AWARDED",
@@ -779,7 +777,7 @@ export default {
 						status: "SUCCESS",
 						description: "PAYMENT IS DONE ",
 						
-					}
+					
 				});
 
 			return R(res, true, "Payment is done ");
