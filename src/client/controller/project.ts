@@ -766,9 +766,7 @@ export default {
 
 
 						
-			 await transaction_details.update(
-				
-				
+			 await transaction_details.update(	
 					{
 						amount: data.amount ,
 						amount_gbp: transaction_details.amount_gbp ,
@@ -776,8 +774,6 @@ export default {
 						
 						status: "SUCCESS",
 						description: "PAYMENT IS DONE ",
-						
-					
 				});
 
 			return R(res, true, "Payment is done ");
