@@ -63,10 +63,13 @@ export default {
 		project_id: Joi.string().required(),
 		bid_id: Joi.string().required(),
 	},
-	add_payment:{
-
+	add_payment: {
 		project_id: Joi.string().required(),
 		amount: Joi.number().required(),
 	},
-	
+
+	review_machinist: {
+		project_id: Joi.string().required(),
+		comments: Joi.string().required(),
+	},
 };

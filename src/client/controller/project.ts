@@ -781,6 +781,38 @@ export default {
 		return R(res, true, "Payment is done ", { project });
 	}),
 
+	review_machinist: asyncWrapper(
+		async (req: UserAuthRequest, res: Response) => {
+			// validation
+			let data = await Validate(
+				res,
+				[],
+				schema.project.review_machinist,
+				req.body,
+				{},
+			);
+
+			let project = await models.projects.findByPk(data.project_id);
+
+			if (!project || !project.programmer_id) {
+				return R(res, false, "Project not found");
+			}
+
+			let review = await models.reviews.create({
+				comments: data.comments,
+				project_id: data.project_id,
+				buyer_id: req.user?.id || 0,
+				provider_id: project.programmer_id,
+			});
+
+			project.project_status = "3";
+
+			await project.save();
+
+			return R(res, true, "review submitted ", { project });
+		},
+	),
+
 	list_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		let data = await Validate(res, [], schema.project.list_msgs, req.query, {});

@@ -91,3 +91,36 @@ CHANGE `approve` `approve` int NULL AFTER `attach_file`;
 ALTER TABLE `messages`
 ADD FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`)
 
+
+
+
+//
+
+ALTER TABLE `reviews`
+CHANGE `comments` `comments` text COLLATE 'utf8mb3_general_ci' NULL AFTER `id`,
+CHANGE `rating` `rating` float(2,1) NULL AFTER `comments`,
+CHANGE `provider_rate1` `provider_rate1` float(2,1) NULL AFTER `rating`,
+CHANGE `provider_rate2` `provider_rate2` float(2,1) NULL AFTER `provider_rate1`,
+CHANGE `provider_rate3` `provider_rate3` float(2,1) NULL AFTER `provider_rate2`,
+CHANGE `provider_rate4` `provider_rate4` float(2,1) NULL AFTER `provider_rate3`,
+CHANGE `provider_rate5` `provider_rate5` float(2,1) NULL AFTER `provider_rate4`,
+CHANGE `provider_rate6` `provider_rate6` float(2,1) NULL AFTER `provider_rate5`,
+CHANGE `provider_rating_avg` `provider_rating_avg` float(2,1) NULL AFTER `provider_rate6`,
+CHANGE `emp_rate1` `emp_rate1` float(2,1) NULL AFTER `provider_rating_avg`,
+CHANGE `emp_rate2` `emp_rate2` float(2,1) NULL AFTER `emp_rate1`,
+CHANGE `emp_rate3` `emp_rate3` float(2,1) NULL AFTER `emp_rate2`,
+CHANGE `emp_rate4` `emp_rate4` float(2,1) NULL AFTER `emp_rate3`,
+CHANGE `emp_rate5` `emp_rate5` float(2,1) NULL AFTER `emp_rate4`,
+CHANGE `emp_rate6` `emp_rate6` float(2,1) NULL AFTER `emp_rate5`,
+CHANGE `emp_rating_avg` `emp_rating_avg` float(2,1) NULL AFTER `emp_rate6`,
+CHANGE `review_time` `review_time` int NULL AFTER `emp_rating_avg`,
+CHANGE `review_post_date` `review_post_date` datetime NULL AFTER `review_time`,
+CHANGE `review_type` `review_type` enum('1','2') COLLATE 'utf8mb3_general_ci' NULL AFTER `review_post_date`,
+CHANGE `hold` `hold` enum('0','1') COLLATE 'latin1_swedish_ci' NULL AFTER `provider_id`,
+CHANGE `buyer_status` `buyer_status` varchar(20) COLLATE 'latin1_swedish_ci' NULL AFTER `hold`,
+CHANGE `provider_status` `provider_status` varchar(20) COLLATE 'latin1_swedish_ci' NULL AFTER `buyer_status`,
+CHANGE `country_code` `country_code` int NULL AFTER `provider_status`;
+
+//
+
+
