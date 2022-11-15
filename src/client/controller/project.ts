@@ -778,7 +778,7 @@ export default {
 
 		await project.save();
 
-		return R(res, true, "Payment is done ");
+		return R(res, true, "Payment is done ", { project });
 	}),
 
 	list_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
