@@ -122,6 +122,10 @@ export default {
 			amount_gbp: bid.bid_amount_gbp,
 		});
 
+		project.project_status = "2";
+
+		await project.save();
+
 		let transaction = await models.transactions.create({
 			amount: bid.bid_amount || 0,
 			amount_gbp: bid.bid_amount_gbp || 0,
