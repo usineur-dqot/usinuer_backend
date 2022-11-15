@@ -235,6 +235,20 @@ export default {
 			ip_address: `${req.headers["x-forwarded-for"]}`.split(",")[0] || "",
 		});
 
+		let user_balance = await models.user_balance.findOne({
+			where: {
+				user_id: user.id,
+			},
+		});
+
+		if (!user_balance) {
+			await models.user_balance.create({
+				user_id: user.id,
+				amount: 0.0,
+				amount_gbp: 0.0,
+			});
+		}
+
 		const token = jwt.sign({ id: user.id }, env.secret);
 
 		let u: any = user.toJSON();
@@ -319,7 +333,6 @@ export default {
 		if (!user) {
 			return R(res, false, "Invalid user");
 		}
-
 
 		await user.update(data);
 		// await user.save();

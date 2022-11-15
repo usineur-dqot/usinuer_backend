@@ -73,4 +73,73 @@ export default {
 		// 	order_id: data.order_id
 		// },)
 	}),
+
+	pay_machinist: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			[],
+			schema.wallet.pay_machinist,
+			req.body,
+			{},
+		);
+
+		let project = await models.projects.findByPk(data.project_id);
+
+		if (!project) {
+			return R(res, false, "Invalid Project");
+		}
+
+		if (!project.programmer_id) {
+			return R(res, false, "Invalid Request");
+		}
+
+		let bid = await models.bids.findOne({
+			where: {
+				project_id: data.project_id,
+				user_id: project.programmer_id,
+			},
+		});
+
+		if (!bid) return R(res, false, "Invalid	Request");
+
+		let machinist_wallet = await models.user_balance.findOne({
+			where: {
+				user_id: project.programmer_id,
+			},
+		});
+
+		if (!machinist_wallet) {
+			machinist_wallet = await models.user_balance.create({
+				user_id: project.programmer_id,
+				amount: 0.0,
+				amount_gbp: 0.0,
+			});
+		}
+
+		machinist_wallet.increment({
+			amount: bid.bid_amount,
+			amount_gbp: bid.bid_amount_gbp,
+		});
+
+		let transaction = await models.transactions.create({
+			amount: bid.bid_amount || 0,
+			amount_gbp: bid.bid_amount_gbp || 0,
+			type: "PAID TO MACHINIST",
+
+			// customer id
+			creator_id: req.user?.id,
+			buyer_id: req.user?.id,
+
+			// machinist id
+			provider_id: project.programmer_id,
+			reciever_id: project.programmer_id,
+
+			status: "SUCCESS",
+			description: "Paid to Machinist",
+			project_id: project.id,
+		});
+
+		return R(res, true, "Paid to Machinist", { transaction });
+	}),
 };
