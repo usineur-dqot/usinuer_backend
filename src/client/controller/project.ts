@@ -760,10 +760,10 @@ export default {
 		if (!transaction_details) {
 			return R(res, false, "Invalid  transaction");
 		}
-		let old_amount = transaction_details.amount_gbp;
-		if (old_amount != data.amount) {
-			return R(res, false, "Invalid  amount");
-		}
+		// let old_amount = transaction_details.amount_gbp;
+		// if (old_amount != data.amount) {
+		// 	return R(res, false, "Invalid  amount");
+		// }
 
 		await transaction_details.update({
 			amount: data.amount,
