@@ -736,50 +736,50 @@ export default {
 		},
 	),
 
-	add_payment: asyncWrapper(
-		async (req: UserAuthRequest, res: Response) => {
-			// validation
-			let data = await Validate(
-				res,
-				[],
-				schema.project.add_payment,
-				req.body,
-				{},
-			);
+	add_payment: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		let data = await Validate(
+			res,
+			[],
+			schema.project.add_payment,
+			req.body,
+			{},
+		);
 
-			let transaction_details = await models.transactions.findOne({
+		let project = await models.projects.findByPk(data.project_id);
 
-				where:{
-					project_id: data.project_id,
+		if (!project) {
+			return R(res, false, "Project not found");
+		}
 
-				}
-			}) 
-			if(!transaction_details){
-				return R(res, false, "Invalid  transaction");
+		let transaction_details = await models.transactions.findOne({
+			where: {
+				project_id: data.project_id,
+			},
+		});
+		if (!transaction_details) {
+			return R(res, false, "Invalid  transaction");
+		}
+		let old_amount = transaction_details.amount_gbp;
+		if (old_amount != data.amount) {
+			return R(res, false, "Invalid  amount");
+		}
 
-			}
-			let old_amount= transaction_details.amount_gbp;
-			if(old_amount != data.amount ){
-				return R(res, false, "Invalid  amount");
+		await transaction_details.update({
+			amount: data.amount,
+			amount_gbp: transaction_details.amount_gbp,
+			type: "DEPOSIT FUND",
 
-			}
+			status: "SUCCESS",
+			description: "PAYMENT IS DONE ",
+		});
 
+		project.project_status = "1";
 
-						
-			 await transaction_details.update(	
-					{
-						amount: data.amount ,
-						amount_gbp: transaction_details.amount_gbp ,
-						type: "PROJECT AWARDED",
-						
-						status: "SUCCESS",
-						description: "PAYMENT IS DONE ",
-				});
+		await project.save();
 
-			return R(res, true, "Payment is done ");
-		},
-	),
-
+		return R(res, true, "Payment is done ");
+	}),
 
 	list_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
