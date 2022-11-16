@@ -73,6 +73,7 @@
 		"nodemon": "^2.0.19",
 		"paypal-rest-sdk": "^1.8.1",
 		"random-indian-name": "^1.0.0",
+		"react-star-ratings": "^2.3.0",
 		"response-time": "^2.3.2",
 		"sequelize": "^6.21.3",
 		"sequelize-auto": "^0.8.8",

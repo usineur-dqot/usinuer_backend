@@ -71,5 +71,9 @@ export default {
 	review_machinist: {
 		project_id: Joi.string().required(),
 		comments: Joi.string().required(),
+		provider_rate1: Joi.string().required(),
+		provider_rate2: Joi.string().required(),
+		provider_rate3: Joi.string().required(),
+		provider_rate4: Joi.string().required(),
 	},
 };
