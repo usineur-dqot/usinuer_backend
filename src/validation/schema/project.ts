@@ -56,7 +56,8 @@ export default {
 	},
 	list_bid_msgs: {
 		project_id: Joi.number().required(),
-		send_to: Joi.number().required(),
+		to_id: Joi.number().required(),
+		from_id: Joi.number().required(),
 	},
 	select_machinist: {
 		programmer_id: Joi.string().required(),
@@ -76,4 +77,20 @@ export default {
 		provider_rate3: Joi.number().required(),
 		provider_rate4: Joi.number().required(),
 	},
+
+	send_confirm: {
+		project_id: Joi.number().required(),
+		to_id: Joi.number().required(),
+		message: Joi.string().required(),
+		date: Joi.date().required(),
+		from_id: Joi.number().required(),
+	},
+	send_shipping: {
+		project_id: Joi.number().required(),
+		to_id: Joi.number().required(),
+		message: Joi.string().required(),
+		date: Joi.date().required(),
+		from_id: Joi.number().required(),
+		tracking_no: Joi.number().required(),
+	}
 };

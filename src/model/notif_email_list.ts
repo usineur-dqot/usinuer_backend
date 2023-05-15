@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { users, usersId } from './users';
 
 export interface notif_email_listAttributes {
   id: number;
@@ -28,6 +29,11 @@ export class notif_email_list extends Model<notif_email_listAttributes, notif_em
   email_body!: string;
   notif_date!: Date;
   message_status!: string;
+
+  customer!: users;
+  getCustomer!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setCustomer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createCustomer!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
 
   static initModel(sequelize: Sequelize.Sequelize): typeof notif_email_list {

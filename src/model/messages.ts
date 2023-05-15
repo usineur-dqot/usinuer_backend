@@ -19,11 +19,12 @@ export interface messagesAttributes {
   deluserid?: string;
   attach_file?: string;
   approve?: number;
+machine_parts_image?: string;
 }
 
 export type messagesPk = "id";
 export type messagesId = messages[messagesPk];
-export type messagesOptionalAttributes = "id" | "reply_for" | "buyer_message_status" | "programmer_message_status" | "provider_delete_status" | "buyer_delete_status" | "notification_status" | "deluserid" | "attach_file" | "approve";
+export type messagesOptionalAttributes = "id" | "reply_for" | "buyer_message_status" | "programmer_message_status" | "provider_delete_status" | "buyer_delete_status" | "notification_status" | "deluserid" | "attach_file" | "approve" | "machine_parts_image";
 export type messagesCreationAttributes = Optional<messagesAttributes, messagesOptionalAttributes>;
 
 export class messages extends Model<messagesAttributes, messagesCreationAttributes> implements messagesAttributes {
@@ -42,6 +43,7 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
   deluserid?: string;
   attach_file?: string;
   approve?: number;
+  machine_parts_image?: string;
 
   // messages belongsTo projects via project_id
   project!: projects;
@@ -136,6 +138,11 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
     approve: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    machine_parts_image:{
+      type: DataTypes.STRING(150),
+      allowNull: true,
+      defaultValue: null,
     }
   }, {
     tableName: 'messages',

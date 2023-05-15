@@ -1,5 +1,8 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { users, usersId } from './users';
+import type { projects, projectsId } from './projects';
+
 
 export interface transactionsAttributes {
   id: number;
@@ -45,6 +48,27 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
   update_flag?: number;
   country_code?: number;
 
+  projects!: projects[];
+  getProjects!: Sequelize.HasManyGetAssociationsMixin<projects>;
+  setProjects!: Sequelize.HasManySetAssociationsMixin<projects, projectsId>;
+  addProject!: Sequelize.HasManyAddAssociationMixin<projects, projectsId>;
+  addProjects!: Sequelize.HasManyAddAssociationsMixin<projects, projectsId>;
+  createProject!: Sequelize.HasManyCreateAssociationMixin<projects>;
+  removeProject!: Sequelize.HasManyRemoveAssociationMixin<projects, projectsId>;
+  removeProjects!: Sequelize.HasManyRemoveAssociationsMixin<projects, projectsId>;
+  hasProject!: Sequelize.HasManyHasAssociationMixin<projects, projectsId>;
+  hasProjects!: Sequelize.HasManyHasAssociationsMixin<projects, projectsId>;
+  countProjects!: Sequelize.HasManyCountAssociationsMixin;
+    // projects belongsTo users via creator_id
+    creator!: users;
+    getCreator!: Sequelize.BelongsToGetAssociationMixin<users>;
+    setCreator!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+    createCreator!: Sequelize.BelongsToCreateAssociationMixin<users>;
+    // projects belongsTo users via programmer_id
+    programmer!: users;
+    getProgrammer!: Sequelize.BelongsToGetAssociationMixin<users>;
+    setProgrammer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+    createProgrammer!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof transactions {
     return sequelize.define('transactions', {

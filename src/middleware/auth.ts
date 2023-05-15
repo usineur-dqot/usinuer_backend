@@ -22,6 +22,16 @@ const ignorePaths = [
 	"/user/auth/verify-otp",
 	"/user/auth/send-otp",
 	"/user/project/get-my-temp",
+	"/user/project/image-list",
+	"/user/project/all-lists",
+	"/user/project/project-gallery",
+	"/user/project/all-reviews",
+	"/user/project/review-proj",
+
+	"/user/project/public-me",
+	"/user/project/public-profile-total-jobs",
+	"/user/project/public-profile-api",
+	"/user/project/public-user-reviews",
 ];
 
 export interface UserAuthRequest extends Request {

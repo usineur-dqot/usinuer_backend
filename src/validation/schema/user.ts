@@ -10,6 +10,9 @@ export default {
 		country_code: Joi.number().required(),
 		address1: Joi.string().required(),
 		description: Joi.string().required(),
+		tva: Joi.required(),
+		company_name: Joi.required(),
+		siren: Joi.required(),	
 	},
 	editAddress: {
 		name: Joi.string().required(),

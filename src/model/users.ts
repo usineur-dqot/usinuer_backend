@@ -69,11 +69,12 @@ export interface usersAttributes {
   createdAt?: Date;
   updatedAt?: Date;
   last_seen?: Date;
+  show_modal?: number;
 }
 
 export type usersPk = "id";
 export type usersId = users[usersPk];
-export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "createdAt" | "updatedAt" | "last_seen";
+export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "createdAt" | "updatedAt" | "last_seen"| "show_modal";
 export type usersCreationAttributes = Optional<usersAttributes, usersOptionalAttributes>;
 
 export class users extends Model<usersAttributes, usersCreationAttributes> implements usersAttributes {
@@ -139,6 +140,8 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   createdAt?: Date;
   updatedAt?: Date;
   last_seen?: Date;
+ show_modal?: number;
+
 
   // users belongsTo country via country_code
   country_code_country!: country;
@@ -473,6 +476,11 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     last_seen: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    show_modal:{
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      defaultValue: 0
     }
   }, {
     tableName: 'users',

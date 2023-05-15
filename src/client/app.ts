@@ -7,6 +7,7 @@ import env from "@config/env";
 import routes from "./routes";
 import morgan from "@middleware/morgan";
 
+
 const app = express();
 
 //cors
@@ -20,6 +21,8 @@ app.use(function (req, res, next) {
 });
 
 app.use(cors({ origin: "*" }));
+
+
 
 app.use(express.json());
 

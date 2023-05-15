@@ -1,4 +1,5 @@
 import mail from "@config/mail";
+import { any, object } from "joi";
 import nodemailer from "nodemailer";
 
 export async function sendMail(
@@ -9,11 +10,12 @@ export async function sendMail(
 	attachment = null,
 ) {
 	const transporter = nodemailer.createTransport({
+		service: 'gmail',
 		auth: {
 			user: mail.mailfrom,
 			pass: mail.mailuserpwd,
 		},
-		tls: { ciphers: "SSLv3" },
+		//tls: { ciphers: "SSLv3" },
 	});
 
 	let mailOption;
@@ -35,4 +37,13 @@ export async function sendMail(
 	} else {
 		return transporter.sendMail(mailOption);
 	}
+}
+
+export const site_mail_data = {
+	"!site_name": "machining-4u.co.uk",
+	"!site_url": "http://machining-4u.co.uk/",
+	"!contact_url": "admin@machining-4u.co.uk",
+	"!site_title": "Machining-4u",
+	
+
 }

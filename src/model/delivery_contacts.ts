@@ -29,7 +29,8 @@ export class delivery_contacts extends Model<delivery_contactsAttributes, delive
     },
     project_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      primaryKey: true,
     },
     name: {
       type: DataTypes.STRING(200),
