@@ -68,6 +68,8 @@ router.post("/request_release_funds", cn.request_release_funds);
 
 router.post("/update_read_my_msg", cn.update_read_my_msgs);
 
+router.get("/inbox-count", cn.inbox_count);
+
 router.post("/update_unread_my_msg", cn.update_unread_my_msgs);
 
 router.post("/update_remove_my_msg", cn.update_remove_my_msgs);

@@ -2573,52 +2573,16 @@ const api_data_rep: object = {
 		if (usr?.role_id == 1) {
 			data["buyer_message_status"] = "R"
 			data["programmer_message_status"] = "U"
-
-
-			let restmessages = await models.messages.findAll({
-				where: {
-					project_id: project?.id
-				}
-			})
-
-			if (!restmessages) {
-				return
-			} else {
-				for (let i = 0; i < restmessages.length; i++) {
-					let msssg = await models.messages.findOne({
-						where: {
-							id: restmessages[i].id
-						}
-					})
-					msssg?.update({ buyer_message_status: "R" })
-				}
-			}
-
 		} else {
 			data["buyer_message_status"] = "U"
 			data["programmer_message_status"] = "R"
-
-
-			let restmessages = await models.messages.findAll({
-				where: {
-					project_id: project?.id
-				}
-			})
-
-			if (!restmessages) {
-				return
-			} else {
-				for (let i = 0; i < restmessages.length; i++) {
-					let msssg = await models.messages.findOne({
-						where: {
-							id: restmessages[i].id
-						}
-					})
-					msssg?.update({ programmer_message_status: "R" })
-				}
-			}
-
 		}
+
+		
+
+	
+
+		
 
 
 
@@ -2975,16 +2939,10 @@ const api_data_rep: object = {
 			let entry = await models.projects.create(project);
 
 			if (images && images?.length) {
-				let imageData = images.map((m: any) => {
-					return {
-						project_id: entry.id,
-						project_name: entry.project_name,
-						project_post_date: moment().format(),
-						cust_id: user?.id,
-						attach_file: m,
-					};
-				});
-				let project_images = await models.project_images.bulkCreate(imageData);
+				let concatenatedData = images.join(',');
+
+				await entry.update({ attachment_name: concatenatedData })
+
 			}
 		}
 
@@ -3971,28 +3929,83 @@ request_release_funds: asyncWrapper(async (req: UserAuthRequest, res: Response) 
 
 update_read_my_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
-		let data = req.body.role_id
-		console.log("Update msg data -", req.body.role_id)
+		let data = req.body
+		console.log("read my msgs log", data)
 
-		if (data == 1) {
-			let message = await models.messages.findOne({
+		if (data?.role_id == 1) {
+
+			let restmessages = await models.messages.findAll({
 				where: {
-					id: req.body.id
+					project_id: data?.project_id
 				}
-			});
-			message?.update({ buyer_message_status: "R" })
-			return R(res, true, "Got message", message)
+			})
+
+			if (!restmessages) {
+				return
+			} else {
+				for (let i = 0; i < restmessages.length; i++) {
+					let msssg = await models.messages.findOne({
+						where: {
+							id: restmessages[i].id
+						}
+					})
+					msssg?.update({ buyer_message_status: "R" })
+				}
+			}
 		} else {
-			let message = await models.messages.findOne({
+
+			let restmessages = await models.messages.findAll({
 				where: {
-					id: req.body.id
+					project_id: data?.project_id
 				}
-			});
-			message?.update({ programmer_message_status: "R" })
-			return R(res, true, "Got message", message)
+			})
+
+			if (!restmessages) {
+				return
+			} else {
+				for (let i = 0; i < restmessages.length; i++) {
+					let msssg = await models.messages.findOne({
+						where: {
+							id: restmessages[i].id
+						}
+					})
+					msssg?.update({ programmer_message_status: "R" })
+				}
+			}
 		}
 
+		return R(res, true, "Got message")
+
 	}),
+
+
+	inbox_count: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		// validation
+		console.log(req.query.role_id)
+		console.log("role id is: -", req.user?.role_id)
+		if (req.query.role_id == "1") {
+			let count = await models.messages.findAndCountAll({
+				where: {
+					to_id: req.query.id?.toString(),
+					buyer_message_status: "U"
+				}
+			})
+			console.log("The count inbox is : -", count.count)
+
+			return R(res, true, "inbox count", count.count)
+		} else {
+			let count = await models.messages.findAndCountAll({
+				where: {
+					to_id: req.query.id?.toString(),
+					programmer_message_status: "U"
+				}
+			})
+			console.log("The count inbox is : -", count.count)
+			return R(res, true, "inbox count", count.count)
+		}
+		
+	}),
+
 
 	update_unread_my_msgs: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
