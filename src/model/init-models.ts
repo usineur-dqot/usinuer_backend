@@ -589,15 +589,7 @@ export function initModels(sequelize: Sequelize) {
   projects.belongsTo(users, { as: "creator", foreignKey: "creator_id"});
   users.hasMany(projects, { as: "projects", foreignKey: "creator_id"});
   projects.belongsTo(users, { as: "programmer", foreignKey: "programmer_id"});
-  transactions.belongsTo(projects, { as: "project", foreignKey: "project_id"});
-  transactions.belongsTo(users, { as: "creator", foreignKey: "creator_id"});
-  transactions.belongsTo(users, { as: "programmer", foreignKey: "reciever_id"});
   users.hasMany(projects, { as: "programmer_projects", foreignKey: "programmer_id"});
-  reviews.belongsTo(projects, {as: "projects", foreignKey: "project_id"});
-  reviews.belongsTo(users, { as: "machanic", foreignKey: "provider_id"});
-  projects.hasMany(reviews, { as: "reviews", foreignKey: "project_id"});
-  projects.hasMany(transactions, { as: "transaction", foreignKey: "project_id"});
-  notif_email_list.belongsTo(users, {as: "customer", foreignKey: "customer_id"});
 
   return {
     admin_apprv_imgs: admin_apprv_imgs,

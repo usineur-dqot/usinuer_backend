@@ -4,7 +4,7 @@ import type { projects, projectsId } from './projects';
 
 export interface project_imagesAttributes {
   id: number;
-  project_id: number;
+  project_id?: number;
   project_name: string;
   project_post_date: string;
   cust_id: number;
@@ -18,12 +18,12 @@ export interface project_imagesAttributes {
 
 export type project_imagesPk = "id";
 export type project_imagesId = project_images[project_imagesPk];
-export type project_imagesOptionalAttributes = "id";
+export type project_imagesOptionalAttributes = "id" | "project_id";
 export type project_imagesCreationAttributes = Optional<project_imagesAttributes, project_imagesOptionalAttributes>;
 
 export class project_images extends Model<project_imagesAttributes, project_imagesCreationAttributes> implements project_imagesAttributes {
   id!: number;
-  project_id!: number;
+  project_id?: number;
   project_name!: string;
   project_post_date!: string;
   cust_id!: number;
@@ -50,7 +50,7 @@ export class project_images extends Model<project_imagesAttributes, project_imag
     },
     project_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'projects',
         key: 'id'
@@ -73,7 +73,7 @@ export class project_images extends Model<project_imagesAttributes, project_imag
       allowNull: false
     },
     attach_file: {
-      type: DataTypes.STRING(150),
+      type: DataTypes.STRING(1500),
       allowNull: false
     },
     upload_date: {

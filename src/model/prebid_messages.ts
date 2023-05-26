@@ -5,7 +5,7 @@ import type { users, usersId } from './users';
 
 export interface prebid_messagesAttributes {
   id: number;
-  project_id: number;
+  project_id?: number;
   reply_for?: number;
   from_id: number;
   to_id: number;
@@ -25,12 +25,12 @@ export interface prebid_messagesAttributes {
 
 export type prebid_messagesPk = "id";
 export type prebid_messagesId = prebid_messages[prebid_messagesPk];
-export type prebid_messagesOptionalAttributes = "id" | "reply_for" | "buyer_message_status" | "programmer_message_status" | "provider_delete_status" | "buyer_delete_status" | "created" | "notification_status" | "deluserid" | "attach_file" | "createdAt" | "updatedAt";
+export type prebid_messagesOptionalAttributes = "id" | "project_id" | "reply_for" | "buyer_message_status" | "programmer_message_status" | "provider_delete_status" | "buyer_delete_status" | "created" | "notification_status" | "deluserid" | "attach_file" | "createdAt" | "updatedAt";
 export type prebid_messagesCreationAttributes = Optional<prebid_messagesAttributes, prebid_messagesOptionalAttributes>;
 
 export class prebid_messages extends Model<prebid_messagesAttributes, prebid_messagesCreationAttributes> implements prebid_messagesAttributes {
   id!: number;
-  project_id!: number;
+  project_id?: number;
   reply_for?: number;
   from_id!: number;
   to_id!: number;
@@ -73,7 +73,7 @@ export class prebid_messages extends Model<prebid_messagesAttributes, prebid_mes
     },
     project_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'projects',
         key: 'id'

@@ -5,8 +5,6 @@ import type { messages, messagesId } from './messages';
 import type { prebid_messages, prebid_messagesId } from './prebid_messages';
 import type { project_images, project_imagesId } from './project_images';
 import type { users, usersId } from './users';
-import { reviews, reviewsId } from './reviews';
-import { transactions, transactionsId } from './transactions';
 
 export interface projectsAttributes {
   id: number;
@@ -72,12 +70,12 @@ export interface projectsAttributes {
   pro_job?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  show_release?: number;
+  show_release: number;
 }
 
 export type projectsPk = "id";
 export type projectsId = projects[projectsPk];
-export type projectsOptionalAttributes = "id" | "project_status" | "buyer_complete_status" | "provider_complete_status" | "expedition_day" | "expedition_day2" | "track_number" | "additional_description" | "project_image" | "project_categories" | "project_start" | "start_bid" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "created" | "enddate" | "programmer_id" | "bid_select_date" | "unpaid_project_notify_date" | "checkstamp" | "buyer_rated" | "provider_rated" | "project_paid" | "project_award_date" | "project_award_date_format" | "project_fund_date_format" | "fund_release_date" | "notification_status" | "attachment_url" | "image" | "first_upload" | "attachment_name" | "attachment_folder" | "is_private" | "private_users" | "contact" | "salary" | "flag" | "salarytype" | "escrow_due" | "city" | "zipcode" | "post_for" | "project_post_format_date" | "project_post_date" | "project_expiry_date" | "expired_notification_sent" | "fund_notification_sent" | "unpaid_project_notif" | "site_fr" | "site_uk" | "site_it" | "country_code" | "pro_job" | "createdAt" | "updatedAt"| "show_release";
+export type projectsOptionalAttributes = "id" | "project_status" | "buyer_complete_status" | "provider_complete_status" | "expedition_day" | "expedition_day2" | "track_number" | "additional_description" | "project_image" | "project_categories" | "project_start" | "start_bid" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "created" | "enddate" | "programmer_id" | "bid_select_date" | "unpaid_project_notify_date" | "checkstamp" | "buyer_rated" | "provider_rated" | "project_paid" | "project_award_date" | "project_award_date_format" | "project_fund_date_format" | "fund_release_date" | "notification_status" | "attachment_url" | "image" | "first_upload" | "attachment_name" | "attachment_folder" | "is_private" | "private_users" | "contact" | "salary" | "flag" | "salarytype" | "escrow_due" | "city" | "zipcode" | "post_for" | "project_post_format_date" | "project_post_date" | "project_expiry_date" | "expired_notification_sent" | "fund_notification_sent" | "unpaid_project_notif" | "site_fr" | "site_uk" | "site_it" | "country_code" | "pro_job" | "createdAt" | "updatedAt";
 export type projectsCreationAttributes = Optional<projectsAttributes, projectsOptionalAttributes>;
 
 export class projects extends Model<projectsAttributes, projectsCreationAttributes> implements projectsAttributes {
@@ -144,7 +142,7 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   pro_job?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  show_release?: number;
+  show_release!: number;
 
   // projects hasMany bids via project_id
   bids!: bids[];
@@ -204,23 +202,6 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   getProgrammer!: Sequelize.BelongsToGetAssociationMixin<users>;
   setProgrammer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
   createProgrammer!: Sequelize.BelongsToCreateAssociationMixin<users>;
-
-  reviews!: reviews[];
-  getReviews!: Sequelize.HasManyGetAssociationsMixin<reviews>;
-  setReviews!: Sequelize.HasManySetAssociationsMixin<reviews, reviewsId>;
-  addReview!: Sequelize.HasManyAddAssociationMixin<reviews, reviewsId>;
-  addReviews!: Sequelize.HasManyAddAssociationsMixin<reviews, reviewsId>;
-  createReviews!: Sequelize.HasManyCreateAssociationMixin<reviews>;
-  removeReview!: Sequelize.HasManyRemoveAssociationMixin<reviews, reviewsId>;
-  removeReviews!: Sequelize.HasManyRemoveAssociationsMixin<reviews, reviewsId>;
-  hasReview!: Sequelize.HasManyHasAssociationMixin<reviews, reviewsId>;
-  hasReviews!: Sequelize.HasManyHasAssociationsMixin<reviews, reviewsId>;
-  countReviews!: Sequelize.HasManyCountAssociationsMixin;
-
-  transaction!: transactions;
-  getTransaction!: Sequelize.BelongsToGetAssociationMixin<transactions>;
-  setTransaction!: Sequelize.BelongsToSetAssociationMixin<transactions, transactionsId>;
-  createTransaction!: Sequelize.BelongsToCreateAssociationMixin<transactions>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof projects {
     return sequelize.define('projects', {
@@ -490,11 +471,10 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
       allowNull: true,
       defaultValue: 0
     },
-      show_release: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-        defaultValue: 0
-      }
+    show_release: {
+      type: DataTypes.TINYINT,
+      allowNull: false
+    }
   }, {
     tableName: 'projects',
     timestamps: true,

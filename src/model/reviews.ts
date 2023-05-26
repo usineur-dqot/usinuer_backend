@@ -1,7 +1,5 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
-import type { users, usersId } from './users';
-import type { projects, projectsId } from './projects';
 
 export interface reviewsAttributes {
   id: number;
@@ -67,27 +65,6 @@ export class reviews extends Model<reviewsAttributes, reviewsCreationAttributes>
   provider_status?: string;
   country_code?: number;
 
-  projects!: projects[];
-  getProjects!: Sequelize.HasManyGetAssociationsMixin<projects>;
-  setProjects!: Sequelize.HasManySetAssociationsMixin<projects, projectsId>;
-  addProject!: Sequelize.HasManyAddAssociationMixin<projects, projectsId>;
-  addProjects!: Sequelize.HasManyAddAssociationsMixin<projects, projectsId>;
-  createProject!: Sequelize.HasManyCreateAssociationMixin<projects>;
-  removeProject!: Sequelize.HasManyRemoveAssociationMixin<projects, projectsId>;
-  removeProjects!: Sequelize.HasManyRemoveAssociationsMixin<projects, projectsId>;
-  hasProject!: Sequelize.HasManyHasAssociationMixin<projects, projectsId>;
-  hasProjects!: Sequelize.HasManyHasAssociationsMixin<projects, projectsId>;
-  countProjects!: Sequelize.HasManyCountAssociationsMixin;
-
-  machanic!: users;
-  getMachanic!: Sequelize.BelongsToGetAssociationMixin<users>;
-  setMachanic!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
-  createMachanic!: Sequelize.BelongsToCreateAssociationMixin<users>;
-
-  customer!: users;
-  getCustomer!: Sequelize.BelongsToGetAssociationMixin<users>;
-  setCustomer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
-  createCustomer!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof reviews {
     return sequelize.define('reviews', {

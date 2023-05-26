@@ -102,7 +102,7 @@ export default {
 			return R(res, false, "Invalid user");
 		}
 		if (user.role_id == 1) {
-			const projects = await models.projects.findAndCountAll({
+			const projects =await models.projects.findAndCountAll({
 				where: {
 					creator_id: user.id,
 				},
@@ -284,7 +284,7 @@ export default {
 					order: [["createdAt", "DESC"]],
 				});
 
-				//console.log("bid projects", projects);
+				console.log("bid projects---====>>>", projects);
 
 
 				let list = projects.rows;
@@ -1443,14 +1443,14 @@ const api_data_rep: object = {
 
 				// machinist id
 				provider_id: user.id,
-				reciever_id: user.id,
+				reciever_id: String(user.id),
 				status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
 
 				//	status: "PENDING",
 				transaction_time: 1, // as status
 
 				description: "Selected the machinist",
-				project_id: project.id,
+				project_id: String(project.id),
 			});
 
 			

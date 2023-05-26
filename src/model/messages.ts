@@ -19,7 +19,7 @@ export interface messagesAttributes {
   deluserid?: string;
   attach_file?: string;
   approve?: number;
-machine_parts_image?: string;
+  machine_parts_image?: string;
 }
 
 export type messagesPk = "id";
@@ -139,10 +139,9 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
       type: DataTypes.INTEGER,
       allowNull: true
     },
-    machine_parts_image:{
-      type: DataTypes.STRING(150),
-      allowNull: true,
-      defaultValue: null,
+    machine_parts_image: {
+      type: DataTypes.STRING(1500),
+      allowNull: true
     }
   }, {
     tableName: 'messages',

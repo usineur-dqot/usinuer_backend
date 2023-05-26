@@ -383,12 +383,12 @@ export default {
 			return R(res, false, "Invalid Credentials.");
 		}
 		let current_date = new Date();
-		user.last_seen = current_date;
+		user.last_seen = String(current_date);
 
 		await user.save();
 
 		await models.login_info.create({
-			user_id: user.id,
+			user_id: String(user.id),
 			ip_address: `${req.headers["x-forwarded-for"]}`.split(",")[0] || "",
 		});
 
