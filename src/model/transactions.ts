@@ -3,19 +3,19 @@ import { DataTypes, Model, Optional } from 'sequelize';
 
 export interface transactionsAttributes {
   id: number;
-  type?: string;
-  creator_id?: number;
-  buyer_id?: number;
-  provider_id?: number;
-  transaction_time?: number;
-  amount?: number;
-  amount_gbp?: number;
+  type: string;
+  creator_id: number;
+  buyer_id: number;
+  provider_id: number;
+  transaction_time: number;
+  amount: number;
+  amount_gbp: number;
   status?: string;
-  description?: string;
+  description: string;
   paypal_address?: string;
   user_type?: string;
-  reciever_id?: number;
-  project_id?: number;
+  reciever_id: string;
+  project_id: string;
   package_id?: number;
   update_flag?: number;
   country_code?: number;
@@ -23,24 +23,24 @@ export interface transactionsAttributes {
 
 export type transactionsPk = "id";
 export type transactionsId = transactions[transactionsPk];
-export type transactionsOptionalAttributes = "id" | "type" | "creator_id" | "buyer_id" | "provider_id" | "transaction_time" | "amount" | "amount_gbp" | "status" | "description" | "paypal_address" | "user_type" | "reciever_id" | "project_id" | "package_id" | "update_flag" | "country_code";
+export type transactionsOptionalAttributes = "id" | "creator_id" | "buyer_id" | "provider_id" | "status" | "paypal_address" | "user_type" | "package_id" | "update_flag" | "country_code";
 export type transactionsCreationAttributes = Optional<transactionsAttributes, transactionsOptionalAttributes>;
 
 export class transactions extends Model<transactionsAttributes, transactionsCreationAttributes> implements transactionsAttributes {
   id!: number;
-  type?: string;
-  creator_id?: number;
-  buyer_id?: number;
-  provider_id?: number;
-  transaction_time?: number;
-  amount?: number;
-  amount_gbp?: number;
+  type!: string;
+  creator_id!: number;
+  buyer_id!: number;
+  provider_id!: number;
+  transaction_time!: number;
+  amount!: number;
+  amount_gbp!: number;
   status?: string;
-  description?: string;
+  description!: string;
   paypal_address?: string;
   user_type?: string;
-  reciever_id?: number;
-  project_id?: number;
+  reciever_id!: string;
+  project_id!: string;
   package_id?: number;
   update_flag?: number;
   country_code?: number;
@@ -56,34 +56,34 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
     },
     type: {
       type: DataTypes.STRING(64),
-      allowNull: true
+      allowNull: false
     },
     creator_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
       defaultValue: 0
     },
     buyer_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
+      type: DataTypes.INTEGER,
+      allowNull: false,
       defaultValue: 0
     },
     provider_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true,
+      type: DataTypes.BIGINT,
+      allowNull: false,
       defaultValue: 0
     },
     transaction_time: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     amount: {
       type: DataTypes.FLOAT,
-      allowNull: true
+      allowNull: false
     },
     amount_gbp: {
       type: DataTypes.FLOAT,
-      allowNull: true
+      allowNull: false
     },
     status: {
       type: DataTypes.CHAR(16),
@@ -91,7 +91,7 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     paypal_address: {
       type: DataTypes.STRING(256),
@@ -102,12 +102,12 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
       allowNull: true
     },
     reciever_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true
+      type: DataTypes.STRING(256),
+      allowNull: false
     },
     project_id: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true
+      type: DataTypes.STRING(256),
+      allowNull: false
     },
     package_id: {
       type: DataTypes.SMALLINT,

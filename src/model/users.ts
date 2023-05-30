@@ -9,138 +9,138 @@ import type { projects, projectsId } from './projects';
 export interface usersAttributes {
   id: number;
   refid: string;
-  country_code?: number;
+  country_code: number;
   user_name?: string;
   name: string;
   surname: string;
-  address1?: string;
-  address2?: string;
-  description?: string;
-  company_name?: string;
-  company_number?: string;
+  address1: string;
+  address2: string;
+  description: string;
+  company_name: string;
+  company_number: string;
   role_id: number;
   password?: string;
   email: string;
-  paypal_email?: string;
+  paypal_email: string;
   profile_desc?: string;
-  service_desc?: string;
-  voter?: string;
-  prof_pic?: string;
-  prot_pic?: string;
-  pdf_file?: string;
-  account?: string;
+  service_desc: string;
+  voter: string;
+  prof_pic: string;
+  prot_pic: string;
+  pdf_file: string;
+  account: string;
   user_status: number;
-  activation_key?: string;
-  zcode?: string;
-  Squestion?: string;
-  answer?: string;
+  activation_key: string;
+  zcode: string;
+  Squestion: string;
+  answer: string;
   state?: string;
   city?: string;
-  country_symbol?: string;
+  country_symbol: string;
   project_notify?: string;
   bid_notify?: string;
-  message_notify?: string;
+  message_notify: string;
   rate?: number;
   logo?: string;
-  created?: number;
-  last_activity?: number;
-  user_rating?: number;
-  num_reviews?: number;
-  rating_hold?: number;
-  tot_rating?: number;
+  created: number;
+  last_activity: number;
+  user_rating: number;
+  num_reviews: number;
+  rating_hold: number;
+  tot_rating: number;
   suspend_status: '0' | '1';
   ban_status: '0' | '1';
-  admin_status?: string;
-  admin_status_uk?: string;
-  admin_status_it?: string;
-  job_fr?: number;
-  job_uk?: number;
-  job_it?: number;
-  choice?: number;
-  supLogin?: string;
-  lang?: string;
+  admin_status: string;
+  admin_status_uk: string;
+  admin_status_it: string;
+  job_fr: number;
+  job_uk: number;
+  job_it: number;
+  choice: number;
+  supLogin: string;
+  lang: string;
   pro_user: number;
-  show_modal: number;
-  pro_vat?: string;
-  siren?: string;
-  mailchimp_id?: string;
-  nxtduedate?: string;
-  entrepreneur?: number;
+  pro_vat: number;
+  siren: string;
+  mailchimp_id: string;
+  nxtduedate: string;
+  entrepreneur: number;
   bid_status: number;
+  last_seen?: Date;
+  show_modal: number;
   createdAt?: Date;
   updatedAt?: Date;
-  last_seen?: Date;
 }
 
 export type usersPk = "id";
 export type usersId = users[usersPk];
-export type usersOptionalAttributes = "id" | "refid" | "country_code" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "createdAt" | "updatedAt" | "last_seen";
+export type usersOptionalAttributes = "id" | "refid" | "user_name" | "password" | "profile_desc" | "user_status" | "state" | "city" | "project_notify" | "bid_notify" | "rate" | "logo" | "suspend_status" | "ban_status" | "pro_user" | "bid_status" | "last_seen" | "createdAt" | "updatedAt";
 export type usersCreationAttributes = Optional<usersAttributes, usersOptionalAttributes>;
 
 export class users extends Model<usersAttributes, usersCreationAttributes> implements usersAttributes {
   id!: number;
   refid!: string;
-  country_code?: number;
+  country_code!: number;
   user_name?: string;
   name!: string;
   surname!: string;
-  address1?: string;
-  address2?: string;
-  description?: string;
-  company_name?: string;
-  company_number?: string;
+  address1!: string;
+  address2!: string;
+  description!: string;
+  company_name!: string;
+  company_number!: string;
   role_id!: number;
   password?: string;
   email!: string;
-  paypal_email?: string;
+  paypal_email!: string;
   profile_desc?: string;
-  service_desc?: string;
-  voter?: string;
-  prof_pic?: string;
-  prot_pic?: string;
-  pdf_file?: string;
-  account?: string;
+  service_desc!: string;
+  voter!: string;
+  prof_pic!: string;
+  prot_pic!: string;
+  pdf_file!: string;
+  account!: string;
   user_status!: number;
-  activation_key?: string;
-  zcode?: string;
-  Squestion?: string;
-  answer?: string;
+  activation_key!: string;
+  zcode!: string;
+  Squestion!: string;
+  answer!: string;
   state?: string;
   city?: string;
-  country_symbol?: string;
+  country_symbol!: string;
   project_notify?: string;
   bid_notify?: string;
-  message_notify?: string;
+  message_notify!: string;
   rate?: number;
   logo?: string;
-  created?: number;
-  last_activity?: number;
-  user_rating?: number;
-  num_reviews?: number;
-  rating_hold?: number;
-  tot_rating?: number;
+  created!: number;
+  last_activity!: number;
+  user_rating!: number;
+  num_reviews!: number;
+  rating_hold!: number;
+  tot_rating!: number;
   suspend_status!: '0' | '1';
   ban_status!: '0' | '1';
-  admin_status?: string;
-  admin_status_uk?: string;
-  admin_status_it?: string;
-  job_fr?: number;
-  job_uk?: number;
-  job_it?: number;
-  choice?: number;
-  supLogin?: string;
-  lang?: string;
+  admin_status!: string;
+  admin_status_uk!: string;
+  admin_status_it!: string;
+  job_fr!: number;
+  job_uk!: number;
+  job_it!: number;
+  choice!: number;
+  supLogin!: string;
+  lang!: string;
   pro_user!: number;
-  show_modal!: number;
-  pro_vat?: string;
-  siren?: string;
-  mailchimp_id?: string;
-  nxtduedate?: string;
-  entrepreneur?: number;
+  pro_vat!: number;
+  siren!: string;
+  mailchimp_id!: string;
+  nxtduedate!: string;
+  entrepreneur!: number;
   bid_status!: number;
+  last_seen?: Date;
+  show_modal!: number;
   createdAt?: Date;
   updatedAt?: Date;
-  last_seen?: Date;
 
   // users belongsTo country via country_code
   country_code_country!: country;
@@ -235,7 +235,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     country_code: {
       type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: 'country',
         key: 'id'
@@ -255,30 +255,30 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     address1: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     address2: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     company_name: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     company_number: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     role_id: {
       type: DataTypes.SMALLINT,
       allowNull: false
     },
     password: {
-      type: DataTypes.STRING(500),
+      type: DataTypes.STRING(32),
       allowNull: true
     },
     email: {
@@ -287,7 +287,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     paypal_email: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     profile_desc: {
       type: DataTypes.TEXT,
@@ -295,27 +295,27 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     service_desc: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     voter: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     prof_pic: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     prot_pic: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     pdf_file: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     account: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     user_status: {
       type: DataTypes.TINYINT,
@@ -324,19 +324,19 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     activation_key: {
       type: DataTypes.STRING(32),
-      allowNull: true
+      allowNull: false
     },
     zcode: {
       type: DataTypes.CHAR(100),
-      allowNull: true
+      allowNull: false
     },
     Squestion: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     answer: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     state: {
       type: DataTypes.STRING(64),
@@ -348,7 +348,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     country_symbol: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     project_notify: {
       type: DataTypes.CHAR(10),
@@ -360,7 +360,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     message_notify: {
       type: DataTypes.CHAR(10),
-      allowNull: true
+      allowNull: false
     },
     rate: {
       type: DataTypes.SMALLINT,
@@ -372,27 +372,27 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     created: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     last_activity: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     user_rating: {
       type: DataTypes.SMALLINT,
-      allowNull: true
+      allowNull: false
     },
     num_reviews: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     rating_hold: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     tot_rating: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     suspend_status: {
       type: DataTypes.ENUM('0','1'),
@@ -406,68 +406,64 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     admin_status: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     admin_status_uk: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     admin_status_it: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     job_fr: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     job_uk: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     job_it: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     choice: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     supLogin: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     lang: {
       type: DataTypes.STRING(11),
-      allowNull: true
+      allowNull: false
     },
     pro_user: {
-      type: DataTypes.TINYINT,
+      type: DataTypes.INTEGER,
       allowNull: false,
       defaultValue: 0
     },
-    show_modal: {
-      type: DataTypes.TINYINT,
-      allowNull: false
-    },
     pro_vat: {
-      type: DataTypes.CHAR(34),
-      allowNull: true
+      type: DataTypes.FLOAT,
+      allowNull: false
     },
     siren: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     mailchimp_id: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     nxtduedate: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     entrepreneur: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       comment: "0=>Not Entrepreneur and 1 => Entrepreneur"
     },
     bid_status: {
@@ -479,6 +475,10 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     last_seen: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    show_modal: {
+      type: DataTypes.TINYINT,
+      allowNull: false
     }
   }, {
     tableName: 'users',

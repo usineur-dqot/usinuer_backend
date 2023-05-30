@@ -10,139 +10,141 @@ export interface projectsAttributes {
   id: number;
   project_name: string;
   project_status: string;
-  buyer_complete_status?: number;
-  provider_complete_status?: number;
+  buyer_complete_status: number;
+  provider_complete_status: number;
   description: string;
-  expedition_day?: string;
-  expedition_day2?: string;
-  track_number?: string;
-  additional_description?: string;
-  project_image?: string;
-  project_categories?: string;
-  project_start?: number;
+  expedition_day: string;
+  expedition_day2: string;
+  track_number: string;
+  additional_description: string;
+  project_image: string;
+  project_categories: string;
+  project_start: number;
   visibility: string;
-  start_bid?: number;
+  start_bid: number;
   budget_min?: number;
   budget_max?: number;
   is_feature?: number;
   is_urgent?: number;
   is_hide_bids?: number;
   creator_id?: number;
-  created?: number;
-  enddate?: number;
+  created: number;
+  enddate: number;
   programmer_id?: number;
-  bid_select_date?: Date;
-  unpaid_project_notify_date?: Date;
-  checkstamp?: string;
-  buyer_rated?: '0' | '1';
-  provider_rated?: '0' | '1';
-  project_paid?: '0' | '1';
-  project_award_date?: number;
-  project_award_date_format?: Date;
-  project_fund_date_format?: Date;
-  fund_release_date?: Date;
+  bid_select_date: Date;
+  unpaid_project_notify_date: Date;
+  checkstamp: string;
+  buyer_rated: '0' | '1';
+  provider_rated: '0' | '1';
+  project_paid: '0' | '1';
+  project_award_date: number;
+  project_award_date_format: Date;
+  project_fund_date_format: Date;
+  fund_release_date: Date;
   notification_status: number;
-  attachment_url?: string;
-  image?: string;
-  first_upload?: number;
+  attachment_url: string;
+  image: string;
+  first_upload: number;
   attachment_name?: string;
-  attachment_folder?: string;
+  attachment_folder: string;
   is_private: number;
   private_users?: string;
-  contact?: string;
-  salary?: string;
-  flag?: number;
-  salarytype?: string;
-  escrow_due?: number;
-  city?: string;
-  zipcode?: string;
-  post_for?: string;
-  project_post_format_date?: Date;
-  project_post_date?: string;
-  project_expiry_date?: string;
+  contact: string;
+  salary: string;
+  flag: number;
+  salarytype: string;
+  escrow_due: number;
+  city: string;
+  zipcode: string;
+  post_for: string;
+  project_post_format_date: Date;
+  project_post_date: string;
+  project_expiry_date: string;
   expired_notification_sent: string;
   fund_notification_sent: string;
-  unpaid_project_notif?: string;
-  site_fr?: number;
-  site_uk?: number;
-  site_it?: number;
-  country_code?: number;
-  pro_job?: number;
+  unpaid_project_notif: string;
+  site_fr: number;
+  site_uk: number;
+  site_it: number;
+  country_code: number;
+  pro_job: number;
+  posted_dt: string;
   createdAt?: Date;
   updatedAt?: Date;
-  show_release: number;
+  show_release?: number;
 }
 
 export type projectsPk = "id";
 export type projectsId = projects[projectsPk];
-export type projectsOptionalAttributes = "id" | "project_status" | "buyer_complete_status" | "provider_complete_status" | "expedition_day" | "expedition_day2" | "track_number" | "additional_description" | "project_image" | "project_categories" | "project_start" | "start_bid" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "created" | "enddate" | "programmer_id" | "bid_select_date" | "unpaid_project_notify_date" | "checkstamp" | "buyer_rated" | "provider_rated" | "project_paid" | "project_award_date" | "project_award_date_format" | "project_fund_date_format" | "fund_release_date" | "notification_status" | "attachment_url" | "image" | "first_upload" | "attachment_name" | "attachment_folder" | "is_private" | "private_users" | "contact" | "salary" | "flag" | "salarytype" | "escrow_due" | "city" | "zipcode" | "post_for" | "project_post_format_date" | "project_post_date" | "project_expiry_date" | "expired_notification_sent" | "fund_notification_sent" | "unpaid_project_notif" | "site_fr" | "site_uk" | "site_it" | "country_code" | "pro_job" | "createdAt" | "updatedAt";
+export type projectsOptionalAttributes = "id" | "project_status" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "programmer_id" | "notification_status" | "attachment_name" | "is_private" | "private_users" | "expired_notification_sent" | "fund_notification_sent" | "createdAt" | "updatedAt" | "show_release";
 export type projectsCreationAttributes = Optional<projectsAttributes, projectsOptionalAttributes>;
 
 export class projects extends Model<projectsAttributes, projectsCreationAttributes> implements projectsAttributes {
   id!: number;
   project_name!: string;
   project_status!: string;
-  buyer_complete_status?: number;
-  provider_complete_status?: number;
+  buyer_complete_status!: number;
+  provider_complete_status!: number;
   description!: string;
-  expedition_day?: string;
-  expedition_day2?: string;
-  track_number?: string;
-  additional_description?: string;
-  project_image?: string;
-  project_categories?: string;
-  project_start?: number;
+  expedition_day!: string;
+  expedition_day2!: string;
+  track_number!: string;
+  additional_description!: string;
+  project_image!: string;
+  project_categories!: string;
+  project_start!: number;
   visibility!: string;
-  start_bid?: number;
+  start_bid!: number;
   budget_min?: number;
   budget_max?: number;
   is_feature?: number;
   is_urgent?: number;
   is_hide_bids?: number;
   creator_id?: number;
-  created?: number;
-  enddate?: number;
+  created!: number;
+  enddate!: number;
   programmer_id?: number;
-  bid_select_date?: Date;
-  unpaid_project_notify_date?: Date;
-  checkstamp?: string;
-  buyer_rated?: '0' | '1';
-  provider_rated?: '0' | '1';
-  project_paid?: '0' | '1';
-  project_award_date?: number;
-  project_award_date_format?: Date;
-  project_fund_date_format?: Date;
-  fund_release_date?: Date;
+  bid_select_date!: Date;
+  unpaid_project_notify_date!: Date;
+  checkstamp!: string;
+  buyer_rated!: '0' | '1';
+  provider_rated!: '0' | '1';
+  project_paid!: '0' | '1';
+  project_award_date!: number;
+  project_award_date_format!: Date;
+  project_fund_date_format!: Date;
+  fund_release_date!: Date;
   notification_status!: number;
-  attachment_url?: string;
-  image?: string;
-  first_upload?: number;
+  attachment_url!: string;
+  image!: string;
+  first_upload!: number;
   attachment_name?: string;
-  attachment_folder?: string;
+  attachment_folder!: string;
   is_private!: number;
   private_users?: string;
-  contact?: string;
-  salary?: string;
-  flag?: number;
-  salarytype?: string;
-  escrow_due?: number;
-  city?: string;
-  zipcode?: string;
-  post_for?: string;
-  project_post_format_date?: Date;
-  project_post_date?: string;
-  project_expiry_date?: string;
+  contact!: string;
+  salary!: string;
+  flag!: number;
+  salarytype!: string;
+  escrow_due!: number;
+  city!: string;
+  zipcode!: string;
+  post_for!: string;
+  project_post_format_date!: Date;
+  project_post_date!: string;
+  project_expiry_date!: string;
   expired_notification_sent!: string;
   fund_notification_sent!: string;
-  unpaid_project_notif?: string;
-  site_fr?: number;
-  site_uk?: number;
-  site_it?: number;
-  country_code?: number;
-  pro_job?: number;
+  unpaid_project_notif!: string;
+  site_fr!: number;
+  site_uk!: number;
+  site_it!: number;
+  country_code!: number;
+  pro_job!: number;
+  posted_dt!: string;
   createdAt?: Date;
   updatedAt?: Date;
-  show_release!: number;
+  show_release?: number;
 
   // projects hasMany bids via project_id
   bids!: bids[];
@@ -222,11 +224,11 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     buyer_complete_status: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     provider_complete_status: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     description: {
       type: DataTypes.TEXT,
@@ -234,31 +236,31 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     expedition_day: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     expedition_day2: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     track_number: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     additional_description: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     project_image: {
       type: DataTypes.STRING(255),
-      allowNull: true
+      allowNull: false
     },
     project_categories: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     project_start: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     visibility: {
       type: DataTypes.STRING(100),
@@ -266,7 +268,7 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     start_bid: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     budget_min: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -300,11 +302,11 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     created: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     enddate: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     programmer_id: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -316,43 +318,43 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     bid_select_date: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     unpaid_project_notify_date: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     checkstamp: {
       type: DataTypes.STRING(50),
-      allowNull: true
+      allowNull: false
     },
     buyer_rated: {
       type: DataTypes.ENUM('0','1'),
-      allowNull: true
+      allowNull: false
     },
     provider_rated: {
       type: DataTypes.ENUM('0','1'),
-      allowNull: true
+      allowNull: false
     },
     project_paid: {
       type: DataTypes.ENUM('0','1'),
-      allowNull: true
+      allowNull: false
     },
     project_award_date: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     project_award_date_format: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     project_fund_date_format: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     fund_release_date: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     notification_status: {
       type: DataTypes.INTEGER,
@@ -361,15 +363,15 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     attachment_url: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     image: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     first_upload: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     attachment_name: {
       type: DataTypes.TEXT,
@@ -377,7 +379,7 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     attachment_folder: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     is_private: {
       type: DataTypes.INTEGER,
@@ -390,48 +392,47 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     contact: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     salary: {
       type: DataTypes.STRING(15),
-      allowNull: true
+      allowNull: false
     },
     flag: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 1
+      allowNull: false
     },
     salarytype: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     escrow_due: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     city: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     zipcode: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     post_for: {
       type: DataTypes.STRING(100),
-      allowNull: true
+      allowNull: false
     },
     project_post_format_date: {
       type: DataTypes.DATE,
-      allowNull: true
+      allowNull: false
     },
     project_post_date: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     project_expiry_date: {
       type: DataTypes.DATEONLY,
-      allowNull: true
+      allowNull: false
     },
     expired_notification_sent: {
       type: DataTypes.STRING(1),
@@ -445,35 +446,35 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     unpaid_project_notif: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     site_fr: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0
+      allowNull: false
     },
     site_uk: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0
+      allowNull: false
     },
     site_it: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0
+      allowNull: false
     },
     country_code: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     pro_job: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 0
+      allowNull: false
+    },
+    posted_dt: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
     },
     show_release: {
       type: DataTypes.TINYINT,
-      allowNull: false
+      allowNull: true
     }
   }, {
     tableName: 'projects',

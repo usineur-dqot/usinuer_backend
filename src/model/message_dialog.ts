@@ -8,13 +8,13 @@ export interface message_dialogAttributes {
   send_to: number;
   msg_box: string;
   datetime: Date;
-  attachment?: string;
-  approve?: number;
+  attachment: string;
+  approve: number;
 }
 
 export type message_dialogPk = "id";
 export type message_dialogId = message_dialog[message_dialogPk];
-export type message_dialogOptionalAttributes = "id" | "datetime" | "attachment" | "approve";
+export type message_dialogOptionalAttributes = "id" | "datetime";
 export type message_dialogCreationAttributes = Optional<message_dialogAttributes, message_dialogOptionalAttributes>;
 
 export class message_dialog extends Model<message_dialogAttributes, message_dialogCreationAttributes> implements message_dialogAttributes {
@@ -24,8 +24,8 @@ export class message_dialog extends Model<message_dialogAttributes, message_dial
   send_to!: number;
   msg_box!: string;
   datetime!: Date;
-  attachment?: string;
-  approve?: number;
+  attachment!: string;
+  approve!: number;
 
 
   static initModel(sequelize: Sequelize.Sequelize): typeof message_dialog {
@@ -59,11 +59,11 @@ export class message_dialog extends Model<message_dialogAttributes, message_dial
     },
     attachment: {
       type: DataTypes.STRING(150),
-      allowNull: true
+      allowNull: false
     },
     approve: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     }
   }, {
     tableName: 'message_dialog',

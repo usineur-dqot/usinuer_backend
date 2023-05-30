@@ -4,7 +4,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 export interface clickthroughsAttributes {
   id: number;
   refid?: string;
-  created_date: string;
+  created_date?: string;
   time: string;
   browser?: string;
   ipaddress?: string;
@@ -20,7 +20,7 @@ export type clickthroughsCreationAttributes = Optional<clickthroughsAttributes, 
 export class clickthroughs extends Model<clickthroughsAttributes, clickthroughsCreationAttributes> implements clickthroughsAttributes {
   id!: number;
   refid?: string;
-  created_date!: string;
+  created_date?: string;
   time!: string;
   browser?: string;
   ipaddress?: string;
@@ -43,8 +43,7 @@ export class clickthroughs extends Model<clickthroughsAttributes, clickthroughsC
     },
     created_date: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
-      defaultValue: "0000-00-00"
+      allowNull: true
     },
     time: {
       type: DataTypes.TIME,

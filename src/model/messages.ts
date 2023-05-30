@@ -6,43 +6,43 @@ import type { users, usersId } from './users';
 export interface messagesAttributes {
   id: number;
   project_id: number;
-  reply_for?: number;
-  from_id: number;
-  to_id: number;
-  buyer_message_status?: string;
-  programmer_message_status?: string;
-  provider_delete_status?: string;
-  buyer_delete_status?: string;
+  reply_for: number;
+  from_id?: number;
+  to_id?: number;
+  buyer_message_status: string;
+  programmer_message_status: string;
+  provider_delete_status: string;
+  buyer_delete_status: string;
   message: string;
   created: number;
-  notification_status?: string;
-  deluserid?: string;
-  attach_file?: string;
-  approve?: number;
+  notification_status: string;
+  deluserid: string;
+  attach_file: string;
+  approve: number;
   machine_parts_image?: string;
 }
 
 export type messagesPk = "id";
 export type messagesId = messages[messagesPk];
-export type messagesOptionalAttributes = "id" | "reply_for" | "buyer_message_status" | "programmer_message_status" | "provider_delete_status" | "buyer_delete_status" | "notification_status" | "deluserid" | "attach_file" | "approve" | "machine_parts_image";
+export type messagesOptionalAttributes = "id" | "from_id" | "to_id" | "notification_status" | "machine_parts_image";
 export type messagesCreationAttributes = Optional<messagesAttributes, messagesOptionalAttributes>;
 
 export class messages extends Model<messagesAttributes, messagesCreationAttributes> implements messagesAttributes {
   id!: number;
   project_id!: number;
-  reply_for?: number;
-  from_id!: number;
-  to_id!: number;
-  buyer_message_status?: string;
-  programmer_message_status?: string;
-  provider_delete_status?: string;
-  buyer_delete_status?: string;
+  reply_for!: number;
+  from_id?: number;
+  to_id?: number;
+  buyer_message_status!: string;
+  programmer_message_status!: string;
+  provider_delete_status!: string;
+  buyer_delete_status!: string;
   message!: string;
   created!: number;
-  notification_status?: string;
-  deluserid?: string;
-  attach_file?: string;
-  approve?: number;
+  notification_status!: string;
+  deluserid!: string;
+  attach_file!: string;
+  approve!: number;
   machine_parts_image?: string;
 
   // messages belongsTo projects via project_id
@@ -78,12 +78,12 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
       }
     },
     reply_for: {
-      type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: true
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     from_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'users',
         key: 'id'
@@ -91,7 +91,7 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
     },
     to_id: {
       type: DataTypes.BIGINT.UNSIGNED,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'users',
         key: 'id'
@@ -99,19 +99,19 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
     },
     buyer_message_status: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     programmer_message_status: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     provider_delete_status: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     buyer_delete_status: {
       type: DataTypes.CHAR(1),
-      allowNull: true
+      allowNull: false
     },
     message: {
       type: DataTypes.TEXT,
@@ -123,21 +123,21 @@ export class messages extends Model<messagesAttributes, messagesCreationAttribut
     },
     notification_status: {
       type: DataTypes.CHAR(1),
-      allowNull: true,
+      allowNull: false,
       defaultValue: "0",
       comment: "P=\"Prebid\",N=\"Notifications\""
     },
     deluserid: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
     attach_file: {
       type: DataTypes.STRING(150),
-      allowNull: true
+      allowNull: false
     },
     approve: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
     machine_parts_image: {
       type: DataTypes.STRING(1500),

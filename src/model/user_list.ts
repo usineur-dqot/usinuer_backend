@@ -31,7 +31,7 @@ export class user_list extends Model<user_listAttributes, user_listCreationAttri
       primaryKey: true
     },
     creator_id: {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     user_id: {

@@ -73,7 +73,7 @@ export class project_images extends Model<project_imagesAttributes, project_imag
       allowNull: false
     },
     attach_file: {
-      type: DataTypes.STRING(1500),
+      type: DataTypes.STRING(150),
       allowNull: false
     },
     upload_date: {

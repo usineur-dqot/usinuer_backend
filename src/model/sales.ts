@@ -6,7 +6,7 @@ export interface salesAttributes {
   refid: string;
   referral: string;
   account_type: number;
-  created_date: string;
+  created_date?: string;
   signup_date: number;
   signup_date_format: string;
   created_time: string;
@@ -25,7 +25,7 @@ export class sales extends Model<salesAttributes, salesCreationAttributes> imple
   refid!: string;
   referral!: string;
   account_type!: number;
-  created_date!: string;
+  created_date?: string;
   signup_date!: number;
   signup_date_format!: string;
   created_time!: string;
@@ -57,8 +57,7 @@ export class sales extends Model<salesAttributes, salesCreationAttributes> imple
     },
     created_date: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
-      defaultValue: "0000-00-00"
+      allowNull: true
     },
     signup_date: {
       type: DataTypes.INTEGER,
