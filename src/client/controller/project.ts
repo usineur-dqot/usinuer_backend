@@ -231,7 +231,7 @@ export default {
 					return R(res, true, "No Data Found", []);
 				}
 
-				let ids = bids.map((b) => b.project_id);
+				let ids = bids.map((b) => b.project_id) as number[];
 
 				//console.log("ids len", ids);
 
