@@ -388,7 +388,7 @@ export default {
 		await user.save();
 
 		await models.login_info.create({
-			user_id: String(user.id),
+			user_id: user.id,
 			ip_address: `${req.headers["x-forwarded-for"]}`.split(",")[0] || "",
 		});
 
