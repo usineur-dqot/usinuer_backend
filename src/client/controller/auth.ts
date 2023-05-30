@@ -383,7 +383,7 @@ export default {
 			return R(res, false, "Invalid Credentials.");
 		}
 		let current_date = new Date();
-		user.last_seen = String(current_date);
+		user.last_seen = current_date;
 
 		await user.save();
 
