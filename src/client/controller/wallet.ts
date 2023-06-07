@@ -231,7 +231,7 @@ export default {
 			"!project": project.project_name,
 			"!username": machinist?.user_name,
 			"!bid_amount": transaction_details.amount,
-			"!withdraw_url":`http://18.169.104.118/auth/sign-in`,
+			"!withdraw_url":`http://18.133.64.152/auth/sign-in`,
 			"!amount": transaction_details.amount_gbp
 		}
 
@@ -304,10 +304,10 @@ export default {
 			"!project": project.project_name,
 			"!username": user?.user_name,
 			"!bid_amount": transaction_details.amount,
-			"!withdraw_url":`http://18.169.104.118/auth/sign-in`,
+			"!withdraw_url":`http://18.133.64.152/auth/sign-in`,
 			"!amount": transaction_details.amount_gbp,
 			"!supplier_username": machinist?.user_name,
-			"!feedback_url": "http://18.169.104.118/"
+			"!feedback_url": "http://18.133.64.152/"
 		}
 
 		const mailData_cus = await models.email_templates.findOne({

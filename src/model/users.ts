@@ -13,58 +13,58 @@ export interface usersAttributes {
   user_name?: string;
   name: string;
   surname: string;
-  address1: string;
-  address2: string;
-  description: string;
-  company_name: string;
-  company_number: string;
+  address1?: string;
+  address2?: string;
+  description?: string;
+  company_name?: string;
+  company_number?: string;
   role_id: number;
   password?: string;
   email: string;
-  paypal_email: string;
+  paypal_email?: string;
   profile_desc?: string;
-  service_desc: string;
-  voter: string;
-  prof_pic: string;
-  prot_pic: string;
-  pdf_file: string;
-  account: string;
+  service_desc?: string;
+  voter?: string;
+  prof_pic?: string;
+  prot_pic?: string;
+  pdf_file?: string;
+  account?: string;
   user_status: number;
-  activation_key: string;
-  zcode: string;
-  Squestion: string;
-  answer: string;
+  activation_key?: string;
+  zcode?: string;
+  Squestion?: string;
+  answer?: string;
   state?: string;
   city?: string;
-  country_symbol: string;
+  country_symbol?: string;
   project_notify?: string;
   bid_notify?: string;
-  message_notify: string;
+  message_notify?: string;
   rate?: number;
   logo?: string;
-  created: number;
-  last_activity: number;
-  user_rating: number;
-  num_reviews: number;
-  rating_hold: number;
-  tot_rating: number;
+  created?: number;
+  last_activity?: number;
+  user_rating?: number;
+  num_reviews?: number;
+  rating_hold?: number;
+  tot_rating?: number;
   suspend_status: '0' | '1';
   ban_status: '0' | '1';
-  admin_status: string;
-  admin_status_uk: string;
-  admin_status_it: string;
-  job_fr: number;
-  job_uk: number;
-  job_it: number;
-  choice: number;
-  supLogin: string;
-  lang: string;
+  admin_status?: string;
+  admin_status_uk?: string;
+  admin_status_it?: string;
+  job_fr?: number;
+  job_uk?: number;
+  job_it?: number;
+  choice?: number;
+  supLogin?: string;
+  lang?: string;
   pro_user: number;
-  pro_vat: number;
-  siren: string;
-  mailchimp_id: string;
-  nxtduedate: string;
-  entrepreneur: number;
+  pro_vat?: number;
+  siren?: string;
+  mailchimp_id?: string;
+  nxtduedate?: string;
+  entrepreneur?: number;
   bid_status: number;
   last_seen?: Date;
   show_modal: number;
@@ -74,7 +74,7 @@ export interface usersAttributes {
 
 export type usersPk = "id";
 export type usersId = users[usersPk];
-export type usersOptionalAttributes = "id" | "refid" | "user_name" | "password" | "profile_desc" | "user_status" | "state" | "city" | "project_notify" | "bid_notify" | "rate" | "logo" | "suspend_status" | "ban_status" | "pro_user" | "bid_status" | "last_seen" | "createdAt" | "updatedAt";
+export type usersOptionalAttributes = "id" | "refid" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "last_seen" | "createdAt" | "updatedAt";
 export type usersCreationAttributes = Optional<usersAttributes, usersOptionalAttributes>;
 
 export class users extends Model<usersAttributes, usersCreationAttributes> implements usersAttributes {
@@ -84,58 +84,58 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   user_name?: string;
   name!: string;
   surname!: string;
-  address1!: string;
-  address2!: string;
-  description!: string;
-  company_name!: string;
-  company_number!: string;
+  address1?: string;
+  address2?: string;
+  description?: string;
+  company_name?: string;
+  company_number?: string;
   role_id!: number;
   password?: string;
   email!: string;
-  paypal_email!: string;
+  paypal_email?: string;
   profile_desc?: string;
-  service_desc!: string;
-  voter!: string;
-  prof_pic!: string;
-  prot_pic!: string;
-  pdf_file!: string;
-  account!: string;
+  service_desc?: string;
+  voter?: string;
+  prof_pic?: string;
+  prot_pic?: string;
+  pdf_file?: string;
+  account?: string;
   user_status!: number;
-  activation_key!: string;
-  zcode!: string;
-  Squestion!: string;
-  answer!: string;
+  activation_key?: string;
+  zcode?: string;
+  Squestion?: string;
+  answer?: string;
   state?: string;
   city?: string;
-  country_symbol!: string;
+  country_symbol?: string;
   project_notify?: string;
   bid_notify?: string;
-  message_notify!: string;
+  message_notify?: string;
   rate?: number;
   logo?: string;
-  created!: number;
-  last_activity!: number;
-  user_rating!: number;
-  num_reviews!: number;
-  rating_hold!: number;
-  tot_rating!: number;
+  created?: number;
+  last_activity?: number;
+  user_rating?: number;
+  num_reviews?: number;
+  rating_hold?: number;
+  tot_rating?: number;
   suspend_status!: '0' | '1';
   ban_status!: '0' | '1';
-  admin_status!: string;
-  admin_status_uk!: string;
-  admin_status_it!: string;
-  job_fr!: number;
-  job_uk!: number;
-  job_it!: number;
-  choice!: number;
-  supLogin!: string;
-  lang!: string;
+  admin_status?: string;
+  admin_status_uk?: string;
+  admin_status_it?: string;
+  job_fr?: number;
+  job_uk?: number;
+  job_it?: number;
+  choice?: number;
+  supLogin?: string;
+  lang?: string;
   pro_user!: number;
-  pro_vat!: number;
-  siren!: string;
-  mailchimp_id!: string;
-  nxtduedate!: string;
-  entrepreneur!: number;
+  pro_vat?: number;
+  siren?: string;
+  mailchimp_id?: string;
+  nxtduedate?: string;
+  entrepreneur?: number;
   bid_status!: number;
   last_seen?: Date;
   show_modal!: number;
@@ -255,30 +255,30 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     address1: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     address2: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     description: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     company_name: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     company_number: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     role_id: {
       type: DataTypes.SMALLINT,
       allowNull: false
     },
     password: {
-      type: DataTypes.STRING(32),
+      type: DataTypes.STRING(500),
       allowNull: true
     },
     email: {
@@ -287,7 +287,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     paypal_email: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     profile_desc: {
       type: DataTypes.TEXT,
@@ -295,27 +295,27 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     service_desc: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     voter: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     prof_pic: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     prot_pic: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     pdf_file: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     account: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     user_status: {
       type: DataTypes.TINYINT,
@@ -324,19 +324,19 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     activation_key: {
       type: DataTypes.STRING(32),
-      allowNull: false
+      allowNull: true
     },
     zcode: {
       type: DataTypes.CHAR(100),
-      allowNull: false
+      allowNull: true
     },
     Squestion: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     answer: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     state: {
       type: DataTypes.STRING(64),
@@ -348,7 +348,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     country_symbol: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     project_notify: {
       type: DataTypes.CHAR(10),
@@ -360,7 +360,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     message_notify: {
       type: DataTypes.CHAR(10),
-      allowNull: false
+      allowNull: true
     },
     rate: {
       type: DataTypes.SMALLINT,
@@ -372,27 +372,27 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     created: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     last_activity: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     user_rating: {
       type: DataTypes.SMALLINT,
-      allowNull: false
+      allowNull: true
     },
     num_reviews: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     rating_hold: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     tot_rating: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     suspend_status: {
       type: DataTypes.ENUM('0','1'),
@@ -406,39 +406,39 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     admin_status: {
       type: DataTypes.CHAR(1),
-      allowNull: false
+      allowNull: true
     },
     admin_status_uk: {
       type: DataTypes.CHAR(1),
-      allowNull: false
+      allowNull: true
     },
     admin_status_it: {
       type: DataTypes.CHAR(1),
-      allowNull: false
+      allowNull: true
     },
     job_fr: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     job_uk: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     job_it: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     choice: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     supLogin: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     lang: {
       type: DataTypes.STRING(11),
-      allowNull: false
+      allowNull: true
     },
     pro_user: {
       type: DataTypes.INTEGER,
@@ -447,23 +447,23 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     pro_vat: {
       type: DataTypes.FLOAT,
-      allowNull: false
+      allowNull: true
     },
     siren: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     mailchimp_id: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     nxtduedate: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     entrepreneur: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       comment: "0=>Not Entrepreneur and 1 => Entrepreneur"
     },
     bid_status: {

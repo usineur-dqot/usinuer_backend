@@ -3,13 +3,13 @@ import { asyncWrapper, R } from "@helpers/response-helpers";
 import { UserAuthRequest } from "@middleware/auth";
 import Joi from "joi";
 import models from "@model/index";
-import { Op } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import env from "@config/env";
 import { Validate } from "@validation/utils";
 import schema from "@validation/schema";
-import { uploadFile, uploadOneFile } from "@helpers/upload";
+import { uploadFile, uploadMachiningFile, uploadOneFile } from "@helpers/upload";
 import moment from "moment";
 import { sendMail, site_mail_data } from "@helpers/mail";
 
@@ -143,7 +143,7 @@ export default {
 				"!username": user.user_name,
 				"!usertype": "customer",
 				"!password": userPassword,
-				"!activation_url": "http://18.169.104.118/auth/sign-in"
+				"!activation_url": "https://35.179.7.135/auth/sign-in"
 			};
 
 
@@ -283,7 +283,7 @@ export default {
 				"!username": user.user_name,
 				"!usertype": "machanic",
 				"!password": machanicPass,
-				"!activation_url": "http://18.169.104.118/auth/sign-in"
+				"!activation_url": "https://35.179.7.135/auth/sign-in"
 			};
 
 
@@ -388,7 +388,7 @@ export default {
 		await user.save();
 
 		await models.login_info.create({
-			user_id: user.id,
+			user_id: (user.id),
 			ip_address: `${req.headers["x-forwarded-for"]}`.split(",")[0] || "",
 		});
 
@@ -460,6 +460,12 @@ export default {
 		// validation
 		let data = await Validate(res, [], schema.user.editUser, req.body, {});
 
+
+
+		
+
+
+
 		let user = await models.users.findOne({
 			where: {
 				id: req.user?.id,
@@ -503,7 +509,12 @@ export default {
 
 		await user.update(data);
 		// await user.save();
-
+		if (req.files?.file2) {
+			let file2 = await uploadMachiningFile(req, res)
+			let concatenatedData = file2.join(',');
+			user?.update({ prot_pic: Sequelize.literal(`concat(prot_pic, ',', '${concatenatedData}')`) })
+			
+		}
 		const api_data_rep: object = {
 			"!username": user.user_name,
 			"!data1": String(data.name),
@@ -659,7 +670,7 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		  "!data3": String(data.user_name),
 		  "!data4": String(data.zcode),
 		  "!data5": String(data.description),
-		  "!url": `http://18.169.104.118/auth/sign-in`,
+		  "!url": `https://35.179.7.135/auth/sign-in`,
 		  "!newpassword": data.new_password
 		};
 	

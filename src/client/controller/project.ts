@@ -121,6 +121,13 @@ export default {
 						attributes: ["email", "user_name"],
 						required: false,
 					},
+
+					{
+						model: models.users,
+						as: "programmer",
+						attributes: ["email", "user_name"],
+						required: false,
+					},
 				],
 				attributes: [
 					"id",
@@ -183,6 +190,16 @@ export default {
 							attributes: ["email", "user_name"],
 							required: false,
 						},
+
+
+						{
+							model: models.users,
+							as: "programmer",
+							attributes: ["email", "user_name"],
+							required: false,
+						},
+
+
 					],
 					attributes: [
 						"id",
@@ -231,7 +248,7 @@ export default {
 					return R(res, true, "No Data Found", []);
 				}
 
-				let ids = bids.map((b) => b.project_id) as number[];
+				let ids = bids.map((b) => b.project_id);
 
 				//console.log("ids len", ids);
 
@@ -594,7 +611,7 @@ export default {
 				{
 					model: models.users,
 					as: "programmer",
-					attributes: ["email", "user_name"],
+					attributes: ["id", "email", "user_name"],
 					required: false,
 				},
 				{
@@ -746,6 +763,8 @@ export default {
 			data["pro_job"] = 1;
 			data["is_private"] = 0;
 		}
+
+		data["show_release"] = 0
 
 		data["country_code"] = 1;
 		data["creator_id"] = user.id;
@@ -926,7 +945,7 @@ const api_data_rep: object = {
 				"!creatorname": user.user_name,
 				"!projectid": project.id,
 				"!projectname": project.project_name,
-				"!projecturl": `http://18.169.104.118/project/${project.project_name}/${project.id}`
+				"!projecturl": `https://35.179.7.135/project/${project.project_name}/${project.id}`
 
 			}
 
@@ -1025,13 +1044,18 @@ const api_data_rep: object = {
 		let files = await uploadFile(req, res);
 
 		if (data.visibility.toLowerCase() == "private") {
-			data["pro_job"] = 1;
+			data["is_private"] = 1;
 		} else {
-			data["pro_job"] = 0;
+			data["is_private"] = 0;
 		}
 		data["country_code"] = 2;
 		data["creator_id"] = 0;
 		data["project_post_date"] = moment().format("YYYY MM DD");
+
+		const now = new Date();
+		const afterDays = new Date(now.setDate(now.getDate() + data.post_for));
+		data["project_expiry_date"] = afterDays.toISOString().slice(0, 10);
+
 		data["post_for"] = moment().add(data.post_for, "days").unix();
 		// project_exp_date = YYYY MM DD
 
@@ -1065,11 +1089,20 @@ const api_data_rep: object = {
 		}
 
 		// file upload
-		let file = await uploadOneFile(req, res, true);
+		let file = null;
 
-		if (file) {
-			data["bid_file"] = file;
+		if (req.files?.file) {
+			file = await uploadsendmsgFile(req, res);
 		}
+
+
+		if (file != null) {
+			let concatenatedData = file.join(',');
+			data["bid_file"] = concatenatedData;
+		}
+
+
+		data["bid_time"] = moment().unix()
 
 		//console.log("bid details-->", data);
 
@@ -1103,7 +1136,7 @@ const api_data_rep: object = {
 				"!project_title": String(project.project_name),
 				"!supplier_email": progemail?.email,
 				"!project_name": String(project.project_name),
-				"!project_url": `http://18.169.104.118/project/${project.project_name}/${project.id}`
+				"!project_url": `https://35.179.7.135/project/${project.project_name}/${project.id}`
 			}
 	
 			
@@ -1281,13 +1314,19 @@ const api_data_rep: object = {
 		}
 
 		// file upload
-		let file = await uploadOneFile(req, res, true);
+		let file = null;
 
-		if (file) {
-			data["bid_file"] = file;
+		if (req.files?.file) {
+			file = await uploadsendmsgFile(req, res);
 		}
 
 		await bid.update(data);
+
+
+		if (file != null) {
+			let concatenatedData = file.join(',');
+			bid.update({ bid_file: Sequelize.literal(`concat(bid_file, ',', '${concatenatedData}')`) })
+		}
 
 		let task_id = 86;
 
@@ -1312,7 +1351,7 @@ const api_data_rep: object = {
 		const api_data_rep: object = {
 			"!provider_name": machinist?.user_name,
 			"!project_name": project?.project_name,
-			"!project_url": `http://18.169.104.118/project/${project?.project_name}/${project?.id}`
+			"!project_url": `https://35.179.7.135/project/${project?.project_name}/${project?.id}`
 		}
 
 		const mailData = await models.email_templates.findOne({
@@ -1443,14 +1482,14 @@ const api_data_rep: object = {
 
 				// machinist id
 				provider_id: user.id,
-				reciever_id: String(user.id),
+				reciever_id: user.id,
 				status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
 
 				//	status: "PENDING",
 				transaction_time: 1, // as status
 
 				description: "Selected the machinist",
-				project_id: String(project.id),
+				project_id: project.id,
 			});
 
 			
@@ -1702,7 +1741,7 @@ const api_data_rep: object = {
 			"!bid_amount": transaction_details.amount_gbp,
 			"!shipping_date": project.bids[0].bid_days,
 			"!amount": transaction_details.amount_gbp,
-			"!project_url": `http://18.169.104.118/project/${project.project_name}/${project.id}`
+			"!project_url": `https://35.179.7.135/project/${project.project_name}/${project.id}`
 
 		}
 
@@ -1795,7 +1834,7 @@ const api_data_rep: object = {
 			"!project_title": project.project_name,
 			"!username": user?.user_name,
 			"!bid_amount": transaction_details.amount,
-			"!withdraw_url":`http://18.169.104.118/auth/sign-in`,
+			"!withdraw_url":`https://35.179.7.135/auth/sign-in`,
 			"!amount": transaction_details.amount_gbp,
 			"!supplier_name": supplier?.user_name,
 			"!delvry_date": project.enddate
@@ -2304,7 +2343,7 @@ const api_data_rep: object = {
 
 			const api_data_rep_sup: object = {
 				"!username": supplier?.user_name,
-				"!public_profile_link": `http://18.169.104.118/account/public-profile`
+				"!public_profile_link": `https://35.179.7.135/account/public-profile`
 
 			}
 
@@ -2546,7 +2585,8 @@ const api_data_rep: object = {
 		}
 
 		if (file!= null) {
-			data["attach_file"] = file[0];
+			let concatenatedData = file.join(',');
+			data["attach_file"] = concatenatedData;
 		}
 
 		data["created"] = moment().unix();
@@ -2775,10 +2815,18 @@ const api_data_rep: object = {
 		}
 
 		// file upload
-		let file = await uploadOneFile(req, res, true);
+		let file = null;
 
-		if (file) {
-			data["attachment"] = file;
+		if (req.files?.file) {
+			file = await uploadsendmsgFile(req, res);
+		}
+
+		//console.log("Main file name", file)
+
+
+		if (file != null) {
+			let concatenatedData = file.join(',');
+			data["attachment"] = concatenatedData;
 		}
 
 		data["send_from"] = req.user?.id;
@@ -2935,6 +2983,7 @@ const api_data_rep: object = {
 			delete project.images;
 			delete project.id;
 			project.creator_id = user?.id;
+			project.show_release = 0
 
 			let entry = await models.projects.create(project);
 
@@ -3471,14 +3520,39 @@ allreviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 						id: {[Op.col]: "project_id"},
 					}
 				},
+
+				{
+					model: models.users,
+					as: "customer",
+					where: {
+						id: { [Op.col]: "buyer_id" },
+					},
+					attributes: ["user_name", "name", "surname"],
+					required: false,
+				},
 				
 				
 			]
 		});
-		console.log("reviews from backend:-", reviews)
-		return R(res, true, "All reviews", reviews);
-	}),
+		const obj: any = {
+			hrsdiff: ""
+		}
 
+		for (let i = 0; i < reviews.length; i++) {
+			let arr = []
+			const datetime: any = reviews[i].review_post_date;
+			const baseDate = new Date(datetime); // create a new Date object for the base date/time
+			const currentDate = new Date(); // create a new Date object for the current date/time
+			const diff = currentDate.getTime() - baseDate.getTime(); // calculate the time difference in milliseconds
+			const hoursDiff = diff / (1000 * 60 * 60); // convert milliseconds to hours
+
+			obj.hrsdiff = hoursDiff
+
+			arr.push(obj)
+		}
+		console.log("reviews from backend:-", reviews, obj)
+		return R(res, true, "All reviews", reviews, { reviewdate: obj });
+	}),
 all_lists: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
 		console.log("going for plist")
@@ -4112,6 +4186,20 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 					}
 				]
 			},
+
+			include: [
+				{
+					model: models.users,
+					as: "programmer",
+					where: {
+						id: { [Op.col]: "programmer_id" },
+					},
+					attributes: ["user_name"],
+					required: false,
+				}
+			],
+
+
 			order: [["project_post_date", "DESC"]]
 		})
 
