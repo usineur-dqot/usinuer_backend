@@ -23,7 +23,8 @@
 		"app": "nodemon src/client/app.ts",
 		"dev": "npm-run-all --parallel app",
 		"dev2": "tsc-alias -w & tsc -w && pm2 reload all",
-		"migrate": "node -r tsconfig-paths/register -r ts-node/register src/db/migrate.ts"
+		"migrate": "node -r tsconfig-paths/register -r ts-node/register src/db/migrate.ts",
+		"install": "npm i -f"
 	},
 	"devDependencies": {
 		"@types/agenda": "^4.1.0",
