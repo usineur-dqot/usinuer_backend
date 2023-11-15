@@ -1,5 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { projects, projectsId } from './projects';
+import type { users, usersId } from './users';
 
 export interface notif_email_listAttributes {
   id: number;
@@ -29,6 +31,16 @@ export class notif_email_list extends Model<notif_email_listAttributes, notif_em
   notif_date!: Date;
   message_status!: string;
 
+  // notif_email_list belongsTo projects via project_id
+  project!: projects;
+  getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
+  setProject!: Sequelize.BelongsToSetAssociationMixin<projects, projectsId>;
+  createProject!: Sequelize.BelongsToCreateAssociationMixin<projects>;
+  // notif_email_list belongsTo users via customer_id
+  customer!: users;
+  getCustomer!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setCustomer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createCustomer!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof notif_email_list {
     return sequelize.define('notif_email_list', {
@@ -39,16 +51,24 @@ export class notif_email_list extends Model<notif_email_listAttributes, notif_em
       primaryKey: true
     },
     customer_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     supplier_id: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
     project_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'projects',
+        key: 'id'
+      }
     },
     email_type: {
       type: DataTypes.STRING(100),
@@ -80,6 +100,20 @@ export class notif_email_list extends Model<notif_email_listAttributes, notif_em
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "customer_id",
+        using: "BTREE",
+        fields: [
+          { name: "customer_id" },
+        ]
+      },
+      {
+        name: "project_id",
+        using: "BTREE",
+        fields: [
+          { name: "project_id" },
         ]
       },
     ]

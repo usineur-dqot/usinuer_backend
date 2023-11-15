@@ -1,5 +1,7 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { projects, projectsId } from './projects';
+import type { users, usersId } from './users';
 
 export interface reviewsAttributes {
   id: number;
@@ -65,6 +67,21 @@ export class reviews extends Model<reviewsAttributes, reviewsCreationAttributes>
   provider_status?: string;
   country_code?: number;
 
+  // reviews belongsTo projects via project_id
+  project!: projects;
+  getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
+  setProject!: Sequelize.BelongsToSetAssociationMixin<projects, projectsId>;
+  createProject!: Sequelize.BelongsToCreateAssociationMixin<projects>;
+  // reviews belongsTo users via buyer_id
+  buyer!: users;
+  getBuyer!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setBuyer!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createBuyer!: Sequelize.BelongsToCreateAssociationMixin<users>;
+  // reviews belongsTo users via provider_id
+  provider!: users;
+  getProvider!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setProvider!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createProvider!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof reviews {
     return sequelize.define('reviews', {
@@ -151,16 +168,28 @@ export class reviews extends Model<reviewsAttributes, reviewsCreationAttributes>
       allowNull: true
     },
     project_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'projects',
+        key: 'id'
+      }
     },
     buyer_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     provider_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     hold: {
       type: DataTypes.ENUM('0','1'),
@@ -188,6 +217,27 @@ export class reviews extends Model<reviewsAttributes, reviewsCreationAttributes>
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "buyer_id",
+        using: "BTREE",
+        fields: [
+          { name: "buyer_id" },
+        ]
+      },
+      {
+        name: "provider_id",
+        using: "BTREE",
+        fields: [
+          { name: "provider_id" },
+        ]
+      },
+      {
+        name: "project_id",
+        using: "BTREE",
+        fields: [
+          { name: "project_id" },
         ]
       },
     ]

@@ -3,13 +3,14 @@ import { asyncWrapper, R } from "@helpers/response-helpers";
 import { UserAuthRequest } from "@middleware/auth";
 import models from "@model/index";
 import db from "@db/mysql";
-import { uploadFile, uploadMachiningFile, uploadOneFile, shippingmachiningfile, uploadsendmsgFile } from "@helpers/upload";
+import { uploadFile, uploadMachiningFile, uploadOneFile, shippingmachiningfile, uploadsendmsgFile,uploadInvoice, uploadadditionalFile, deleteadditionalFile, deleteprofilepic, deleteportfoliopic } from "@helpers/upload";
 import { Pick, Validate } from "validation/utils";
 import schema from "validation/schema";
 import moment from "moment";
 import { Op, Sequelize } from "sequelize";
 import { sendMail, site_mail_data } from "@helpers/mail";
 import { float } from "aws-sdk/clients/lightsail";
+import { jsPDF } from "jspdf";
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -18,7 +19,19 @@ export default {
 
 	list: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		//pagination options
-		//console.log("plist showing")
+		
+
+		const serverTime = moment().format('YYYY-MM-DD HH:mm:ss');
+		console.log("server time---->", serverTime);
+
+		console.log("The date fro test is-----",new Date().toLocaleString());
+
+
+		
+
+
+
+
 		const opt = {
 			page: parseInt(req.query.page?.toString() || "0"),
 			limit: parseInt(req.query.limit?.toString() || "10"),
@@ -36,6 +49,7 @@ export default {
 		const projects = await models.projects.findAndCountAll({
 			where: {
 				...userQuery,
+				country_code : 2
 			},
 			include: [
 				
@@ -56,6 +70,8 @@ export default {
 				"project_status",
 				"visibility",
 				"project_post_date",
+				"project_post_format_date",
+				"project_expiry_date",
 				"post_for",
 				"programmer_id",
 				"pro_job",
@@ -73,7 +89,7 @@ export default {
 			],
 			limit: opt.limit,
 			offset: opt.page * opt.limit,
-			order: [["createdAt", "DESC"]],
+			order: [["project_post_format_date", "DESC"]],
 		});
 		//console.log("projects--",projects)
 
@@ -255,7 +271,7 @@ export default {
 
 				const projects = await models.projects.findAndCountAll({
 					where: {
-						programmer_id: user.id,
+						//programmer_id: user.id,
 						id: {
 							[Op.in]: ids,
 						},
@@ -576,7 +592,7 @@ export default {
 						{
 							model: models.users,
 							as: "user",
-							attributes: ["email", "user_name","pro_vat","pro_user"],
+							attributes: ["email", "user_name","pro_vat","pro_user", "prof_pic"],
 							required: false,
 						},
 						// {
@@ -605,13 +621,13 @@ export default {
 				{
 					model: models.users,
 					as: "creator",
-					attributes: ["email", "user_name"],
+					attributes: ["id", "email", "user_name"],
 					required: false,
 				},
 				{
 					model: models.users,
 					as: "programmer",
-					attributes: ["id", "email", "user_name"],
+					attributes: ["id", "email", "user_name", "prof_pic"],
 					required: false,
 				},
 				{
@@ -650,92 +666,204 @@ export default {
 
 		return R(res, true, "project details", project);
 	}),
-	askQuestion: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
-		// validation
-		let data = await Validate(
-			res,
-			["project_id", "message"],
-			schema.project.question,
-			req.body,
-			{},
-		);
+askQuestion: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+    // validation
+    let data = await Validate(
+        res,
+        ["project_id", "message"],
+        schema.project.question,
+        req.body,
+        {},
+    );
 
-		let user = await models.users.findByPk(req.user?.id, {
-			attributes: ["id"],
-		});
+    let user = await models.users.findByPk(req.user?.id, {
+        attributes: ["id"],
+    });
 
-		if (!user) {
-			return R(res, false, "Invalid user");
-		}
+    if (!user) {
+        return R(res, false, "Invalid user");
+    }
 
-		let project = await models.projects.findByPk(data.project_id, {
-			attributes: ["id", "creator_id"],
-		});
+    let project = await models.projects.findByPk(data.project_id, {
+        attributes: ["id", "creator_id", "project_name"],
+    });
+	console.log("project name", project?.project_name)
+    if (!project) {
+        return R(res, false, "Project not found");
+    }
 
-		if (!project) {
-			return R(res, false, "Project not found");
-		}
+    data["from_id"] = user.id;
+    data["to_id"] = project.creator_id;
+    data["msg_type"] = "Q";
 
-		data["from_id"] = user.id;
-		data["to_id"] = project.creator_id;
-		data["msg_type"] = "Q";
+    data["buyer_message_status"] = "U";
+    data["created"] = moment().unix();
+    data["notification_status"] = "P";
 
-		data["buyer_message_status"] = "U";
-		data["created"] = moment().unix();
-		data["notification_status"] = "P";
+    let question = await models.prebid_messages.create(data);
+    let custemail = await models.users.findOne({ where: { id: project.creator_id } })
 
-		let question = await models.prebid_messages.create(data);
 
-		return R(res, true, "Question Submitted", question);
-	}),
 
-	addAnswer: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
-		// validation
-		let data = await Validate(res, [], schema.project.answer, req.body, {});
+     const api_data_rep: object = { "!customer_name": custemail?.name, 
+     "!project_name": project?.project_name,
+      "!response": question.message, 
+      "!project_url": `https://machining-4u.co.uk/machining/${project.project_name.split(" ").join("-")}-${project?.id}`,
+    }
 
-		let user = await models.users.findByPk(req.user?.id, {
-			attributes: ["id"],
-		});
 
-		if (!user) {
-			return R(res, false, "Invalid user");
-		}
 
-		let question = await models.prebid_messages.findByPk(data.id);
+     let task_id = 90; 
+     const mailData = await models.email_templates.findOne({
+         where: {
+             id: task_id, 
+             country_code: "en" 
+            }, 
+            attributes: ["title", "mail_subject", "mail_body"],
+         }); 
+         var body = mailData?.mail_body; 
+         var title = mailData?.title; 
+         var subject = mailData?.mail_subject; 
+         (Object.keys(api_data_rep) as (keyof typeof api_data_rep)[]).forEach(key => 
+            { if (body?.includes(key)) 
+                { var re = new RegExp(key, 'g'); 
+                body = body.replace(re, api_data_rep[key]) } 
+                if (title?.includes(key)) 
+                { var re = new RegExp(key, 'g'); 
+                title = title.replace(re, api_data_rep[key]) 
+            } 
+                if (subject?.includes(key)) {
+                     var re = new RegExp(key, 'g');
+                      subject = subject.replace(re, api_data_rep[key]) 
+                    } 
+                }); 
+                (Object.keys(site_mail_data) as (keyof typeof site_mail_data)[]).forEach(key => 
+                    { if (body?.includes(key)) 
+                        { var re = new RegExp(key, 'g');
+                         body = body.replace(re, site_mail_data[key]) 
+                        } if (title?.includes(key)) 
+                        { var re = new RegExp(key, 'g');
+                         title = title.replace(re, site_mail_data[key])
+                         } if (subject?.includes(key)) 
+                         { var re = new RegExp(key, 'g'); 
+                         subject = subject.replace(re, site_mail_data[key])
+                         } 
+                        })
 
-		if (!question) {
-			return R(res, false, "Question Not Found", null);
-		}
 
-		let q = question.toJSON();
 
-		let answer = await models.prebid_messages.create({
-			project_id: q.project_id,
-			reply_for: q.id,
-			from_id: user.id,
-			to_id: q.from_id,
-			message: data.message,
-			msg_type: "A",
-			programmer_message_status: "U",
-			buyer_message_status: "R",
-			created: moment().unix(),
-			notification_status : "P"
 
-		});
+    await sendMail(custemail?.email, subject, body);
+    return R(res, true, "Question Submitted", question);
+}),
 
-		return R(res, true, "Answer Submitted", answer);
-	}),
-	add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+
+
+addAnswer: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+    // validation
+    let data = await Validate(res, [], schema.project.answer, req.body, {});
+
+    let user = await models.users.findByPk(req.user?.id, {
+        attributes: ["id"],
+    });
+
+    if (!user) {
+        return R(res, false, "Invalid user");
+    }
+	
+    let question = await models.prebid_messages.findByPk(data.id);
+
+    if (!question) {
+        return R(res, false, "Question Not Found", null);
+    }
+
+    let q = question.toJSON();
+
+	let project = await models.projects.findByPk(q.project_id, {
+        attributes: ["id", "creator_id", "project_name"],
+    });
+
+	let supplieremail = await models.users.findOne({ where: { id: q.from_id } })
+
+    let answer = await models.prebid_messages.create({
+        project_id: q.project_id,
+        reply_for: q.id,
+        from_id: user.id,
+        to_id: q.from_id,
+        message: data.message,
+        msg_type: "A",
+        programmer_message_status: "U",
+        buyer_message_status: "R",
+        created: moment().unix(),
+        notification_status : "P"
+
+    });
+	console.log("answer msg", answer)
+
+	const api_data_rep: object = { 
+	"!supplier_name": supplieremail?.name, 
+     "!project_name": project?.project_name,
+      "!response": data.message, 
+      "!project_url": `https://machining-4u.co.uk/machining/${project?.project_name.split(" ").join("-")}-${project?.id}`,
+    }
+
+
+
+     let task_id = 94; 
+     const mailData = await models.email_templates.findOne({
+         where: {
+             id: task_id, 
+             country_code: "en" 
+            }, 
+            attributes: ["title", "mail_subject", "mail_body"],
+         }); 
+         var body = mailData?.mail_body; 
+         var title = mailData?.title; 
+         var subject = mailData?.mail_subject; 
+         (Object.keys(api_data_rep) as (keyof typeof api_data_rep)[]).forEach(key => 
+            { if (body?.includes(key)) 
+                { var re = new RegExp(key, 'g'); 
+                body = body.replace(re, api_data_rep[key]) } 
+                if (title?.includes(key)) 
+                { var re = new RegExp(key, 'g'); 
+                title = title.replace(re, api_data_rep[key]) 
+            } 
+                if (subject?.includes(key)) {
+                     var re = new RegExp(key, 'g');
+                      subject = subject.replace(re, api_data_rep[key]) 
+                    } 
+                }); 
+                (Object.keys(site_mail_data) as (keyof typeof site_mail_data)[]).forEach(key => 
+                    { if (body?.includes(key)) 
+                        { var re = new RegExp(key, 'g');
+                         body = body.replace(re, site_mail_data[key]) 
+                        } if (title?.includes(key)) 
+                        { var re = new RegExp(key, 'g');
+                         title = title.replace(re, site_mail_data[key])
+                         } if (subject?.includes(key)) 
+                         { var re = new RegExp(key, 'g'); 
+                         subject = subject.replace(re, site_mail_data[key])
+                         } 
+                        })
+
+
+
+
+     sendMail(supplieremail?.email, subject, body);
+    return R(res, true, "Answer Submitted", answer);
+}),	
+
+add: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		// validation
 		console.log("add hitting....")
 		let data = await Validate(
 			res,
-			["project_name", "description", "visibility", "post_for"],
+			["project_name", "description", "visibility", "post_for" ],
 			schema.project.addProject,
 			req.body,
 			{},
 		);
-		//console.log("data",data)
+		console.log("data for project----->>",data)
 
 		let user = await models.users.findOne({
 			where: {
@@ -752,29 +880,70 @@ export default {
 		// file upload
 		let files = await uploadFile(req, res);
 
+
+		const momentDt = moment();
+		console.log("current moemt is----",momentDt);
+		const mString = moment().format('YYYY-MM-DD HH:mm:ss');
+		//console.log("current moemt form sa is----",momentform);
+		//const serverTime = moment().unix();
+		//const serverTime2 = moment.unix(serverTime).format('YYYY-MM-DD HH:mm:ss')
+		const currentDate = new Date(mString);
+		
+		console.log("current date is----",currentDate);
+		// Get the date components
+		const year = currentDate.getFullYear();
+		const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+		const day = String(currentDate.getDate()).padStart(2, '0');
+		console.log("current datessbs is----",year, month, day);
+		// Get the time components
+		const hours = String(currentDate.getHours()).padStart(2, '0');
+		const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+		const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+		console.log("current datessbs is----",hours, minutes, seconds);
+		// Format the date and time
+		const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+		console.log("current datessbs is----",formattedDateTime);
+		// Print the result
+		//data["project_post_format_date"] = formattedDateTime
+		data["project_post_format_date"] = moment().format('YYYY-MM-DD HH:mm:ss');
+		console.log("data[project_post_format_date]-----",data["project_post_format_date"]);
+
+		
+
 		if (data.visibility.toLowerCase() == "private") {
 			data["is_private"] = 1;
 			data["pro_job"] = 0;
+			data["visibility"] = "Private";
 		} else if (data.visibility.toLowerCase() == "public") {
 			data["pro_job"] = 0;
 			data["is_private"] = 0;
+			data["visibility"] = "Public";
 		}
 		else if (data.visibility.toLowerCase() == "pro") {
 			data["pro_job"] = 1;
 			data["is_private"] = 0;
+			data["visibility"] = "Pro";
 		}
 
 		data["show_release"] = 0
 
-		data["country_code"] = 1;
+		data["country_code"] = 2;
+		data["site_uk"] = 1; 
 		data["creator_id"] = user.id;
-		data["project_post_date"] = moment().format("YYYY MM DD");
+		data["project_post_date"] = moment().format("YYYY-MM-DD");
 
-		const now = new Date();
+		console.log("project post date1234--->>",data["project_post_date"]);
+
+		
+		
+		const mString2 = moment().format('YYYY-MM-DD HH:mm:ss');
+		const now = new Date(mString2);
 		const afterDays = new Date(now.setDate(now.getDate() + data.post_for));
 		data["project_expiry_date"] = afterDays.toISOString().slice(0, 10);
 
 		data["post_for"] = moment().add(data.post_for, "days").unix();
+		data["created"] = moment().add(data.created, "days").unix();
+		data["start"] = moment().add(data.created, "days").unix();
 		let concatenatedData = files.join(',');
 		data["attachment_name"] = concatenatedData
 		// project_exp_date = YYYY MM DD
@@ -936,7 +1105,7 @@ const api_data_rep: object = {
 				}
 			})
 
-			sendMail(user.email, subject, body);
+			//sendMail(user.email, subject, body);
 
 			// email to supplier
 
@@ -945,7 +1114,7 @@ const api_data_rep: object = {
 				"!creatorname": user.user_name,
 				"!projectid": project.id,
 				"!projectname": project.project_name,
-				"!projecturl": `https://35.179.7.135/project/${project.project_name}/${project.id}`
+				"!projecturl": `https://machining-4u.co.uk/project/${project.project_name}/${project.id}`
 
 			}
 
@@ -1043,6 +1212,32 @@ const api_data_rep: object = {
 		// file upload
 		let files = await uploadFile(req, res);
 
+
+
+
+
+		const currentDate = new Date();
+
+		// Get the date components
+		const year = currentDate.getFullYear();
+		const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+		const day = String(currentDate.getDate()).padStart(2, '0');
+
+		// Get the time components
+		const hours = String(currentDate.getHours()).padStart(2, '0');
+		const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+		const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+
+		// Format the date and time
+		const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+		// Print the result
+		let t = moment();
+		data["project_post_format_date"] = t.format('YYYY-MM-DD HH:mm:ss');
+		console.log("project_post_format_date is", t)
+
+
+
 		if (data.visibility.toLowerCase() == "private") {
 			data["is_private"] = 1;
 		} else {
@@ -1052,11 +1247,12 @@ const api_data_rep: object = {
 		data["creator_id"] = 0;
 		data["project_post_date"] = moment().format("YYYY MM DD");
 
-		const now = new Date();
+		const now = new Date(moment().format('YYYY-MM-DD HH:mm:ss'));
 		const afterDays = new Date(now.setDate(now.getDate() + data.post_for));
 		data["project_expiry_date"] = afterDays.toISOString().slice(0, 10);
 
 		data["post_for"] = moment().add(data.post_for, "days").unix();
+		data["created"] = moment().add(data.created, "days").unix();
 		// project_exp_date = YYYY MM DD
 
 		if (project) {
@@ -1089,16 +1285,20 @@ const api_data_rep: object = {
 		}
 
 		// file upload
-		let file = null;
+		
+
 
 		if (req.files?.file) {
-			file = await uploadsendmsgFile(req, res);
+			let file = await uploadFile(req, res);
+			let concatenatedData = file.join(',');
+			data["bid_file"] = concatenatedData;
 		}
 
 
-		if (file != null) {
-			let concatenatedData = file.join(',');
-			data["bid_file"] = concatenatedData;
+		if (data?.bid_amount == 0) {
+			data["no_offer"] = 2
+		} else {
+			data["no_offer"] = 1
 		}
 
 
@@ -1136,7 +1336,7 @@ const api_data_rep: object = {
 				"!project_title": String(project.project_name),
 				"!supplier_email": progemail?.email,
 				"!project_name": String(project.project_name),
-				"!project_url": `https://35.179.7.135/project/${project.project_name}/${project.id}`
+				"!project_url": `https://machining-4u.co.uk/machining/${project.project_name.split(" ").join("-")}-${project?.id}`
 			}
 	
 			
@@ -1218,15 +1418,17 @@ const api_data_rep: object = {
 	
 	
 			const api_data_rep: object = {
-				"!supplier_username": progemail?.user_name,
-				"!project_title": String(project.project_name),
-				"!supplier_email": progemail?.email
+				"!supplier_name": progemail?.user_name,
+				"!project_name": String(project.project_name),
+				"!supplier_email": progemail?.email,
+				"!project_details": `https://machining-4u.co.uk/machining/${project.project_name.split(" ").join("-")}-${project?.id}`,
+
 			}
 	
 	
 	
 	
-			let task_id = 6;
+			let task_id = 84;
 	
 			const mailData = await models.email_templates.findOne({
 				where: {
@@ -1287,7 +1489,7 @@ const api_data_rep: object = {
 	
 			//let type = "profile_update";
 			// await user.save();
-			sendMail(custemail?.email, subject, body);
+		 sendMail(custemail?.email, subject, body);
 	
 		}
 
@@ -1313,19 +1515,35 @@ const api_data_rep: object = {
 			return R(res, false, "No Bid Found");
 		}
 
-		// file upload
-		let file = null;
 
-		if (req.files?.file) {
-			file = await uploadsendmsgFile(req, res);
+		if (data?.bid_amount == 0) {
+			data["no_offer"] = 2
+		} else {
+			data["no_offer"] = 1
 		}
+
+		// file upload
+		
 
 		await bid.update(data);
 
+		console.log("Files are:-", req.files);
 
-		if (file != null) {
+		const date = moment.unix(Number(bid?.bid_time));
+
+		const year = date.format('YYYY');
+		const month = date.format('MMMM');
+
+
+		if (req.files?.file) {
+			//let file = await uploadFile(req, res);
+			let file = await uploadadditionalFile(req, res, { year: year, month: month });
 			let concatenatedData = file.join(',');
-			bid.update({ bid_file: Sequelize.literal(`concat(bid_file, ',', '${concatenatedData}')`) })
+			if (bid?.bid_file != null && bid?.bid_file != "") {
+				bid.update({ bid_file: Sequelize.literal(`concat(bid_file, ',', '${concatenatedData}')`) })
+			} else {
+				bid?.update({ bid_file: concatenatedData })
+			}
 		}
 
 		let task_id = 86;
@@ -1351,7 +1569,7 @@ const api_data_rep: object = {
 		const api_data_rep: object = {
 			"!provider_name": machinist?.user_name,
 			"!project_name": project?.project_name,
-			"!project_url": `https://35.179.7.135/project/${project?.project_name}/${project?.id}`
+			"!project_url": `https://machining-4u.co.uk/`
 		}
 
 		const mailData = await models.email_templates.findOne({
@@ -1408,8 +1626,11 @@ const api_data_rep: object = {
 				subject = subject.replace(re, site_mail_data[key])
 			}
 		})
+	let b2= `<p>!provider_name modified his&nbsp;offer for your project &quot;!project_name&quot;.</p><p>To see the updated offer: <a href="!project_url">click here</a></p><p>Kind Regards,</p><p>!site_name</p><p>!site_url</p>`
 
-		sendMail(customer?.email, subject, body);
+		console.log("email for edit bid------>>>>>>",customer?.email, subject, `${body}`);
+
+	 sendMail(customer?.email, subject, String(body));
 
 		return R(res, true, "Offer updated", bid);
 	}),
@@ -1460,10 +1681,12 @@ const api_data_rep: object = {
 			if (!bid) {
 				return R(res, false, "Invalid	 Bid");
 			}
-
+			var bidTime = new Date();
 			project.programmer_id = user.id;
 			project.project_status = '1';
-
+			project.bid_select_date = bidTime;
+			project.project_award_date_format = bidTime;
+			project.project_award_date = moment().unix();
 			await project.save();
 
 			if (!req.user?.id) {
@@ -1472,9 +1695,10 @@ const api_data_rep: object = {
 			var today = new Date();
 
 			let transaction = await models.transactions.create({
-				amount: bid.bid_amount || 0,
-				amount_gbp: bid.bid_amount_gbp || 0,
-				type: "PROJECT AWARDED",
+				amount: bid.bid_amount_gbp || 0,
+				amount_gbp: bid.bid_amount || 0,
+				//type: "PROJECT AWARDED",
+				type: "Escrow Transfer",
 
 				// customer id
 				creator_id: req.user?.id,
@@ -1483,13 +1707,14 @@ const api_data_rep: object = {
 				// machinist id
 				provider_id: user.id,
 				reciever_id: user.id,
-				status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
+				//status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
+				status: "Pending",
+				country_code : 2 ,
+				transaction_time: moment().unix(), // as status
 
-				//	status: "PENDING",
-				transaction_time: 1, // as status
-
-				description: "Selected the machinist",
+				description: "Paypal",
 				project_id: project.id,
+				
 			});
 
 			
@@ -1508,13 +1733,11 @@ const api_data_rep: object = {
 
 			let notifs = await models.notif_email_list.create(notifdata)
 			//console.log("notif created -->", notifs);
-			let task_id = 7;
+			let task_id = 95;
 
 			const api_data_rep: object = {
 				"!project_title": project.project_name,
-				"!buyer_username": user?.user_name,
-				"!buyer_email": buyer?.email,
-				"!user_name": user?.user_name
+				"!programmer_name": user?.user_name
 
 			}
 
@@ -1709,14 +1932,15 @@ const api_data_rep: object = {
 		await transaction_details.update({
 			//amount: data.amount,
 			amount_gbp: transaction_details.amount_gbp,
-			type: "DEPOSIT FUND",
+			type: "Escrow Transfer",
 
 			//			status: "SUCCESS",
-			status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
-			transaction_time: 1, // as status
+			//status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
+			status:"success",
+			transaction_time: moment().unix(), // as status
 
 
-			description: "PAYMENT IS DONE ",
+			description: "Paypal",
 		});
 
 		project.project_status = "4";
@@ -1741,7 +1965,7 @@ const api_data_rep: object = {
 			"!bid_amount": transaction_details.amount_gbp,
 			"!shipping_date": project.bids[0].bid_days,
 			"!amount": transaction_details.amount_gbp,
-			"!project_url": `https://35.179.7.135/project/${project.project_name}/${project.id}`
+			"!project_url": `https://machining-4u.co.uk/project/${project.project_name}/${project.id}`
 
 		}
 
@@ -1834,10 +2058,10 @@ const api_data_rep: object = {
 			"!project_title": project.project_name,
 			"!username": user?.user_name,
 			"!bid_amount": transaction_details.amount,
-			"!withdraw_url":`https://35.179.7.135/auth/sign-in`,
+			"!withdraw_url":`https://machining-4u.co.uk/auth/sign-in`,
 			"!amount": transaction_details.amount_gbp,
 			"!supplier_name": supplier?.user_name,
-			"!delvry_date": project.enddate
+			"!delvry_date": project.bids[0].bid_days
 		}
 
 		const mailData_cus = await models.email_templates.findOne({
@@ -1923,6 +2147,7 @@ const api_data_rep: object = {
 		const machinists = await models.transactions.findAll({
 			where: {
 				reciever_id: req.query.machinist_id?.toString(),
+				status: "Completed",
 
 			 },
 			// attributes: {
@@ -1954,9 +2179,17 @@ const api_data_rep: object = {
 				},
 				{
 					model: models.users,
-					as: "programmer",
+					as: "reciever",
 					where: {
 						id: { [Op.col]: "transactions.reciever_id" },
+					},
+					required: false,
+				},
+				{
+					model: models.invoices,
+					as: "invoices",
+					where: {
+						id: { [Op.col]: "transactions.project_id" },
 					},
 					required: false,
 				},
@@ -2286,7 +2519,7 @@ const api_data_rep: object = {
 
 			//console.log(" review data ------////--> ", data);
 
-			let project_rating: float = (data.provider_rate1 + data.provider_rate2 + data.provider_rate3 + data.provider_rate4) / 4;
+			let project_rating = (data.provider_rate1 + data.provider_rate2 + data.provider_rate3 + data.provider_rate4) / 4;
 
 			let project = await models.projects.findByPk(data.project_id);
 
@@ -2294,6 +2527,8 @@ const api_data_rep: object = {
 				return R(res, false, "Project not found");
 			}
 			let currDate = new Date();
+
+console.log("The rating submitted is:-",project_rating);
 
 			let review = await models.reviews.create({
 				rating: project_rating,
@@ -2305,7 +2540,8 @@ const api_data_rep: object = {
        				 provider_rate2: data.provider_rate2,
         				provider_rate3: data.provider_rate3,
        					 provider_rate4: data.provider_rate4,
-				review_post_date: currDate
+				review_post_date: currDate,
+				country_code : 2,
 			});
 
 //console.log("review created------>", review);
@@ -2343,7 +2579,7 @@ const api_data_rep: object = {
 
 			const api_data_rep_sup: object = {
 				"!username": supplier?.user_name,
-				"!public_profile_link": `https://35.179.7.135/account/public-profile`
+				"!public_profile_link": `https://machining-4u.co.uk/account/public-profile/${supplier?.id}`
 
 			}
 
@@ -2472,91 +2708,28 @@ const api_data_rep: object = {
 		}
 
 
-		if (user?.role_id == 1) {
+		const opt = {
+			page: parseInt(req.query.page?.toString() || "0"),
+			limit: parseInt(req.query.limit?.toString() || "10"),
+			user_id: req.query.user_id?.toString() || null,
+		};
 
-			let proj = await models.projects.findAll({
-				where: {
-					
-					creator_id: req.user?.id
-				},
-				include: [
-					{
-						model: models.messages,
-						as: "messages",
-						where: {
-							project_id: { [Op.col]: "projects.id" },
-						},
-						include: [
-							{
-								model: models.users,
-								as: "from",
-								where: {
-									id: { [Op.col]: "messages.from_id" },
-								},
-								attributes: [
-									"user_name"
-								]
-							},
-						]
-					},
-					
 
-				],
+		const limit = opt.limit;
+		const offset = opt.page * opt.limit;
+
+		const latestMessages = await db.sequelize.query('SELECT messages.*, projects.project_name, users.user_name FROM messages LEFT JOIN projects ON messages.project_id = projects.id LEFT JOIN users ON messages.from_id = users.id WHERE messages.id IN ( SELECT MAX(id) FROM messages GROUP BY project_id ) AND (messages.from_id = :user_id OR messages.to_id = :user_id) ORDER BY messages.created DESC LIMIT :limit OFFSET :offset', { model: models.messages, replacements: { limit, offset, user_id: req.user?.id } })
+
+		const latestMessages2 = await db.sequelize.query('SELECT messages.*, projects.project_name, users.user_name FROM messages LEFT JOIN projects ON messages.project_id = projects.id LEFT JOIN users ON messages.from_id = users.id WHERE messages.id IN ( SELECT MAX(id) FROM messages GROUP BY project_id ) AND (messages.from_id = :user_id OR messages.to_id = :user_id) ORDER BY messages.created DESC', { model: models.messages, replacements: { user_id: req.user?.id } })
+
+
+		console.log("latest are:- ", latestMessages)
+			return R(res, true, "Messages list", latestMessages, {
+				current_page: opt.page,
+				total_count: latestMessages2.length,
+				total_pages: Math.floor(latestMessages2.length / opt.limit),
 			});
-
-			let arr = [];
-			for (let i = 0; i < proj.length; i++) {
-				arr.push({message: proj[i].messages[proj[i].messages.length - 1], project:proj[i] })
-			}
-
-			arr.sort((a, b) => b.message.created.valueOf() - a.message.created.valueOf());
-
-			console.log("array of last messages", arr)
-
-			return R(res, true, "Messages list", arr);
-
-
-		} else {
-			let proj = await models.projects.findAll({
-				where: {
-					
-					programmer_id: req.user?.id,
-				},
-				include: [
-					{
-						model: models.messages,
-						as: "messages",
-						where: {
-							project_id: { [Op.col]: "projects.id" },
-						},
-						include: [
-							{
-								model: models.users,
-								as: "from",
-								where: {
-									id: { [Op.col]: "messages.from_id" },
-								},
-								attributes: [
-									"user_name"
-								]
-							},
-						]
-					},
-					
-
-				],
-			});
-			let arr = [];
-			for (let i = 0; i < proj.length; i++) {
-				arr.push({message: proj[i].messages[proj[i].messages.length - 1], project:proj[i] })
-			}
-
-			arr.sort((a, b) => b.message.created.valueOf() - a.message.created.valueOf());
-
-			console.log("array of last messages", arr)
-
-			return R(res, true, "Messages list", arr);
-		}
+		
 
 	}),
 	send_msg: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -2570,6 +2743,7 @@ const api_data_rep: object = {
 				id: req.user?.id
 			}
 		})
+		console.log("supplier name---->", usr); 
 
 
 		if (!project) {
@@ -2577,14 +2751,13 @@ const api_data_rep: object = {
 		}
 
 
-		let file = null;
+		//let file = null;
 
 		// file upload
-		if (req.files?.file) {
-			file = await uploadsendmsgFile(req, res);
-		}
+		
 
-		if (file!= null) {
+		if (req.files?.file) {
+			let file = await uploadsendmsgFile(req, res);
 			let concatenatedData = file.join(',');
 			data["attach_file"] = concatenatedData;
 		}
@@ -2650,7 +2823,7 @@ const api_data_rep: object = {
 				sup_id: project.programmer_id,
 				attach_file: concatenatedData,
 				upload_date: new Date(),
-				approved: 0,
+				approved: 1,
 				country_code: 0,
 				adminApprove: 0
 			}
@@ -2682,7 +2855,9 @@ const api_data_rep: object = {
 		const api_data_rep: object = {
 			"!project_name": project.project_name,
 			"!message": message.message,
-			"!message_url": "abc.com",
+			"!message_url": `http://35.179.7.135/machining/msg/${project?.id}/${message.from_id}/${message.to_id}`,
+			"!supplier": usr?.user_name
+			
 		}
 
 		let task_id = 96;
@@ -2815,16 +2990,11 @@ const api_data_rep: object = {
 		}
 
 		// file upload
-		let file = null;
+		
+
 
 		if (req.files?.file) {
-			file = await uploadsendmsgFile(req, res);
-		}
-
-		//console.log("Main file name", file)
-
-
-		if (file != null) {
+			let file = await uploadFile(req, res);
 			let concatenatedData = file.join(',');
 			data["attachment"] = concatenatedData;
 		}
@@ -2849,13 +3019,88 @@ const api_data_rep: object = {
 			}
 		})
 
+		 let macdetails2 = await models.users.findOne({
+			where: {
+				id: message.send_from
+			}
+		})
+        if (macdetails?.role_id==1) {
+            const api_data_rep: object = {
+                "!project_name": project.project_name,
+                "!supplier_name ": macdetails2?.user_name,
+                "!message": message.msg_box,
+                "!project_url": `https://machining-4u.co.uk/machining/${project.project_name.split(" ").join("-")}-${project?.id}`,
+            }
+    
+            let task_id = 87;
+    
+            const mailData = await models.email_templates.findOne({
+                where: {
+                    id: task_id,
+                    country_code: "en"
+                },
+                attributes: ["title", "mail_subject", "mail_body"],
+            });
+    
+            var body = mailData?.mail_body;
+            var title = mailData?.title;
+            var subject = mailData?.mail_subject;
+    
+            (Object.keys(api_data_rep) as (keyof typeof api_data_rep)[]).forEach(key => {
+                if (body?.includes(key)) {
+                    var re = new RegExp(key, 'g');
+                    body = body.replace(re, api_data_rep[key])
+                }
+    
+                if (title?.includes(key)) {
+                    var re = new RegExp(key, 'g');
+                    title = title.replace(re, api_data_rep[key])
+                }
+    
+                if (subject?.includes(key)) {
+                    var re = new RegExp(key, 'g');
+                    subject = subject.replace(re, api_data_rep[key])
+                }
+    
+            });
+    
+    
+            (Object.keys(site_mail_data) as (keyof typeof site_mail_data)[]).forEach(key => {
+    
+    
+                if (body?.includes(key)) {
+    
+                    var re = new RegExp(key, 'g');
+    
+                    body = body.replace(re, site_mail_data[key])
+                }
+    
+                if (title?.includes(key)) {
+                    var re = new RegExp(key, 'g');
+                    title = title.replace(re, site_mail_data[key])
+                }
+    
+                if (subject?.includes(key)) {
+                    var re = new RegExp(key, 'g');
+                    subject = subject.replace(re, site_mail_data[key])
+                }
+    
+            })
+    
+            console.log("macdetails----------->", macdetails?.email)
+            sendMail(macdetails?.email, subject, body);
+        }
+        else{
+
+        
 		const api_data_rep: object = {
 			"!project_name": project.project_name,
 			"!message": message.msg_box,
-			"!message_url": "abc.com"
+            "!project_url": `https://machining-4u.co.uk/machining/${project.project_name.split(" ").join("-")}-${project?.id}`,
+
 		}
 
-		let task_id = 96;
+		let task_id = 89;
 
 		const mailData = await models.email_templates.findOne({
 			where: {
@@ -2912,7 +3157,7 @@ const api_data_rep: object = {
 
 		console.log("macdetails----------->", macdetails?.email)
 		sendMail(macdetails?.email, subject, body);
-
+    }
 		return R(res, true, "Message Sent", message);
 	}),
 
@@ -2984,8 +3229,10 @@ const api_data_rep: object = {
 			delete project.id;
 			project.creator_id = user?.id;
 			project.show_release = 0
+			console.log("before create projects are:-", project)
 
 			let entry = await models.projects.create(project);
+			
 
 			if (images && images?.length) {
 				let concatenatedData = images.join(',');
@@ -2993,6 +3240,7 @@ const api_data_rep: object = {
 				await entry.update({ attachment_name: concatenatedData })
 
 			}
+			console.log("project created through temp---->", entry);
 		}
 
 		return R(res, true, "Project Added Successfully", {});
@@ -3018,7 +3266,7 @@ const api_data_rep: object = {
 				include: [
 					{
 						model: models.projects,
-						as: "projects",
+						as: "project",
 						where: {
 							id: { [Op.col]: "project_id" },
 						},
@@ -3027,7 +3275,7 @@ const api_data_rep: object = {
 					},
 					{
 						model: models.users,
-						as: "machanic",
+						as: "provider",
 						where: {
 							id: { [Op.col]: "provider_id" },
 						},
@@ -3057,7 +3305,7 @@ const api_data_rep: object = {
 			include: [
 				{
 					model: models.projects,
-					as: "projects",
+					as: "project",
 					where: {
 						id: { [Op.col]: "project_id" },
 					},
@@ -3066,7 +3314,7 @@ const api_data_rep: object = {
 				},
 				{
 					model: models.users,
-					as: "machanic",
+					as: "provider",
 					where: {
 						id: { [Op.col]: "provider_id" },
 					},
@@ -3110,7 +3358,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				include: [
 					{
 						model: models.projects,
-						as: "projects",
+						as: "project",
 						where: {
 							id: { [Op.col]: "project_id" },
 						},
@@ -3119,7 +3367,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 					},
 					{
 						model: models.users,
-						as: "machanic",
+						as: "provider",
 						where: {
 							id: { [Op.col]: "provider_id" },
 						},
@@ -3149,7 +3397,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 			include: [
 				{
 					model: models.projects,
-					as: "projects",
+					as: "project",
 					where: {
 						id: { [Op.col]: "project_id" },
 					},
@@ -3158,7 +3406,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				},
 				{
 					model: models.users,
-					as: "machanic",
+					as: "provider",
 					where: {
 						id: { [Op.col]: "provider_id" },
 					},
@@ -3271,7 +3519,8 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
 			const projects = await models.projects.findAndCountAll({
 				where: {
-					project_status: 5
+					project_status: 5,
+					country_code: 2
 				},
 				include: [
 					{
@@ -3298,7 +3547,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 					},
 					{
 						model: models.transactions,
-						as: "transaction",
+						as: "transactions",
 						where: {
 
 							project_id: { [Op.col]: "projects.id" },
@@ -3314,7 +3563,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				],
 				limit: opt.limit,
 				offset: opt.page * opt.limit,
-
+				order: [["project_post_format_date", "DESC"]],
 
 			})
 
@@ -3356,6 +3605,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				const projects = await models.projects.findAll({
 					where: {
 						project_status: 5,
+						country_code: 2,
 						project_name: {
 							[Op.substring]: el
 						},
@@ -3386,7 +3636,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 						},
 						{
 							model: models.transactions,
-							as: "transaction",
+							as: "transactions",
 							where: {
 
 								project_id: { [Op.col]: "projects.id" },
@@ -3402,6 +3652,7 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 					],
 					limit: opt.limit,
 					offset: opt.page * opt.limit,
+					order: [["project_post_format_date", "DESC"]],
 				})
 
 				//console.log("result projects", projects.length);
@@ -3502,11 +3753,17 @@ customer_reviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
     }),
 
 allreviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
-		let reviews = await models.reviews.findAll({
+
+		const opt = {
+			page: parseInt(req.query.page?.toString() || "0"),
+			limit: parseInt(req.query.limit?.toString() || "10"),
+			
+		};
+		let reviews = await models.reviews.findAndCountAll({
 			include: [
 				{
 					model: models.users,
-					as: "machanic",
+					as: "provider",
 					where: {
 						id: { [Op.col]: "provider_id" },
 					},
@@ -3515,15 +3772,16 @@ allreviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				},
 				{
 					model: models.projects,
-					as: "projects",
+					as: "project",
 					where:{
 						id: {[Op.col]: "project_id"},
+						country_code : 2,
 					}
 				},
 
 				{
 					model: models.users,
-					as: "customer",
+					as: "buyer",
 					where: {
 						id: { [Op.col]: "buyer_id" },
 					},
@@ -3532,34 +3790,38 @@ allreviews: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				},
 				
 				
-			]
+			],
+		order: [["review_post_date", "DESC"]],
+		limit: opt.limit,
+		offset: opt.page * opt.limit,
 		});
 		const obj: any = {
 			hrsdiff: ""
 		}
-
-		for (let i = 0; i < reviews.length; i++) {
-			let arr = []
-			const datetime: any = reviews[i].review_post_date;
-			const baseDate = new Date(datetime); // create a new Date object for the base date/time
-			const currentDate = new Date(); // create a new Date object for the current date/time
-			const diff = currentDate.getTime() - baseDate.getTime(); // calculate the time difference in milliseconds
-			const hoursDiff = diff / (1000 * 60 * 60); // convert milliseconds to hours
-
-			obj.hrsdiff = hoursDiff
-
-			arr.push(obj)
-		}
-		console.log("reviews from backend:-", reviews, obj)
-		return R(res, true, "All reviews", reviews, { reviewdate: obj });
+		let list = reviews.rows;
+		let count = reviews.count;
+		
+		//console.log("reviews from backend:-", reviews, obj)
+		return R(res, true, "All reviews", list,{
+					current_page: opt.page,
+					total_count: count,
+					total_pages: Math.floor(count / opt.limit),
+		});
 	}),
+
+
+
 all_lists: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
 		console.log("going for plist")
 
-		
 		let projects = await models.project_images.findAll({
-			order: [["project_post_date", "DESC"]]
+			where: {
+				adminApprove: 1,
+				approved: 2
+			},
+			order: [["project_post_date", "DESC"]],
+			limit:10
 		})
 
 		//let arr: string = [];
@@ -3570,18 +3832,39 @@ all_lists: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 			let obj = {}
 			let attachment = projects[i].attach_file
 			let project_name = projects[i].project_name
+			let created = projects[i].upload_date
 			let new_attach: any = attachment.split(",")
-			new_attach.map((m: any) => {
-				obj = {
-					a: m,
-					b: project_name
+
+			let apr = await models.admin_apprv_imgs.findOne({
+				where: {
+					id: "1"
 				}
-				arr.push(obj)
 			})
+
+			for (let i = 0; i < new_attach.length; i++) {
+				if (apr?.images.includes(new_attach[i])) {
+					obj = {
+						a: new_attach[i],
+						b: project_name,
+						c: created
+					}
+					arr.push(obj)
+					break
+				}
+			}
+
+
+			// new_attach.map((m: any) => {
+			// 	obj = {
+			// 		a: m,
+			// 		b: project_name
+			// 	}
+			// 	arr.push(obj)
+			// })
 			//arr = [...arr, new_attach]
 		}
 
-		console.log("new attach:-", arr)
+		console.log("coming from all-list:-", arr)
 
 		return R(res, true, "project all list", projects, {
 		});
@@ -3591,36 +3874,69 @@ all_lists: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
 		//console.log("going for plist")
 
-		let projects = await models.project_images.findAll({
-			order: [["project_post_date", "DESC"]]
+		const opt = {
+			page: parseInt(req.query.page?.toString() || "0"),
+			limit: parseInt(req.query.limit?.toString() || "10"),
+		};
+
+		let projects: any = await models.project_images.findAll({
+			where: {
+				adminApprove: 1,
+				approved: 2
+			},
+			order: [["project_post_date", "DESC"]],
+			limit: 500,
+			offset: opt.page * opt.limit,
+		})
+
+		let apr = await models.admin_apprv_imgs.findOne({
+			where: {
+				id: "1"
+			}
 		})
 
 		//let arr: string = [];
 
 		let arr: any = []
+		let cnt: number = 0;
 
 		for (let i = 0; i < projects.length; i++) {
 			let obj = {}
-			if (projects[i].adminApprove == 1) {
-				let attachment = projects[i].attach_file
-				let project_name = projects[i].project_name
-				let id = projects[i].project_id
-				let new_attach: any = attachment.split(",")
-				new_attach.map((m: any) => {
+
+			let attachment = projects[i].attach_file
+			let project_name = projects[i].project_name
+			let id = projects[i].project_id
+			let date = projects[i].upload_date
+			let new_attach: any = attachment.split(",")
+			new_attach.map((m: any) => {
+				if (apr?.images.includes(m) && cnt < opt.limit) {
 					obj = {
 						a: m,
 						b: project_name,
-						c: id
+						c: id,
+						d: date
 					}
 					arr.push(obj)
-				})
+					cnt++;
+				}
+			})
+
+			if (cnt >= opt.limit) {
+				break;
 			}
+
 			//arr = [...arr, new_attach]
 		}
 
 		console.log("new attach:-", arr)
 
+		//let list = projects.rows;
+		let count = projects.length;
+
 		return R(res, true, "project all list", arr, {
+			current_page: opt.page,
+			total_count: arr.length,
+			total_pages: Math.floor(count / opt.limit),
 		});
 	}),
 
@@ -3736,6 +4052,10 @@ update_release_payment: asyncWrapper(async (req: UserAuthRequest, res: Response)
 		data.created = moment().unix();
 		data.to_id = req.body.to_id;
 
+
+		data["buyer_message_status"] = "U";
+        	data["programmer_message_status"] = "R";
+
 		console.log("data before api call: -", data)
 		let msg = await models.messages.create(data)
 
@@ -3770,6 +4090,75 @@ update_release_payment: asyncWrapper(async (req: UserAuthRequest, res: Response)
 		}
 
 		// console.log("msg", msg)
+
+		let mail_to = await models.users.findOne({
+			where: {
+				id: msg?.to_id,
+			}
+		})
+		const api_data_rep: object = {
+			"!content" : `${msg.message.replace(/\n/g, '<br>')}`,
+		};
+
+
+		let task_id = 112;
+    
+		const mailData = await models.email_templates.findOne({
+			where: {
+				id: task_id,
+				country_code: "en"
+			},
+			attributes: ["title", "mail_subject", "mail_body"],
+		});
+
+		var body = mailData?.mail_body;
+		var title = mailData?.title;
+		var subject = mailData?.mail_subject;
+
+		(Object.keys(api_data_rep) as (keyof typeof api_data_rep)[]).forEach(key => {
+			if (body?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				body = body.replace(re, api_data_rep[key])
+			}
+
+			if (title?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				title = title.replace(re, api_data_rep[key])
+			}
+
+			if (subject?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				subject = subject.replace(re, api_data_rep[key])
+			}
+
+		});
+
+
+		(Object.keys(site_mail_data) as (keyof typeof site_mail_data)[]).forEach(key => {
+
+
+			if (body?.includes(key)) {
+
+				var re = new RegExp(key, 'g');
+
+				body = body.replace(re, site_mail_data[key])
+			}
+
+			if (title?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				title = title.replace(re, site_mail_data[key])
+			}
+
+			if (subject?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				subject = subject.replace(re, site_mail_data[key])
+			}
+
+		})
+
+		console.log("macdetails----------->", mail_to?.email)
+		//body = body?.replace(/\n/g, '<br>');
+		sendMail(mail_to?.email, subject, body);
 		return R(res, true, "Confirmation sent", msg)
 	}),
 
@@ -3790,6 +4179,10 @@ shipping_message_send: asyncWrapper(async (req: UserAuthRequest, res: Response) 
 		data.project_id = req.body.project_id;
 		data.created = moment().unix();
 		data.to_id = req.body.to_id;
+
+		data["buyer_message_status"] = "U";
+        	data["programmer_message_status"] = "R";
+
 		console.log("data before api call: -", data)
 
 		let projects = await models.projects.findOne({
@@ -3848,7 +4241,7 @@ shipping_message_send: asyncWrapper(async (req: UserAuthRequest, res: Response) 
 				attach_file: concatenatedData,
 				upload_date: currentDate,
 				sup_id: 0,
-				approved: 0,
+				approved: 1,
 				country_code: 0,
 				adminApprove: 0
 			}
@@ -3878,6 +4271,10 @@ shipping_message_send: asyncWrapper(async (req: UserAuthRequest, res: Response) 
 		data.project_id = req.body.project_id;
 		data.created = moment().unix();
 		data.to_id = req.body.to_id;
+
+		data.buyer_message_status = "U";
+        	data.programmer_message_status = "R";
+
 		console.log("data before api call: -", data)
 
 		let projects = await models.projects.findOne({
@@ -3911,6 +4308,74 @@ shipping_message_send: asyncWrapper(async (req: UserAuthRequest, res: Response) 
 
 
 		console.log("msg", msg)
+
+		let mail_to = await models.users.findOne({
+			where: {
+				id: msg?.to_id,
+			}
+		})
+		const api_data_rep: object = {
+			"!content" : `${msg.message.replace(/\n/g, '<br>')}`,
+		};
+
+
+		let task_id = 113;
+    
+		const mailData = await models.email_templates.findOne({
+			where: {
+				id: task_id,
+				country_code: "en"
+			},
+			attributes: ["title", "mail_subject", "mail_body"],
+		});
+
+		var body = mailData?.mail_body;
+		var title = mailData?.title;
+		var subject = mailData?.mail_subject;
+
+		(Object.keys(api_data_rep) as (keyof typeof api_data_rep)[]).forEach(key => {
+			if (body?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				body = body.replace(re, api_data_rep[key])
+			}
+
+			if (title?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				title = title.replace(re, api_data_rep[key])
+			}
+
+			if (subject?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				subject = subject.replace(re, api_data_rep[key])
+			}
+
+		});
+
+
+		(Object.keys(site_mail_data) as (keyof typeof site_mail_data)[]).forEach(key => {
+
+
+			if (body?.includes(key)) {
+
+				var re = new RegExp(key, 'g');
+
+				body = body.replace(re, site_mail_data[key])
+			}
+
+			if (title?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				title = title.replace(re, site_mail_data[key])
+			}
+
+			if (subject?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				subject = subject.replace(re, site_mail_data[key])
+			}
+
+		})
+
+		console.log("macdetails----------->", mail_to?.email)
+		sendMail(mail_to?.email, subject, body);
 		return R(res, true, "Confirmation sent", msg)
 		}
 	}),
@@ -3975,15 +4440,73 @@ request_release_funds: asyncWrapper(async (req: UserAuthRequest, res: Response) 
 			}
 		})
 
-		const api_data_rep: any = {
-			a: supplier?.user_name,
-			b: proj?.project_name
-		}
+			let mail_to = await models.users.findOne({
+			where: {
+				id: proj?.creator_id
+			}
+		})
+		const api_data_rep: object = {
+			"!user_name" : `${supplier?.user_name}`,
+			"!project_title" : `${proj?.project_name}`
+		};
+		let task_id = 114;
+    
+		const mailData = await models.email_templates.findOne({
+			where: {
+				id: task_id,
+				country_code: "en"
+			},
+			attributes: ["title", "mail_subject", "mail_body"],
+		});
 
-		var subject = "Payment request from your Machinist"
-		var body = `<p>Hello,</p> \n <p>Your Machinist ${api_data_rep.a} wishes to be paid for the project ${api_data_rep.b} jobs and asks for it to kindly release the money you paid to the order.</p> \n <p>If you received your machined parts and approve the quality of the machining work, kindly release the funds you paid for the order.</p> \n <p>Regards,</p> \n <p>Machining-4u</p> \n www.machining-4u.co.uk`
+		var body = mailData?.mail_body;
+		var title = mailData?.title;
+		var subject = mailData?.mail_subject;
 
-		sendMail(cust_name?.email, subject, body);
+		(Object.keys(api_data_rep) as (keyof typeof api_data_rep)[]).forEach(key => {
+			if (body?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				body = body.replace(re, api_data_rep[key])
+			}
+
+			if (title?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				title = title.replace(re, api_data_rep[key])
+			}
+
+			if (subject?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				subject = subject.replace(re, api_data_rep[key])
+			}
+
+		});
+
+
+		(Object.keys(site_mail_data) as (keyof typeof site_mail_data)[]).forEach(key => {
+
+
+			if (body?.includes(key)) {
+
+				var re = new RegExp(key, 'g');
+
+				body = body.replace(re, site_mail_data[key])
+			}
+
+			if (title?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				title = title.replace(re, site_mail_data[key])
+			}
+
+			if (subject?.includes(key)) {
+				var re = new RegExp(key, 'g');
+				subject = subject.replace(re, site_mail_data[key])
+			}
+
+		})
+
+		console.log("macdetails----------->", mail_to?.email)
+		sendMail(mail_to?.email, subject, body);
+
 		return R(res, true, "Confirmation sent", step)
 	}),
 
@@ -4196,7 +4719,31 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 					},
 					attributes: ["user_name"],
 					required: false,
-				}
+				},
+
+
+				{
+					model: models.users,
+					as: "creator",
+					where: {
+						id: { [Op.col]: "creator_id" },
+					},
+					attributes: ["user_name",  "id"],
+					required: false,
+				},
+
+
+
+				{
+						model: models.reviews,
+						as: "reviews",
+						where: {
+							project_id: { [Op.col]: "projects.id" },
+						},
+								attributes: ["rating", "comments", "review_post_date", "provider_rate1", "provider_rate2", "provider_rate3", "provider_rate4"],
+								required: false,
+
+					},
 			],
 
 
@@ -4255,7 +4802,7 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				include: [
 					{
 						model: models.projects,
-						as: "projects",
+						as: "project",
 						where: {
 							id: { [Op.col]: "project_id" },
 						},
@@ -4264,7 +4811,7 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 					},
 					{
 						model: models.users,
-						as: "machanic",
+						as: "provider",
 						where: {
 							id: { [Op.col]: "provider_id" },
 						},
@@ -4294,7 +4841,7 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 			include: [
 				{
 					model: models.projects,
-					as: "projects",
+					as: "project",
 					where: {
 						id: { [Op.col]: "project_id" },
 					},
@@ -4303,7 +4850,7 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 				},
 				{
 					model: models.users,
-					as: "machanic",
+					as: "buyer",
 					where: {
 						id: { [Op.col]: "buyer_id" },
 					},
@@ -4323,6 +4870,350 @@ public_me: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
 
 
+
+
+	}),
+
+
+
+
+
+
+
+
+offer_reviews_feedback: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+
+		console.log("The query from backend is", req.query)
+
+		let projectId = req.query.id?.toString();
+
+		let bids = await models.bids.findAll({
+			where: {
+				project_id: projectId
+			}
+		})
+
+		let arr = [];
+
+		for (let i = 0; i < bids.length; i++) {
+			let reviews = await models.reviews.findAll({
+				where: {
+					provider_id: bids[i]?.user_id,
+				}
+			})
+
+			//console.log("reviews are", reviews)
+			let public_avg_rating: number = 0;
+
+			if (reviews != null) {
+				let public_reviews: any = [];
+
+				public_reviews = reviews;
+
+				// public_reviews.forEach(function (curr: any) {
+				// 	public_avg_rating += curr?.rating;
+				// });
+
+				for (let i = 0; i < public_reviews.length; i++) {
+					public_avg_rating += Number(public_reviews[i]?.rating);
+				}
+
+				// public_reviews.map((m: any) => {
+				// 	public_avg_rating += m?.rating;
+				// })
+
+
+				public_avg_rating = Number(public_avg_rating / public_reviews?.length);
+
+				public_avg_rating = Number(public_avg_rating.toFixed(2));
+			}
+
+
+
+			let projects = await models.projects.findAndCountAll({
+				where: {
+					programmer_id: bids[i]?.user_id,
+					project_status: 5
+				}
+			})
+			let obj = {
+				id: bids[i]?.user_id,
+				totalproject: projects.count,
+				public_avg_rating: Number(public_avg_rating)
+			};
+			arr.push(obj)
+			console.log("public_avg_rat", public_avg_rating)
+		}
+
+
+
+		console.log(arr)
+
+		return R(res, true, "IIof", arr);
+
+
+	}),
+
+ 
+  project_finalise_image: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+	
+	let proj_img = await models.project_images.findOne({
+      where: {
+        project_id:req.query?.id?.toString(),
+      },
+    });
+		
+	if (proj_img?.approved == 2 && proj_img?.adminApprove == 1){
+
+ let new_attach: any = proj_img?.attach_file.split(",");
+
+    console.log("new attach before", new_attach);
+
+    let adap = await models.admin_apprv_imgs.findOne({
+      where: {
+        id: "1",
+      },
+    });
+    let newarr = [];
+
+    for (let i = 0; i < new_attach?.length; i++) {
+      if (adap?.images.includes(new_attach[i])) {
+    	
+         let obj = {
+               id: proj_img?.project_id,
+               project_name: proj_img?.project_name,
+               post_date: proj_img?.upload_date,
+		attach_file: new_attach[i],
+             };
+             newarr.push(obj);
+      }
+    }
+		
+    console.log("new attach is", new_attach);
+
+    return R(res, true, " project_finalise_image", newarr);
+
+
+		}
+	let emptyarr:any=[];
+	
+    return R(res, true, " project_finalise_image", emptyarr);
+
+
+
+
+}),
+
+save_invoice: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		
+		
+	let tid = req?.query.tid;
+	let invoice = await models.invoices.findOne({
+				where: {
+					transaction_id:String(tid)
+				}
+	})
+
+	if(!(invoice?.pdf_link)){
+	
+	let files = await uploadInvoice(req, res);
+	const currentDate = new Date();
+	const year = currentDate.getFullYear();
+	const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+	
+	
+	let invoicePath = `/pdf_generation/${year}/${month[currentDate.getMonth()]}/${files}`;
+	invoice?.update({ pdf_link: invoicePath });
+	}
+	else{
+		return R(res, true, "Invoice downloaded");
+	}
+	
+		
+
+	return R(res, true, "Invoice downloaded once");
+
+
+
+	}),
+
+get_additional_comment: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+
+
+		console.log("params is -------------------------> ", req?.query)
+
+
+		let project_description = await models.project_descriptions.findAll({
+			where: {
+				project_id: req?.query?.id?.toString()
+			}
+		});
+
+		if (!project_description) return
+
+		return R(res, true, " not project_finalise_image", project_description);
+
+	}),
+
+
+
+	add_desccomment: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+
+		console.log("body is ", req?.query)
+
+		let data = await Validate(res, ["project_id", "description"], schema.project.addComment, req?.body, {},);
+		console.log("data for additional comment add----->>", data)
+
+		const momentDt = moment();
+		console.log("current moemt is----", momentDt);
+		const mString = moment().format('YYYY-MM-DD HH:mm:ss');
+		const currentDate = new Date(mString);
+		console.log("current date is----", currentDate);
+		const year = currentDate.getFullYear();
+		const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+		const day = String(currentDate.getDate()).padStart(2, '0');
+		console.log("current datessbs is----", year, month, day);
+		const hours = String(currentDate.getHours()).padStart(2, '0');
+		const minutes = String(currentDate.getMinutes()).padStart(2, '0');
+		const seconds = String(currentDate.getSeconds()).padStart(2, '0');
+		console.log("current datessbs is----", hours, minutes, seconds);
+
+		data["post_date_time"] = moment().format("YYYY MM DD HH:mm:ss");
+		console.log("data[project_post_format_date]-----", data["post_date_time"]);
+		const project_desc = await models.project_descriptions.create(data);
+
+		console.log("files for additional", req?.files)
+
+		if (req?.files) {
+
+			
+			let proj = await models.projects.findOne({
+				where: {
+					id: req?.body?.project_id
+				}
+			})
+			if (!proj) {
+				return
+			}
+
+
+			const month = moment(proj?.project_post_date).format('MMMM');
+			const year = moment(proj?.project_post_date).format('YYYY');
+
+			console.log("year, month", year, month);
+			let files = await uploadadditionalFile(req, res, { month: month, year: year });
+			let concatenatedData = files.join(',');
+
+			proj?.update({ attachment_name: Sequelize.literal(`concat(attachment_name, ',', '${concatenatedData}')`) })
+		}
+
+
+
+		return R(res, true, "Comment Added", project_desc);
+
+	}),
+
+
+
+
+
+
+
+delete_additional_file: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+
+
+		let bid = await models.bids.findOne({
+			where: {
+				id: req?.body?.id.toString()
+			}
+		})
+
+		let file = req?.body?.filename?.toString();
+
+		console.log("the filename is ", file);
+
+		const valuesArray: any = bid?.bid_file?.split(',').filter(value => value !== file);
+		
+		console.log("values array is:-", valuesArray);
+
+		if (valuesArray?.length) {
+			const updatedfiles = valuesArray.join(",");
+			await bid?.update({ bid_file: updatedfiles });
+		} else {
+			await bid?.update({ bid_file: "" });
+		}
+
+
+
+		const date = moment.unix(Number(bid?.bid_time));
+
+		const year = date.format('YYYY');
+		const month = date.format('MMMM');
+
+		console.log("check for time--> ", month, year);
+
+
+		let files = await deleteadditionalFile(req, res, { month: month, year: year, file: file });
+
+		return R(res, true, "File has been deleted", files);
+
+	}),
+
+
+
+
+
+
+
+
+	delete_profile_picture: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		let user = await models.users.findOne({
+			where: {
+				id: req?.query?.id?.toString(),
+				prof_pic: req?.body?.prof_pic
+			}
+		})
+
+		if (!user) return R(res, false, "no user found", user)
+
+
+		await deleteprofilepic(req, res, req?.body?.prof_pic)
+		await user?.update({ prof_pic: "" })
+
+		return R(res, true, "Profile picture deleted", user)
+
+
+	}),
+
+
+	delete_portfolio_picture: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
+		console.log("id is", req?.query?.id?.toString())
+		let user = await models.users.findOne({
+			where: {
+				id: req?.query?.id?.toString(),
+				//prot_pic: req?.body?.prot_pic
+			}
+		})
+
+		if (!user) return R(res, false, "no user found", user)
+
+
+		const valuesArray: any = user?.prot_pic?.split(',').filter(value => value !== req?.body?.prot_pic);
+
+		console.log("values array is:-", valuesArray);
+
+		if (valuesArray?.length) {
+			const updatedfiles = valuesArray.join(",");
+			await user?.update({ prot_pic: updatedfiles });
+		} else {
+			await user?.update({ prot_pic: "" });
+		}
+
+
+		await deleteportfoliopic(req, res, req?.body?.prot_pic)
+		//await user?.update({ prof_pic: "" })
+
+		return R(res, true, "Profile picture deleted", user)
 
 
 	}),

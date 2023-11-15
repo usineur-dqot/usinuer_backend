@@ -91,6 +91,10 @@ export default {
 		message: Joi.string().required(),
 		date: Joi.date().required(),
 		from_id: Joi.number().required(),
-		tracking_no: Joi.number().required(),
-	}
+		tracking_no: Joi.string().required(),
+	},
+	addComment: {
+		project_id: Joi.string().required(),
+		description: Joi.string().required(),
+	},
 };

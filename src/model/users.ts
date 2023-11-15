@@ -3,8 +3,11 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import type { bids, bidsId } from './bids';
 import type { country, countryId } from './country';
 import type { messages, messagesId } from './messages';
+import type { notif_email_list, notif_email_listId } from './notif_email_list';
 import type { prebid_messages, prebid_messagesId } from './prebid_messages';
 import type { projects, projectsId } from './projects';
+import type { reviews, reviewsId } from './reviews';
+import type { transactions, transactionsId } from './transactions';
 
 export interface usersAttributes {
   id: number;
@@ -67,14 +70,14 @@ export interface usersAttributes {
   entrepreneur?: number;
   bid_status: number;
   last_seen?: Date;
-  show_modal: number;
+  show_modal?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 export type usersPk = "id";
 export type usersId = users[usersPk];
-export type usersOptionalAttributes = "id" | "refid" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "last_seen" | "createdAt" | "updatedAt";
+export type usersOptionalAttributes = "id" | "refid" | "user_name" | "address1" | "address2" | "description" | "company_name" | "company_number" | "password" | "paypal_email" | "profile_desc" | "service_desc" | "voter" | "prof_pic" | "prot_pic" | "pdf_file" | "account" | "user_status" | "activation_key" | "zcode" | "Squestion" | "answer" | "state" | "city" | "country_symbol" | "project_notify" | "bid_notify" | "message_notify" | "rate" | "logo" | "created" | "last_activity" | "user_rating" | "num_reviews" | "rating_hold" | "tot_rating" | "suspend_status" | "ban_status" | "admin_status" | "admin_status_uk" | "admin_status_it" | "job_fr" | "job_uk" | "job_it" | "choice" | "supLogin" | "lang" | "pro_user" | "pro_vat" | "siren" | "mailchimp_id" | "nxtduedate" | "entrepreneur" | "bid_status" | "last_seen" | "show_modal" | "createdAt" | "updatedAt";
 export type usersCreationAttributes = Optional<usersAttributes, usersOptionalAttributes>;
 
 export class users extends Model<usersAttributes, usersCreationAttributes> implements usersAttributes {
@@ -138,7 +141,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   entrepreneur?: number;
   bid_status!: number;
   last_seen?: Date;
-  show_modal!: number;
+  show_modal?: number;
   createdAt?: Date;
   updatedAt?: Date;
 
@@ -183,6 +186,18 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   hasTo_message!: Sequelize.HasManyHasAssociationMixin<messages, messagesId>;
   hasTo_messages!: Sequelize.HasManyHasAssociationsMixin<messages, messagesId>;
   countTo_messages!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany notif_email_list via customer_id
+  notif_email_lists!: notif_email_list[];
+  getNotif_email_lists!: Sequelize.HasManyGetAssociationsMixin<notif_email_list>;
+  setNotif_email_lists!: Sequelize.HasManySetAssociationsMixin<notif_email_list, notif_email_listId>;
+  addNotif_email_list!: Sequelize.HasManyAddAssociationMixin<notif_email_list, notif_email_listId>;
+  addNotif_email_lists!: Sequelize.HasManyAddAssociationsMixin<notif_email_list, notif_email_listId>;
+  createNotif_email_list!: Sequelize.HasManyCreateAssociationMixin<notif_email_list>;
+  removeNotif_email_list!: Sequelize.HasManyRemoveAssociationMixin<notif_email_list, notif_email_listId>;
+  removeNotif_email_lists!: Sequelize.HasManyRemoveAssociationsMixin<notif_email_list, notif_email_listId>;
+  hasNotif_email_list!: Sequelize.HasManyHasAssociationMixin<notif_email_list, notif_email_listId>;
+  hasNotif_email_lists!: Sequelize.HasManyHasAssociationsMixin<notif_email_list, notif_email_listId>;
+  countNotif_email_lists!: Sequelize.HasManyCountAssociationsMixin;
   // users hasMany prebid_messages via from_id
   prebid_messages!: prebid_messages[];
   getPrebid_messages!: Sequelize.HasManyGetAssociationsMixin<prebid_messages>;
@@ -219,6 +234,54 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
   hasProgrammer_project!: Sequelize.HasManyHasAssociationMixin<projects, projectsId>;
   hasProgrammer_projects!: Sequelize.HasManyHasAssociationsMixin<projects, projectsId>;
   countProgrammer_projects!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany reviews via buyer_id
+  reviews!: reviews[];
+  getReviews!: Sequelize.HasManyGetAssociationsMixin<reviews>;
+  setReviews!: Sequelize.HasManySetAssociationsMixin<reviews, reviewsId>;
+  addReview!: Sequelize.HasManyAddAssociationMixin<reviews, reviewsId>;
+  addReviews!: Sequelize.HasManyAddAssociationsMixin<reviews, reviewsId>;
+  createReview!: Sequelize.HasManyCreateAssociationMixin<reviews>;
+  removeReview!: Sequelize.HasManyRemoveAssociationMixin<reviews, reviewsId>;
+  removeReviews!: Sequelize.HasManyRemoveAssociationsMixin<reviews, reviewsId>;
+  hasReview!: Sequelize.HasManyHasAssociationMixin<reviews, reviewsId>;
+  hasReviews!: Sequelize.HasManyHasAssociationsMixin<reviews, reviewsId>;
+  countReviews!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany reviews via provider_id
+  provider_reviews!: reviews[];
+  getProvider_reviews!: Sequelize.HasManyGetAssociationsMixin<reviews>;
+  setProvider_reviews!: Sequelize.HasManySetAssociationsMixin<reviews, reviewsId>;
+  addProvider_review!: Sequelize.HasManyAddAssociationMixin<reviews, reviewsId>;
+  addProvider_reviews!: Sequelize.HasManyAddAssociationsMixin<reviews, reviewsId>;
+  createProvider_review!: Sequelize.HasManyCreateAssociationMixin<reviews>;
+  removeProvider_review!: Sequelize.HasManyRemoveAssociationMixin<reviews, reviewsId>;
+  removeProvider_reviews!: Sequelize.HasManyRemoveAssociationsMixin<reviews, reviewsId>;
+  hasProvider_review!: Sequelize.HasManyHasAssociationMixin<reviews, reviewsId>;
+  hasProvider_reviews!: Sequelize.HasManyHasAssociationsMixin<reviews, reviewsId>;
+  countProvider_reviews!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany transactions via creator_id
+  transactions!: transactions[];
+  getTransactions!: Sequelize.HasManyGetAssociationsMixin<transactions>;
+  setTransactions!: Sequelize.HasManySetAssociationsMixin<transactions, transactionsId>;
+  addTransaction!: Sequelize.HasManyAddAssociationMixin<transactions, transactionsId>;
+  addTransactions!: Sequelize.HasManyAddAssociationsMixin<transactions, transactionsId>;
+  createTransaction!: Sequelize.HasManyCreateAssociationMixin<transactions>;
+  removeTransaction!: Sequelize.HasManyRemoveAssociationMixin<transactions, transactionsId>;
+  removeTransactions!: Sequelize.HasManyRemoveAssociationsMixin<transactions, transactionsId>;
+  hasTransaction!: Sequelize.HasManyHasAssociationMixin<transactions, transactionsId>;
+  hasTransactions!: Sequelize.HasManyHasAssociationsMixin<transactions, transactionsId>;
+  countTransactions!: Sequelize.HasManyCountAssociationsMixin;
+  // users hasMany transactions via reciever_id
+  reciever_transactions!: transactions[];
+  getReciever_transactions!: Sequelize.HasManyGetAssociationsMixin<transactions>;
+  setReciever_transactions!: Sequelize.HasManySetAssociationsMixin<transactions, transactionsId>;
+  addReciever_transaction!: Sequelize.HasManyAddAssociationMixin<transactions, transactionsId>;
+  addReciever_transactions!: Sequelize.HasManyAddAssociationsMixin<transactions, transactionsId>;
+  createReciever_transaction!: Sequelize.HasManyCreateAssociationMixin<transactions>;
+  removeReciever_transaction!: Sequelize.HasManyRemoveAssociationMixin<transactions, transactionsId>;
+  removeReciever_transactions!: Sequelize.HasManyRemoveAssociationsMixin<transactions, transactionsId>;
+  hasReciever_transaction!: Sequelize.HasManyHasAssociationMixin<transactions, transactionsId>;
+  hasReciever_transactions!: Sequelize.HasManyHasAssociationsMixin<transactions, transactionsId>;
+  countReciever_transactions!: Sequelize.HasManyCountAssociationsMixin;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof users {
     return sequelize.define('users', {
@@ -478,7 +541,7 @@ export class users extends Model<usersAttributes, usersCreationAttributes> imple
     },
     show_modal: {
       type: DataTypes.TINYINT,
-      allowNull: false
+      allowNull: true
     }
   }, {
     tableName: 'users',

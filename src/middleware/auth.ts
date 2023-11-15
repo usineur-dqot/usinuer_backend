@@ -32,6 +32,10 @@ const ignorePaths = [
 	"/user/project/public-profile-total-jobs",
 	"/user/project/public-profile-api",
 	"/user/project/public-user-reviews",
+
+	"/user/project/offer-reviews-feedback",
+	"/user/project/project_finalise_image",
+	"/user/project/get-additional-comment",
 ];
 
 export interface UserAuthRequest extends Request {

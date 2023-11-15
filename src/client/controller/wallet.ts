@@ -139,8 +139,8 @@ export default {
 		}
 
 		machinist_wallet.increment({
-			amount: bid.bid_amount,
-			amount_gbp: bid.bid_amount_gbp,
+			amount: bid.bid_amount_gbp,
+			amount_gbp: bid.bid_amount,
 		});
 		var today = new Date();
 
@@ -192,14 +192,13 @@ export default {
 		await transaction_details.update({
 			//amount: data.amount,
 			amount_gbp: transaction_details.amount_gbp,
-			type: "PAID TO MACHINIST",
+			type: "Escrow Transfer ",
+    			  transaction_time: moment().unix(),
+			  description: "Paypal",
+			  user_type:"customer",
+			status: "Completed",
 
-			//			status: "SUCCESS",
-			status: today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate(), // as timedate
-			transaction_time: 3, // as status
 
-
-			description: "Paid to Machinist",
 		});
 
 
@@ -231,8 +230,8 @@ export default {
 			"!project": project.project_name,
 			"!username": machinist?.user_name,
 			"!bid_amount": transaction_details.amount,
-			"!withdraw_url":`http://18.133.64.152/auth/sign-in`,
-			"!amount": transaction_details.amount_gbp
+			"!withdraw_url":`https://machining-4u.co.uk/account/withdraw`,
+			"!amount": transaction_details.amount
 		}
 
 		const mailData = await models.email_templates.findOne({
@@ -304,10 +303,10 @@ export default {
 			"!project": project.project_name,
 			"!username": user?.user_name,
 			"!bid_amount": transaction_details.amount,
-			"!withdraw_url":`http://18.133.64.152/auth/sign-in`,
-			"!amount": transaction_details.amount_gbp,
+			"!withdraw_url":`http://35.179.7.135/account/withdraw`,
+			"!amount": transaction_details.amount,
 			"!supplier_username": machinist?.user_name,
-			"!feedback_url": "http://18.133.64.152/"
+			"!feedback_url": `https://machining-4u.co.uk/machining/${project.project_name.split(" ").join("-")}-${project?.id}`,
 		}
 
 		const mailData_cus = await models.email_templates.findOne({

@@ -67,12 +67,13 @@ router.post("/shipping_message_send", cn.shipping_message_send);
 router.post("/request_release_funds", cn.request_release_funds);
 
 router.post("/update_read_my_msg", cn.update_read_my_msgs);
-
+router.post("/add-desccomment", cn.add_desccomment);
 router.get("/inbox-count", cn.inbox_count);
 
 router.post("/update_unread_my_msg", cn.update_unread_my_msgs);
 
 router.post("/update_remove_my_msg", cn.update_remove_my_msgs);
+router.get("/project_finalise_image", cn.project_finalise_image);
 
 
 router.get("/reviews", cn.user_reviews);
@@ -98,4 +99,16 @@ router.get("/public-me", cn.public_me);
 router.get("/public-profile-total-jobs", cn.public_profile_total_jobs);
 
 router.get("/public-user-reviews", cn.public_user_reviews);
+
+router.get("/offer-reviews-feedback", cn.offer_reviews_feedback);
+
+router.get("/get-additional-comment", cn.get_additional_comment);
+
+router.post("/save-invoice", cn.save_invoice);
+
+router.post("/delete-additional-file", cn.delete_additional_file);
+
+router.post("/delete-profile-picture", cn.delete_profile_picture);
+
+router.post("/delete-portfolio-picture", cn.delete_portfolio_picture);
 export default router;

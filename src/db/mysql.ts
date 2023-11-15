@@ -19,7 +19,7 @@ const sequelize = new Sequelize(config.db, config.user, config.password, {
 	define: {
 		timestamps: false,
 	},
-	timezone: "+05:30",
+	timezone: "+02:00",
 	// logging: false
 });
 

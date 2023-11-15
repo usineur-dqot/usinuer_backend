@@ -1,5 +1,8 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { invoices, invoicesId } from './invoices';
+import type { projects, projectsId } from './projects';
+import type { users, usersId } from './users';
 
 export interface transactionsAttributes {
   id: number;
@@ -14,8 +17,8 @@ export interface transactionsAttributes {
   description: string;
   paypal_address?: string;
   user_type?: string;
-  reciever_id: string;
-  project_id: string;
+  reciever_id?: number;
+  project_id?: number;
   package_id?: number;
   update_flag?: number;
   country_code?: number;
@@ -23,7 +26,7 @@ export interface transactionsAttributes {
 
 export type transactionsPk = "id";
 export type transactionsId = transactions[transactionsPk];
-export type transactionsOptionalAttributes = "id" | "creator_id" | "buyer_id" | "provider_id" | "status" | "paypal_address" | "user_type" | "package_id" | "update_flag" | "country_code";
+export type transactionsOptionalAttributes = "id" | "creator_id" | "buyer_id" | "provider_id" | "status" | "paypal_address" | "user_type" | "reciever_id" | "project_id" | "package_id" | "update_flag" | "country_code";
 export type transactionsCreationAttributes = Optional<transactionsAttributes, transactionsOptionalAttributes>;
 
 export class transactions extends Model<transactionsAttributes, transactionsCreationAttributes> implements transactionsAttributes {
@@ -39,12 +42,39 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
   description!: string;
   paypal_address?: string;
   user_type?: string;
-  reciever_id!: string;
-  project_id!: string;
+  reciever_id?: number;
+  project_id?: number;
   package_id?: number;
   update_flag?: number;
   country_code?: number;
 
+  // transactions belongsTo projects via project_id
+  project!: projects;
+  getProject!: Sequelize.BelongsToGetAssociationMixin<projects>;
+  setProject!: Sequelize.BelongsToSetAssociationMixin<projects, projectsId>;
+  createProject!: Sequelize.BelongsToCreateAssociationMixin<projects>;
+  // transactions hasMany invoices via transaction_id
+  invoices!: invoices[];
+  getInvoices!: Sequelize.HasManyGetAssociationsMixin<invoices>;
+  setInvoices!: Sequelize.HasManySetAssociationsMixin<invoices, invoicesId>;
+  addInvoice!: Sequelize.HasManyAddAssociationMixin<invoices, invoicesId>;
+  addInvoices!: Sequelize.HasManyAddAssociationsMixin<invoices, invoicesId>;
+  createInvoice!: Sequelize.HasManyCreateAssociationMixin<invoices>;
+  removeInvoice!: Sequelize.HasManyRemoveAssociationMixin<invoices, invoicesId>;
+  removeInvoices!: Sequelize.HasManyRemoveAssociationsMixin<invoices, invoicesId>;
+  hasInvoice!: Sequelize.HasManyHasAssociationMixin<invoices, invoicesId>;
+  hasInvoices!: Sequelize.HasManyHasAssociationsMixin<invoices, invoicesId>;
+  countInvoices!: Sequelize.HasManyCountAssociationsMixin;
+  // transactions belongsTo users via creator_id
+  creator!: users;
+  getCreator!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setCreator!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createCreator!: Sequelize.BelongsToCreateAssociationMixin<users>;
+  // transactions belongsTo users via reciever_id
+  reciever!: users;
+  getReciever!: Sequelize.BelongsToGetAssociationMixin<users>;
+  setReciever!: Sequelize.BelongsToSetAssociationMixin<users, usersId>;
+  createReciever!: Sequelize.BelongsToCreateAssociationMixin<users>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof transactions {
     return sequelize.define('transactions', {
@@ -59,17 +89,21 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
       allowNull: false
     },
     creator_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
-      defaultValue: 0
+      defaultValue: 0,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     buyer_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       defaultValue: 0
     },
     provider_id: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.BIGINT.UNSIGNED,
       allowNull: false,
       defaultValue: 0
     },
@@ -102,12 +136,20 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
       allowNull: true
     },
     reciever_id: {
-      type: DataTypes.STRING(256),
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
     },
     project_id: {
-      type: DataTypes.STRING(256),
-      allowNull: false
+      type: DataTypes.BIGINT.UNSIGNED,
+      allowNull: true,
+      references: {
+        model: 'projects',
+        key: 'id'
+      }
     },
     package_id: {
       type: DataTypes.SMALLINT,
@@ -131,6 +173,27 @@ export class transactions extends Model<transactionsAttributes, transactionsCrea
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "project_id",
+        using: "BTREE",
+        fields: [
+          { name: "project_id" },
+        ]
+      },
+      {
+        name: "creator_id",
+        using: "BTREE",
+        fields: [
+          { name: "creator_id" },
+        ]
+      },
+      {
+        name: "reciever_id",
+        using: "BTREE",
+        fields: [
+          { name: "reciever_id" },
         ]
       },
     ]

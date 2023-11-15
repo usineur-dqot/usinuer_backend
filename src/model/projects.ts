@@ -2,73 +2,76 @@ import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
 import type { bids, bidsId } from './bids';
 import type { messages, messagesId } from './messages';
+import type { notif_email_list, notif_email_listId } from './notif_email_list';
 import type { prebid_messages, prebid_messagesId } from './prebid_messages';
 import type { project_images, project_imagesId } from './project_images';
+import type { reviews, reviewsId } from './reviews';
+import type { transactions, transactionsId } from './transactions';
 import type { users, usersId } from './users';
 
 export interface projectsAttributes {
   id: number;
   project_name: string;
   project_status: string;
-  buyer_complete_status: number;
-  provider_complete_status: number;
+  buyer_complete_status?: number;
+  provider_complete_status?: number;
   description: string;
-  expedition_day: string;
-  expedition_day2: string;
-  track_number: string;
-  additional_description: string;
-  project_image: string;
-  project_categories: string;
-  project_start: number;
+  expedition_day?: string;
+  expedition_day2?: string;
+  track_number?: string;
+  additional_description?: string;
+  project_image?: string;
+  project_categories?: string;
+  project_start?: number;
   visibility: string;
-  start_bid: number;
+  start_bid?: number;
   budget_min?: number;
   budget_max?: number;
   is_feature?: number;
   is_urgent?: number;
   is_hide_bids?: number;
   creator_id?: number;
-  created: number;
-  enddate: number;
+  created?: number;
+  enddate?: number;
   programmer_id?: number;
-  bid_select_date: Date;
-  unpaid_project_notify_date: Date;
-  checkstamp: string;
-  buyer_rated: '0' | '1';
-  provider_rated: '0' | '1';
-  project_paid: '0' | '1';
-  project_award_date: number;
-  project_award_date_format: Date;
-  project_fund_date_format: Date;
-  fund_release_date: Date;
+  bid_select_date?: Date;
+  unpaid_project_notify_date?: Date;
+  checkstamp?: string;
+  buyer_rated?: '0' | '1';
+  provider_rated?: '0' | '1';
+  project_paid?: '0' | '1';
+  project_award_date?: number;
+  project_award_date_format?: Date;
+  project_fund_date_format?: Date;
+  fund_release_date?: Date;
   notification_status: number;
-  attachment_url: string;
-  image: string;
-  first_upload: number;
+  attachment_url?: string;
+  image?: string;
+  first_upload?: number;
   attachment_name?: string;
-  attachment_folder: string;
+  attachment_folder?: string;
   is_private: number;
   private_users?: string;
-  contact: string;
-  salary: string;
-  flag: number;
-  salarytype: string;
-  escrow_due: number;
-  city: string;
-  zipcode: string;
-  post_for: string;
-  project_post_format_date: Date;
-  project_post_date: string;
-  project_expiry_date: string;
+  contact?: string;
+  salary?: string;
+  flag?: number;
+  salarytype?: string;
+  escrow_due?: number;
+  city?: string;
+  zipcode?: string;
+  post_for?: string;
+  project_post_format_date?: Date;
+  project_post_date?: string;
+  project_expiry_date?: string;
   expired_notification_sent: string;
   fund_notification_sent: string;
-  unpaid_project_notif: string;
-  site_fr: number;
-  site_uk: number;
-  site_it: number;
-  country_code: number;
-  pro_job: number;
-  posted_dt: string;
+  unpaid_project_notif?: string;
+  site_fr?: number;
+  site_uk?: number;
+  site_it?: number;
+  country_code?: number;
+  pro_job?: number;
+  posted_dt?: string;
   createdAt?: Date;
   updatedAt?: Date;
   show_release?: number;
@@ -76,72 +79,72 @@ export interface projectsAttributes {
 
 export type projectsPk = "id";
 export type projectsId = projects[projectsPk];
-export type projectsOptionalAttributes = "id" | "project_status" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "programmer_id" | "notification_status" | "attachment_name" | "is_private" | "private_users" | "expired_notification_sent" | "fund_notification_sent" | "createdAt" | "updatedAt" | "show_release";
+export type projectsOptionalAttributes = "id" | "project_status" | "buyer_complete_status" | "provider_complete_status" | "expedition_day" | "expedition_day2" | "track_number" | "additional_description" | "project_image" | "project_categories" | "project_start" | "start_bid" | "budget_min" | "budget_max" | "is_feature" | "is_urgent" | "is_hide_bids" | "creator_id" | "created" | "enddate" | "programmer_id" | "bid_select_date" | "unpaid_project_notify_date" | "checkstamp" | "buyer_rated" | "provider_rated" | "project_paid" | "project_award_date" | "project_award_date_format" | "project_fund_date_format" | "fund_release_date" | "notification_status" | "attachment_url" | "image" | "first_upload" | "attachment_name" | "attachment_folder" | "is_private" | "private_users" | "contact" | "salary" | "flag" | "salarytype" | "escrow_due" | "city" | "zipcode" | "post_for" | "project_post_format_date" | "project_post_date" | "project_expiry_date" | "expired_notification_sent" | "fund_notification_sent" | "unpaid_project_notif" | "site_fr" | "site_uk" | "site_it" | "country_code" | "pro_job" | "posted_dt" | "createdAt" | "updatedAt" | "show_release";
 export type projectsCreationAttributes = Optional<projectsAttributes, projectsOptionalAttributes>;
 
 export class projects extends Model<projectsAttributes, projectsCreationAttributes> implements projectsAttributes {
   id!: number;
   project_name!: string;
   project_status!: string;
-  buyer_complete_status!: number;
-  provider_complete_status!: number;
+  buyer_complete_status?: number;
+  provider_complete_status?: number;
   description!: string;
-  expedition_day!: string;
-  expedition_day2!: string;
-  track_number!: string;
-  additional_description!: string;
-  project_image!: string;
-  project_categories!: string;
-  project_start!: number;
+  expedition_day?: string;
+  expedition_day2?: string;
+  track_number?: string;
+  additional_description?: string;
+  project_image?: string;
+  project_categories?: string;
+  project_start?: number;
   visibility!: string;
-  start_bid!: number;
+  start_bid?: number;
   budget_min?: number;
   budget_max?: number;
   is_feature?: number;
   is_urgent?: number;
   is_hide_bids?: number;
   creator_id?: number;
-  created!: number;
-  enddate!: number;
+  created?: number;
+  enddate?: number;
   programmer_id?: number;
-  bid_select_date!: Date;
-  unpaid_project_notify_date!: Date;
-  checkstamp!: string;
-  buyer_rated!: '0' | '1';
-  provider_rated!: '0' | '1';
-  project_paid!: '0' | '1';
-  project_award_date!: number;
-  project_award_date_format!: Date;
-  project_fund_date_format!: Date;
-  fund_release_date!: Date;
+  bid_select_date?: Date;
+  unpaid_project_notify_date?: Date;
+  checkstamp?: string;
+  buyer_rated?: '0' | '1';
+  provider_rated?: '0' | '1';
+  project_paid?: '0' | '1';
+  project_award_date?: number;
+  project_award_date_format?: Date;
+  project_fund_date_format?: Date;
+  fund_release_date?: Date;
   notification_status!: number;
-  attachment_url!: string;
-  image!: string;
-  first_upload!: number;
+  attachment_url?: string;
+  image?: string;
+  first_upload?: number;
   attachment_name?: string;
-  attachment_folder!: string;
+  attachment_folder?: string;
   is_private!: number;
   private_users?: string;
-  contact!: string;
-  salary!: string;
-  flag!: number;
-  salarytype!: string;
-  escrow_due!: number;
-  city!: string;
-  zipcode!: string;
-  post_for!: string;
-  project_post_format_date!: Date;
-  project_post_date!: string;
-  project_expiry_date!: string;
+  contact?: string;
+  salary?: string;
+  flag?: number;
+  salarytype?: string;
+  escrow_due?: number;
+  city?: string;
+  zipcode?: string;
+  post_for?: string;
+  project_post_format_date?: Date;
+  project_post_date?: string;
+  project_expiry_date?: string;
   expired_notification_sent!: string;
   fund_notification_sent!: string;
-  unpaid_project_notif!: string;
-  site_fr!: number;
-  site_uk!: number;
-  site_it!: number;
-  country_code!: number;
-  pro_job!: number;
-  posted_dt!: string;
+  unpaid_project_notif?: string;
+  site_fr?: number;
+  site_uk?: number;
+  site_it?: number;
+  country_code?: number;
+  pro_job?: number;
+  posted_dt?: string;
   createdAt?: Date;
   updatedAt?: Date;
   show_release?: number;
@@ -170,6 +173,18 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   hasMessage!: Sequelize.HasManyHasAssociationMixin<messages, messagesId>;
   hasMessages!: Sequelize.HasManyHasAssociationsMixin<messages, messagesId>;
   countMessages!: Sequelize.HasManyCountAssociationsMixin;
+  // projects hasMany notif_email_list via project_id
+  notif_email_lists!: notif_email_list[];
+  getNotif_email_lists!: Sequelize.HasManyGetAssociationsMixin<notif_email_list>;
+  setNotif_email_lists!: Sequelize.HasManySetAssociationsMixin<notif_email_list, notif_email_listId>;
+  addNotif_email_list!: Sequelize.HasManyAddAssociationMixin<notif_email_list, notif_email_listId>;
+  addNotif_email_lists!: Sequelize.HasManyAddAssociationsMixin<notif_email_list, notif_email_listId>;
+  createNotif_email_list!: Sequelize.HasManyCreateAssociationMixin<notif_email_list>;
+  removeNotif_email_list!: Sequelize.HasManyRemoveAssociationMixin<notif_email_list, notif_email_listId>;
+  removeNotif_email_lists!: Sequelize.HasManyRemoveAssociationsMixin<notif_email_list, notif_email_listId>;
+  hasNotif_email_list!: Sequelize.HasManyHasAssociationMixin<notif_email_list, notif_email_listId>;
+  hasNotif_email_lists!: Sequelize.HasManyHasAssociationsMixin<notif_email_list, notif_email_listId>;
+  countNotif_email_lists!: Sequelize.HasManyCountAssociationsMixin;
   // projects hasMany prebid_messages via project_id
   prebid_messages!: prebid_messages[];
   getPrebid_messages!: Sequelize.HasManyGetAssociationsMixin<prebid_messages>;
@@ -194,6 +209,30 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
   hasProject_image!: Sequelize.HasManyHasAssociationMixin<project_images, project_imagesId>;
   hasProject_images!: Sequelize.HasManyHasAssociationsMixin<project_images, project_imagesId>;
   countProject_images!: Sequelize.HasManyCountAssociationsMixin;
+  // projects hasMany reviews via project_id
+  reviews!: reviews[];
+  getReviews!: Sequelize.HasManyGetAssociationsMixin<reviews>;
+  setReviews!: Sequelize.HasManySetAssociationsMixin<reviews, reviewsId>;
+  addReview!: Sequelize.HasManyAddAssociationMixin<reviews, reviewsId>;
+  addReviews!: Sequelize.HasManyAddAssociationsMixin<reviews, reviewsId>;
+  createReview!: Sequelize.HasManyCreateAssociationMixin<reviews>;
+  removeReview!: Sequelize.HasManyRemoveAssociationMixin<reviews, reviewsId>;
+  removeReviews!: Sequelize.HasManyRemoveAssociationsMixin<reviews, reviewsId>;
+  hasReview!: Sequelize.HasManyHasAssociationMixin<reviews, reviewsId>;
+  hasReviews!: Sequelize.HasManyHasAssociationsMixin<reviews, reviewsId>;
+  countReviews!: Sequelize.HasManyCountAssociationsMixin;
+  // projects hasMany transactions via project_id
+  transactions!: transactions[];
+  getTransactions!: Sequelize.HasManyGetAssociationsMixin<transactions>;
+  setTransactions!: Sequelize.HasManySetAssociationsMixin<transactions, transactionsId>;
+  addTransaction!: Sequelize.HasManyAddAssociationMixin<transactions, transactionsId>;
+  addTransactions!: Sequelize.HasManyAddAssociationsMixin<transactions, transactionsId>;
+  createTransaction!: Sequelize.HasManyCreateAssociationMixin<transactions>;
+  removeTransaction!: Sequelize.HasManyRemoveAssociationMixin<transactions, transactionsId>;
+  removeTransactions!: Sequelize.HasManyRemoveAssociationsMixin<transactions, transactionsId>;
+  hasTransaction!: Sequelize.HasManyHasAssociationMixin<transactions, transactionsId>;
+  hasTransactions!: Sequelize.HasManyHasAssociationsMixin<transactions, transactionsId>;
+  countTransactions!: Sequelize.HasManyCountAssociationsMixin;
   // projects belongsTo users via creator_id
   creator!: users;
   getCreator!: Sequelize.BelongsToGetAssociationMixin<users>;
@@ -224,11 +263,11 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     buyer_complete_status: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     provider_complete_status: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     description: {
       type: DataTypes.TEXT,
@@ -236,31 +275,31 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     expedition_day: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     expedition_day2: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     track_number: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     additional_description: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     project_image: {
       type: DataTypes.STRING(255),
-      allowNull: false
+      allowNull: true
     },
     project_categories: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     project_start: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     visibility: {
       type: DataTypes.STRING(100),
@@ -268,7 +307,7 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     start_bid: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     budget_min: {
       type: DataTypes.INTEGER.UNSIGNED,
@@ -302,11 +341,11 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     created: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     enddate: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     programmer_id: {
       type: DataTypes.BIGINT.UNSIGNED,
@@ -318,43 +357,43 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     bid_select_date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     unpaid_project_notify_date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     checkstamp: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     buyer_rated: {
       type: DataTypes.ENUM('0','1'),
-      allowNull: false
+      allowNull: true
     },
     provider_rated: {
       type: DataTypes.ENUM('0','1'),
-      allowNull: false
+      allowNull: true
     },
     project_paid: {
       type: DataTypes.ENUM('0','1'),
-      allowNull: false
+      allowNull: true
     },
     project_award_date: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     project_award_date_format: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     project_fund_date_format: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     fund_release_date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     notification_status: {
       type: DataTypes.INTEGER,
@@ -363,15 +402,15 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     attachment_url: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     image: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     first_upload: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     attachment_name: {
       type: DataTypes.TEXT,
@@ -379,7 +418,7 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     attachment_folder: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     is_private: {
       type: DataTypes.INTEGER,
@@ -392,47 +431,47 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     contact: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     salary: {
       type: DataTypes.STRING(15),
-      allowNull: false
+      allowNull: true
     },
     flag: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     salarytype: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     escrow_due: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     city: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     zipcode: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     post_for: {
       type: DataTypes.STRING(100),
-      allowNull: false
+      allowNull: true
     },
     project_post_format_date: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     project_post_date: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     project_expiry_date: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     expired_notification_sent: {
       type: DataTypes.STRING(1),
@@ -446,31 +485,31 @@ export class projects extends Model<projectsAttributes, projectsCreationAttribut
     },
     unpaid_project_notif: {
       type: DataTypes.TEXT,
-      allowNull: false
+      allowNull: true
     },
     site_fr: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     site_uk: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     site_it: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     country_code: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     pro_job: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: true
     },
     posted_dt: {
       type: DataTypes.DATEONLY,
-      allowNull: false
+      allowNull: true
     },
     show_release: {
       type: DataTypes.TINYINT,

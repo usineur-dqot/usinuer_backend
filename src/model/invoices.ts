@@ -1,5 +1,6 @@
 import * as Sequelize from 'sequelize';
 import { DataTypes, Model, Optional } from 'sequelize';
+import type { transactions, transactionsId } from './transactions';
 
 export interface invoicesAttributes {
   id: number;
@@ -25,6 +26,11 @@ export class invoices extends Model<invoicesAttributes, invoicesCreationAttribut
   pdf_link!: string;
   created_date!: Date;
 
+  // invoices belongsTo transactions via transaction_id
+  transaction!: transactions;
+  getTransaction!: Sequelize.BelongsToGetAssociationMixin<transactions>;
+  setTransaction!: Sequelize.BelongsToSetAssociationMixin<transactions, transactionsId>;
+  createTransaction!: Sequelize.BelongsToCreateAssociationMixin<transactions>;
 
   static initModel(sequelize: Sequelize.Sequelize): typeof invoices {
     return sequelize.define('invoices', {
@@ -43,8 +49,12 @@ export class invoices extends Model<invoicesAttributes, invoicesCreationAttribut
       allowNull: false
     },
     transaction_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
+      type: DataTypes.INTEGER.UNSIGNED,
+      allowNull: false,
+      references: {
+        model: 'transactions',
+        key: 'id'
+      }
     },
     commission_rate: {
       type: DataTypes.DECIMAL(10,2),
@@ -68,6 +78,13 @@ export class invoices extends Model<invoicesAttributes, invoicesCreationAttribut
         using: "BTREE",
         fields: [
           { name: "id" },
+        ]
+      },
+      {
+        name: "transaction_id",
+        using: "BTREE",
+        fields: [
+          { name: "transaction_id" },
         ]
       },
     ]

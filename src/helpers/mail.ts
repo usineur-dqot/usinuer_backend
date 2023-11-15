@@ -40,10 +40,10 @@ export async function sendMail(
 }
 
 export const site_mail_data = {
-	"!site_name": "machining-4u.co.uk",
-	"!site_url": "http://machining-4u.co.uk/",
-	"!contact_url": "admin@machining-4u.co.uk",
-	"!site_title": "Machining-4u",
+	"!site_name": "machining.co.uk",
+	"!site_url": "www.machining.co.uk",
+	"!contact_url": "admin@machining.co.uk",
+	"!site_title": "Machining",
 	
 
 }

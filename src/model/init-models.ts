@@ -574,22 +574,40 @@ export function initModels(sequelize: Sequelize) {
   projects.hasMany(bids, { as: "bids", foreignKey: "project_id"});
   messages.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(messages, { as: "messages", foreignKey: "project_id"});
+  notif_email_list.belongsTo(projects, { as: "project", foreignKey: "project_id"});
+  projects.hasMany(notif_email_list, { as: "notif_email_lists", foreignKey: "project_id"});
   prebid_messages.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "project_id"});
   project_images.belongsTo(projects, { as: "project", foreignKey: "project_id"});
   projects.hasMany(project_images, { as: "project_images", foreignKey: "project_id"});
+  reviews.belongsTo(projects, { as: "project", foreignKey: "project_id"});
+  projects.hasMany(reviews, { as: "reviews", foreignKey: "project_id"});
+  transactions.belongsTo(projects, { as: "project", foreignKey: "project_id"});
+  projects.hasMany(transactions, { as: "transactions", foreignKey: "project_id"});
+  invoices.belongsTo(transactions, { as: "transaction", foreignKey: "transaction_id"});
+  transactions.hasMany(invoices, { as: "invoices", foreignKey: "transaction_id"});
   bids.belongsTo(users, { as: "user", foreignKey: "user_id"});
   users.hasMany(bids, { as: "bids", foreignKey: "user_id"});
   messages.belongsTo(users, { as: "from", foreignKey: "from_id"});
   users.hasMany(messages, { as: "messages", foreignKey: "from_id"});
   messages.belongsTo(users, { as: "to", foreignKey: "to_id"});
   users.hasMany(messages, { as: "to_messages", foreignKey: "to_id"});
+  notif_email_list.belongsTo(users, { as: "customer", foreignKey: "customer_id"});
+  users.hasMany(notif_email_list, { as: "notif_email_lists", foreignKey: "customer_id"});
   prebid_messages.belongsTo(users, { as: "from", foreignKey: "from_id"});
   users.hasMany(prebid_messages, { as: "prebid_messages", foreignKey: "from_id"});
   projects.belongsTo(users, { as: "creator", foreignKey: "creator_id"});
   users.hasMany(projects, { as: "projects", foreignKey: "creator_id"});
   projects.belongsTo(users, { as: "programmer", foreignKey: "programmer_id"});
   users.hasMany(projects, { as: "programmer_projects", foreignKey: "programmer_id"});
+  reviews.belongsTo(users, { as: "buyer", foreignKey: "buyer_id"});
+  users.hasMany(reviews, { as: "reviews", foreignKey: "buyer_id"});
+  reviews.belongsTo(users, { as: "provider", foreignKey: "provider_id"});
+  users.hasMany(reviews, { as: "provider_reviews", foreignKey: "provider_id"});
+  transactions.belongsTo(users, { as: "creator", foreignKey: "creator_id"});
+  users.hasMany(transactions, { as: "transactions", foreignKey: "creator_id"});
+  transactions.belongsTo(users, { as: "reciever", foreignKey: "reciever_id"});
+  users.hasMany(transactions, { as: "reciever_transactions", foreignKey: "reciever_id"});
 
   return {
     admin_apprv_imgs: admin_apprv_imgs,

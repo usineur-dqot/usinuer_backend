@@ -9,9 +9,10 @@ import jwt from "jsonwebtoken";
 import env from "@config/env";
 import { Validate } from "@validation/utils";
 import schema from "@validation/schema";
-import { uploadFile, uploadMachiningFile, uploadOneFile } from "@helpers/upload";
+import { uploadFile, uploadMachiningFile, uploadOneFile, uploadProtpic } from "@helpers/upload";
 import moment from "moment";
 import { sendMail, site_mail_data } from "@helpers/mail";
+import crypto from 'crypto';
 
 export default {
 	test: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
@@ -124,8 +125,15 @@ export default {
 			data["siren"] = req.body.SIREN
 
 			data["role_id"] = 1;
-			data["country_code"] = 74;
-			data.password = bcrypt.hashSync(data.password, 10);
+			data["created"] = moment().unix();
+			data["country_code"] = 2;
+			const hash = crypto.createHash('md5');
+			hash.update(data?.password);
+			const hashedPassword = hash.digest('hex');
+			console.log("hashbefore", hashedPassword)
+
+
+			data.password = hashedPassword;
 
 			objectToBeDeleted.forEach((f) => delete data[f]);
 
@@ -143,7 +151,7 @@ export default {
 				"!username": user.user_name,
 				"!usertype": "customer",
 				"!password": userPassword,
-				"!activation_url": "https://35.179.7.135/auth/sign-in"
+				"!activation_url": "https://machining-4u.co.uk/auth/sign-in"
 			};
 
 
@@ -263,8 +271,13 @@ export default {
 			}
 
 			data["role_id"] = 2;
+			data["created"] = moment().unix();
 			data["country_code"] = 74;
-			data.password = bcrypt.hashSync(data.password, 10);
+			const hash = crypto.createHash('md5');
+			hash.update(data?.password);
+			const hashedPassword = hash.digest('hex');
+			console.log("hashbefore", hashedPassword)
+			data.password = hashedPassword;
 			[...objectToBeDeleted, "password_confirmation"].forEach(
 				(f) => delete data[f]
 			);
@@ -283,7 +296,7 @@ export default {
 				"!username": user.user_name,
 				"!usertype": "machanic",
 				"!password": machanicPass,
-				"!activation_url": "https://35.179.7.135/auth/sign-in"
+				"!activation_url": "https://machining-4u.co.uk/auth/sign-in"
 			};
 
 
@@ -379,7 +392,35 @@ export default {
 			return R(res, false, "Invalid Credentials");
 		}
 
-		if (!bcrypt.compareSync(data.password, user.password || "")) {
+		function hashPassword(password: any) {
+			const hash = crypto.createHash('md5');
+			hash.update(password);
+			const hashedPassword = hash.digest('hex');
+			console.log("hashbefore", hashedPassword)
+			return hashedPassword;
+		}
+
+		function verifyPassword(plainTextPassword: any, hashedPassword: any) {
+			const hashedPlainTextPassword = hashPassword(plainTextPassword);
+			return hashedPlainTextPassword === hashedPassword;
+		}
+
+		// Example usage
+		let plainTextPassword = data.password;
+		let hashedPasswordFromDatabase = user.password; // Example MD5 hashed password from the database
+
+		console.log("plainTextPassword", plainTextPassword);
+		console.log("hashedPasswordFromDatabase", hashedPasswordFromDatabase)
+
+		const isMatch = verifyPassword(plainTextPassword, hashedPasswordFromDatabase);
+
+		console.log("crypt veryfy is", isMatch);
+
+		// if (!bcrypt.compareSync(data.password, user.password || "")) {
+		// 	return R(res, false, "Invalid Credentials.");
+		// }
+
+		if (isMatch == false) {
 			return R(res, false, "Invalid Credentials.");
 		}
 		let current_date = new Date();
@@ -439,11 +480,18 @@ export default {
 		
 		console.log("req-->", req);
 		let id: number = Number(req.query.id);
+			console.log("id--------",id)
+	 let project = await models.projects.findOne({
+            where :{
+                id : id
 
+            }
+
+        });
 		let user = await models.delivery_contacts.findOne({
 			where: {
 				project_id: id,
-				user_id: req.user?.id
+				 user_id: project?.creator_id,
 				 
 			},
 			
@@ -453,6 +501,7 @@ export default {
 		
 		return R(res, true, "delivery User data", user);
 	}),
+
 
 	update: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 
@@ -510,9 +559,13 @@ export default {
 		await user.update(data);
 		// await user.save();
 		if (req.files?.file2) {
-			let file2 = await uploadMachiningFile(req, res)
+			let file2 = await uploadProtpic(req, res)
 			let concatenatedData = file2.join(',');
-			user?.update({ prot_pic: Sequelize.literal(`concat(prot_pic, ',', '${concatenatedData}')`) })
+			if (user?.prot_pic != null && user?.prot_pic != "") {
+				await user?.update({ prot_pic: Sequelize.literal(`concat(prot_pic, ',', '${concatenatedData}')`) })
+			} else {
+				await user?.update({ prot_pic: concatenatedData })
+			}
 			
 		}
 		const api_data_rep: object = {
@@ -627,10 +680,30 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 	save_address: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		
 		let data = req.body;
-
+		console.log("data address", data);
+		let deladd= await models.delivery_contacts.findOne({
+			
+			where:{
+				project_id: data?.project_id,
+				}
+			})
+		if(!deladd){
 		let newAddress = await models.delivery_contacts.create(data);
 		console.log("address gen----->>",newAddress);
-		return R(res, true, "Address saved");
+		return R(res, true, "Address saved");	
+			}
+			else{
+		await deladd?.update({
+			name: data?.name,
+			address:data?.address,
+			postalcode: data?.postalcode,
+			city:data?.city,
+
+			})
+		return R(res, true, "Address saved");	
+
+			}
+		
 	}),
 
 	
@@ -655,11 +728,40 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 			return R(res, false, "Invalid user");
 		}
 
-		if (!bcrypt.compareSync(data.old_password, user.password || "")) {
+		function hashPassword(password: any) {
+			const hash = crypto.createHash('md5');
+			hash.update(password);
+			const hashedPassword = hash.digest('hex');
+			console.log("hashbefore", hashedPassword)
+			return hashedPassword;
+		}
+
+		function verifyPassword(plainTextPassword: any, hashedPassword: any) {
+			const hashedPlainTextPassword = hashPassword(plainTextPassword);
+			return hashedPlainTextPassword === hashedPassword;
+		}
+
+		// Example usage
+		let plainTextPassword = data.old_password;
+		let hashedPasswordFromDatabase = user.password; // Example MD5 hashed password from the database
+
+		console.log("plainTextPassword", plainTextPassword);
+		console.log("hashedPasswordFromDatabase", hashedPasswordFromDatabase)
+
+		const isMatch = verifyPassword(plainTextPassword, hashedPasswordFromDatabase);
+
+		console.log("crypt veryfy is", isMatch);
+
+		if (isMatch == false) {
 			return R(res, false, "Old Password is not correct.");
 		}
 
-		user.password = bcrypt.hashSync(data.new_password, 10);
+
+		const hash = crypto.createHash('md5');
+		hash.update(data.new_password);
+		const hashedPassword = hash.digest('hex');
+
+		user.password = hashedPassword;
 
 		await user.save();
 
@@ -670,7 +772,7 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		  "!data3": String(data.user_name),
 		  "!data4": String(data.zcode),
 		  "!data5": String(data.description),
-		  "!url": `https://35.179.7.135/auth/sign-in`,
+		  "!url": `https://machining-4u.co.uk/auth/sign-in`,
 		  "!newpassword": data.new_password
 		};
 	
@@ -727,7 +829,7 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		  }
 		);
 	
-		//sendMail(user?.email, subject, body);
+		sendMail(user?.email, subject, body);
 
 		return R(res, true, "Password Changed");
 	}),
@@ -1009,6 +1111,7 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 			let user_project = await models.projects.findAll({
 				where: {
 					creator_id: req.user?.id,
+					project_status: 5
 				},
 				attributes: ["id"],
 			});
@@ -1023,6 +1126,7 @@ update_pro: asyncWrapper(async (req: UserAuthRequest, res: Response) => {
 		let mach_project = await models.projects.findAll({
 			where: {
 				programmer_id: req.user?.id,
+				project_status: 5
 			},
 			attributes: ["id"],
 		});
